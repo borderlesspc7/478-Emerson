@@ -1,0 +1,140 @@
+.app-sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  z-index: calc(var(--z-sidebar) - 1);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.25s ease,
+    visibility 0.25s ease;
+}
+
+.app-sidebar-backdrop.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+@media (max-width: 1023px) {
+  .app-sidebar-backdrop.is-open {
+    display: block;
+  }
+}
+
+.app-sidebar {
+  width: var(--sidebar-width);
+  min-height: 100%;
+  background: var(--surface-elevated);
+  border-right: 1px solid var(--border-default);
+  display: flex;
+  flex-direction: column;
+  z-index: var(--z-sidebar);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (max-width: 1023px) {
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .app-sidebar.is-open {
+    transform: translateX(0);
+  }
+}
+
+.app-sidebar__brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.app-sidebar__logo {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(135deg, var(--color-primary), #334155);
+  flex-shrink: 0;
+}
+
+.app-sidebar__name {
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+}
+
+.app-sidebar__nav {
+  flex: 1;
+  padding: 1rem 0.75rem;
+  overflow-y: auto;
+}
+
+.app-sidebar__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.app-sidebar__link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.875rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.app-sidebar__link:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.app-sidebar__link:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+.app-sidebar__link.is-active {
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.app-sidebar__icon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.app-sidebar__link.is-active .app-sidebar__icon {
+  opacity: 1;
+}
+
+.app-sidebar__footer {
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.app-sidebar__hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
