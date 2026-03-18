@@ -1,0 +1,9 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Ajuste conforme sua app: por padrão nega tudo até você liberar por coleção.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
