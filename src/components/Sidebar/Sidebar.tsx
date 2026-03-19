@@ -4,8 +4,8 @@ import './Sidebar.css'
 
 const nav = [
   { to: PATHS.dashboard, label: 'Visão geral', icon: IconHome },
-  { to: PATHS.reports, label: 'Relatórios', icon: IconChart },
-  { to: PATHS.team, label: 'Equipe', icon: IconUsers },
+  { to: PATHS.reservation, label: 'Reserva', icon: IconChart },
+  { to: PATHS.services, label: 'Serviços', icon: IconUsers },
   { to: PATHS.settings, label: 'Configurações', icon: IconSettings },
 ] as const
 
@@ -31,7 +31,7 @@ export function Sidebar({ open, showBackdrop, onNavigate }: SidebarProps) {
       >
         <div className="app-sidebar__brand">
           <span className="app-sidebar__logo" aria-hidden />
-          <span className="app-sidebar__name">Workspace</span>
+          <span className="app-sidebar__name">Guia da Zen</span>
         </div>
 
         <nav className="app-sidebar__nav">
@@ -55,7 +55,7 @@ export function Sidebar({ open, showBackdrop, onNavigate }: SidebarProps) {
         </nav>
 
         <div className="app-sidebar__footer">
-          <p className="app-sidebar__hint">v1.0 · Ambiente seguro</p>
+          <p className="app-sidebar__hint">v1.0 · Guia do hóspede</p>
         </div>
       </aside>
     </>

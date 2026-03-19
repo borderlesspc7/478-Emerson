@@ -10,7 +10,7 @@ import {
   firebaseErrorToMessage,
   loginWithEmail,
   logout,
-  subscribeAuth,
+  subscribeAuth
 } from '../services/authService'
 import type { AppUser } from '../types/user'
 
@@ -26,6 +26,7 @@ type AuthContextValue = {
   clearError: () => void
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext<AuthContextValue | null>(null)
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -35,8 +36,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsub = subscribeAuth(
-      (u) => {
-        setUser(u)
+      (nextUser) => {
+        setUser(nextUser)
         setAuthReady(true)
       },
       () => {
@@ -44,6 +45,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setAuthReady(true)
       }
     )
+
     return unsub
   }, [])
 
@@ -68,7 +70,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await logout()
   }, [])
 
-  const clearError = useCallback(() => setLastError(null), [])
+  const clearError = useCallback(() => {
+    setLastError(null)
+  }, [])
 
   const status: AuthStatus = !authReady
     ? 'loading'
@@ -86,18 +90,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       lastError,
       clearError,
     }),
-    [
-      user,
-      status,
-      authReady,
-      handleLogin,
-      handleLogout,
-      lastError,
-      clearError,
-    ]
+    [user, status, authReady, handleLogin, handleLogout, lastError, clearError]
   )
 
-  return (
-    <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
-  )
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

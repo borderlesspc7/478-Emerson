@@ -9,8 +9,8 @@ import './Layout.css'
 
 const titles: Record<string, string> = {
   [PATHS.dashboard]: 'Visão geral',
-  [PATHS.reports]: 'Relatórios',
-  [PATHS.team]: 'Equipe',
+  [PATHS.reservation]: 'Reserva',
+  [PATHS.services]: 'Serviços',
   [PATHS.settings]: 'Configurações',
 }
 

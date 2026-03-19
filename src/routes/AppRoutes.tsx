@@ -14,20 +14,20 @@ export function AppRoutes() {
         <Route element={<AppLayout />}>
           <Route path={PATHS.dashboard} element={<DashboardPage />} />
           <Route
-            path={PATHS.reports}
+            path={PATHS.reservation}
             element={
               <PlaceholderPage
-                title="Relatórios"
-                description="Exporte e visualize relatórios. Conecte esta rota aos seus dados reais."
+                title="Dados da Reserva"
+                description="Endereço, unidade, datas de check-in/check-out e instruções da hospedagem."
               />
             }
           />
           <Route
-            path={PATHS.team}
+            path={PATHS.services}
             element={
               <PlaceholderPage
-                title="Equipe"
-                description="Gerencie membros e permissões da organização."
+                title="Serviços"
+                description="Solicite limpeza, suporte e extras durante sua estadia."
               />
             }
           />
@@ -36,7 +36,7 @@ export function AppRoutes() {
             element={
               <PlaceholderPage
                 title="Configurações"
-                description="Preferências da conta, notificações e integrações."
+                description="Idioma, termos de uso e preferências básicas do hóspede."
               />
             }
           />

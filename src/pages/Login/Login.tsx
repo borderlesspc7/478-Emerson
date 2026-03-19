@@ -1,6 +1,7 @@
 import { useEffect, useId, useState } from 'react'
 import { Link, Navigate, useLocation } from 'react-router-dom'
 import { Button } from '../../components/ui/Button/Button'
+import { ErrorMessage } from '../../components/ui/ErrorMessage'
 import { useAuth } from '../../hooks/useAuth'
 import { PATHS } from '../../routes/path'
 import './Login.css'
@@ -84,16 +85,10 @@ export function LoginPage() {
             noValidate
             aria-describedby={invalid ? errorId : undefined}
           >
-            {invalid ? (
-              <div
-                id={errorId}
-                className="login-form__alert"
-                role="alert"
-                aria-live="polite"
-              >
-                {fieldError || lastError}
-              </div>
-            ) : null}
+            <ErrorMessage
+              id={invalid ? errorId : undefined}
+              message={fieldError || lastError}
+            />
 
             <div className="login-form__field">
               <label className="login-form__label" htmlFor={emailId}>
