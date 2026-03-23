@@ -3,7 +3,7 @@
   min-height: 100svh;
   width: 100%;
   max-width: 100%;
-  background: var(--surface-page);
+  background: transparent;
 }
 
 .app-layout__main {

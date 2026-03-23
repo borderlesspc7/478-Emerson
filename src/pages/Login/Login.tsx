@@ -1,4 +1,5 @@
 import { useEffect, useId, useState } from 'react'
+import { GiLotusFlower } from 'react-icons/gi'
 import { Link, Navigate, useLocation } from 'react-router-dom'
 import { Button } from '../../components/ui/Button/Button'
 import { ErrorMessage } from '../../components/ui/ErrorMessage'
@@ -66,12 +67,13 @@ export function LoginPage() {
 
   return (
     <div className="login-page">
-      <div className="login-page__panel" aria-hidden />
       <main className="login-page__main">
         <div className="login-card">
           <header className="login-card__header">
             <div className="login-card__logo" aria-hidden>
-              <span className="login-card__logo-mark" />
+              <span className="login-card__logo-mark">
+                <GiLotusFlower className="login-card__logo-icon" aria-hidden />
+              </span>
             </div>
             <h1 className="login-card__title">Entrar</h1>
             <p className="login-card__subtitle">

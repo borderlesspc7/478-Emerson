@@ -17,13 +17,22 @@ const titles: Record<string, string> = {
 export function AppLayout() {
   const { user, logout } = useAuth()
   const location = useLocation()
-  const [sidebarOpen, setSidebarOpen] = useState(false)
+  /** Drawer mobile (overlay) */
+  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
+  /** Desktop: barra estreita só com ícones */
+  const [desktopCollapsed, setDesktopCollapsed] = useState(false)
   const [logoutLoading, setLogoutLoading] = useState(false)
   const isDesktop = useMediaQuery('(min-width: 1024px)')
-  const sidebarExpanded = isDesktop || sidebarOpen
 
-  const closeSidebar = useCallback(() => setSidebarOpen(false), [])
-  const toggleSidebar = useCallback(() => setSidebarOpen((o) => !o), [])
+  const closeMobileDrawer = useCallback(() => setMobileDrawerOpen(false), [])
+
+  const toggleSidebar = useCallback(() => {
+    if (isDesktop) {
+      setDesktopCollapsed((c) => !c)
+    } else {
+      setMobileDrawerOpen((o) => !o)
+    }
+  }, [isDesktop])
 
   const title = titles[location.pathname] ?? 'Painel'
 
@@ -42,17 +51,29 @@ export function AppLayout() {
     }
   }
 
+  const menuAriaLabel = isDesktop
+    ? desktopCollapsed
+      ? 'Expandir barra lateral'
+      : 'Recolher barra lateral'
+    : mobileDrawerOpen
+      ? 'Fechar menu de navegação'
+      : 'Abrir menu de navegação'
+
   return (
     <div className="app-layout">
       <Sidebar
-        open={sidebarExpanded}
-        showBackdrop={!isDesktop && sidebarOpen}
-        onNavigate={closeSidebar}
+        open={isDesktop ? true : mobileDrawerOpen}
+        collapsed={isDesktop && desktopCollapsed}
+        isDesktop={isDesktop}
+        showBackdrop={!isDesktop && mobileDrawerOpen}
+        onNavigate={closeMobileDrawer}
+        onToggleSidebar={toggleSidebar}
       />
       <div className="app-layout__main">
         <Header
           title={title}
           onMenuClick={toggleSidebar}
+          menuAriaLabel={menuAriaLabel}
           userLabel={user?.email ?? userLabel}
           userInitial={userInitial}
           onLogout={handleLogout}

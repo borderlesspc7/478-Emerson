@@ -5,6 +5,8 @@ import './Header.css'
 type HeaderProps = {
   title?: string
   onMenuClick: () => void
+  /** Acessibilidade: texto muda entre mobile (drawer) e desktop (recolher/expandir) */
+  menuAriaLabel?: string
   userLabel: string
   userInitial: string
   onLogout: () => void
@@ -14,6 +16,7 @@ type HeaderProps = {
 export function Header({
   title = 'Painel',
   onMenuClick,
+  menuAriaLabel = 'Abrir menu de navegação',
   userLabel,
   userInitial,
   onLogout,
@@ -39,7 +42,7 @@ export function Header({
           type="button"
           className="app-header__menu-btn"
           onClick={onMenuClick}
-          aria-label="Abrir menu de navegação"
+          aria-label={menuAriaLabel}
         >
           <span className="app-header__menu-icon" aria-hidden>
             <span />
