@@ -1,18 +1,13 @@
+import { useMemo } from 'react'
 import { GiLotusFlower } from 'react-icons/gi'
 import {
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
 } from 'react-icons/md'
+import { useTranslation } from 'react-i18next'
 import { NavLink } from 'react-router-dom'
 import { PATHS } from '../../routes/path'
 import './Sidebar.css'
-
-const nav = [
-  { to: PATHS.dashboard, label: 'Visão geral', icon: IconHome },
-  { to: PATHS.reservation, label: 'Reserva', icon: IconChart },
-  { to: PATHS.services, label: 'Serviços', icon: IconUsers },
-  { to: PATHS.settings, label: 'Configurações', icon: IconSettings },
-] as const
 
 type SidebarProps = {
   /** Mobile: drawer aberto. Desktop: sempre true (barra visível). */
@@ -33,7 +28,27 @@ export function Sidebar({
   onNavigate,
   onToggleSidebar,
 }: SidebarProps) {
+  const { t } = useTranslation()
   const backdrop = showBackdrop ?? false
+
+  const nav = useMemo(
+    () =>
+      [
+        { to: PATHS.dashboard, labelKey: 'nav.overview' as const, icon: IconHome },
+        {
+          to: PATHS.reservation,
+          labelKey: 'nav.reservation' as const,
+          icon: IconChart,
+        },
+        { to: PATHS.services, labelKey: 'nav.services' as const, icon: IconUsers },
+        {
+          to: PATHS.settings,
+          labelKey: 'nav.settings' as const,
+          icon: IconSettings,
+        },
+      ] as const,
+    []
+  )
 
   return (
     <>
@@ -50,19 +65,21 @@ export function Sidebar({
         ]
           .filter(Boolean)
           .join(' ')}
-        aria-label="Navegação principal"
+        aria-label={t('nav.mainAria')}
         aria-hidden={!open}
       >
         <div className="app-sidebar__brand">
           <span className="app-sidebar__logo" aria-hidden>
             <GiLotusFlower className="app-sidebar__logo-icon" aria-hidden />
           </span>
-          <span className="app-sidebar__name">Guia da Zen</span>
+          <span className="app-sidebar__name">{t('nav.brand')}</span>
         </div>
 
-        <nav className="app-sidebar__nav" aria-label="Páginas">
+        <nav className="app-sidebar__nav" aria-label={t('nav.pagesAria')}>
           <ul className="app-sidebar__list">
-            {nav.map(({ to, label, icon: Icon }) => (
+            {nav.map(({ to, labelKey, icon: Icon }) => {
+              const label = t(labelKey)
+              return (
               <li key={to}>
                 <NavLink
                   to={to}
@@ -77,7 +94,8 @@ export function Sidebar({
                   <span className="app-sidebar__label">{label}</span>
                 </NavLink>
               </li>
-            ))}
+              )
+            })}
           </ul>
         </nav>
 
@@ -89,10 +107,10 @@ export function Sidebar({
               onClick={onToggleSidebar}
               aria-label={
                 collapsed
-                  ? 'Expandir barra lateral'
-                  : 'Recolher barra lateral'
+                  ? t('layout.expandSidebar')
+                  : t('layout.collapseSidebar')
               }
-              title={collapsed ? 'Expandir' : 'Recolher'}
+              title={collapsed ? t('nav.expandShort') : t('nav.collapseShort')}
             >
               {collapsed ? (
                 <MdKeyboardDoubleArrowRight aria-hidden className="app-sidebar__collapse-icon" />
@@ -104,7 +122,7 @@ export function Sidebar({
         ) : null}
 
         <div className="app-sidebar__footer">
-          <p className="app-sidebar__hint">v1.0 · Guia do hóspede</p>
+          <p className="app-sidebar__hint">{t('nav.footerHint')}</p>
         </div>
       </aside>
     </>

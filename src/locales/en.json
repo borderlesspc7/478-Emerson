@@ -1,0 +1,94 @@
+{
+  "common": {
+    "loadingSession": "Loading session…",
+    "verifyingSession": "Verifying session…",
+    "guest": "guest",
+    "account": "Account"
+  },
+  "nav": {
+    "mainAria": "Main navigation",
+    "pagesAria": "Pages",
+    "footerHint": "v1.0 · Guest guide",
+    "expandShort": "Expand",
+    "collapseShort": "Collapse",
+    "brand": "Guia da Zen",
+    "overview": "Overview",
+    "reservation": "Reservation",
+    "services": "Services",
+    "settings": "Settings"
+  },
+  "layout": {
+    "panel": "Dashboard",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar",
+    "closeMenu": "Close navigation menu",
+    "openMenu": "Open navigation menu"
+  },
+  "header": {
+    "logout": "Log out"
+  },
+  "accessExpired": {
+    "title": "Access outside stay period",
+    "lead": "Your dashboard access is only valid during your stay (between check-in and check-out). Contact the team if you need help.",
+    "logout": "Sign out"
+  },
+  "login": {
+    "titleSignIn": "Sign in",
+    "titleSignUp": "Create account",
+    "subtitleCorp": "Access the dashboard with your work email.",
+    "subtitleDev": "Local dev: create the test user once, or change email and password.",
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "you@company.com",
+    "passwordPlaceholder": "••••••••",
+    "forgotPassword": "Forgot password?",
+    "submitSignIn": "Sign in",
+    "submitSignUp": "Create account and sign in",
+    "errorEmailRequired": "Please enter your email.",
+    "errorPasswordRequired": "Please enter your password.",
+    "errorPasswordLength": "Password must be at least 6 characters.",
+    "footerHasAccount": "Already have an account?",
+    "footerSignIn": "Sign in",
+    "footerFirstDev": "First time in local dev?",
+    "footerCreateDev": "Create test account",
+    "footerNoAccount": "No account?",
+    "footerRequestAccess": "Request access"
+  },
+  "dashboard": {
+    "greeting": "Hello, {{name}}",
+    "lead": "Your digital stay guide in one place: reservation, property access, Wi‑Fi and service requests.",
+    "ctaReservation": "View reservation details",
+    "ctaService": "Request a service",
+    "cardCheckin": "Check-in",
+    "cardCheckinValue": "Today, 3:00 PM",
+    "cardCheckinMeta": "Digital entry enabled",
+    "cardWifi": "Wi‑Fi",
+    "cardWifiValue": "ZEN_GUEST",
+    "cardWifiMeta": "Password: bemvindo2026",
+    "cardAccess": "Access",
+    "cardAccessValue": "Active",
+    "cardAccessMeta": "Valid during your stay",
+    "cardProperty": "Property",
+    "cardPropertyValue": "Apt 402",
+    "cardPropertyMeta": "Sample St, 123",
+    "cardQuick": "Quick service",
+    "cardQuickValue": "Cleaning",
+    "cardQuickMeta": "Request in one click",
+    "cardSupport": "Support",
+    "cardSupportValue": "24h",
+    "cardSupportMeta": "Centralized in the app"
+  },
+  "placeholders": {
+    "reservationTitle": "Reservation details",
+    "reservationDesc": "Address, unit, check-in/check-out dates and stay instructions.",
+    "servicesTitle": "Services",
+    "servicesDesc": "Request cleaning, support and extras during your stay.",
+    "settingsTitle": "Settings",
+    "settingsDesc": "Language, terms and basic guest preferences."
+  },
+  "settings": {
+    "language": "Language",
+    "pt": "Português",
+    "en": "English"
+  }
+}

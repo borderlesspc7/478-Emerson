@@ -1,4 +1,5 @@
 import {
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
   setPersistence,
   signInWithEmailAndPassword,
@@ -52,6 +53,25 @@ export async function loginWithEmail(
   return mapUser(cred.user)
 }
 
+/** Apenas para desenvolvimento local; exige Email/Password ativo no Firebase. */
+export async function registerWithEmail(
+  email: string,
+  password: string
+): Promise<AppUser> {
+  const auth = getFirebaseAuth()
+  if (!auth || !isFirebaseConfigured()) {
+    throw new Error('AUTH_NOT_CONFIGURED')
+  }
+
+  await setPersistence(auth, browserLocalPersistence)
+  const cred = await createUserWithEmailAndPassword(
+    auth,
+    email.trim(),
+    password
+  )
+  return mapUser(cred.user)
+}
+
 export async function logout(): Promise<void> {
   const auth = getFirebaseAuth()
   if (!auth) return
@@ -65,6 +85,10 @@ export function firebaseErrorToMessage(code: string): string {
     'auth/user-not-found': 'Nenhuma conta encontrada com este e-mail.',
     'auth/wrong-password': 'Senha incorreta.',
     'auth/invalid-credential': 'E-mail ou senha incorretos.',
+    'auth/email-already-in-use': 'Já existe uma conta com este e-mail. Use Entrar.',
+    'auth/weak-password': 'Senha muito fraca. Use pelo menos 6 caracteres.',
+    'auth/operation-not-allowed':
+      'Cadastro por e-mail não está habilitado no Firebase (Authentication → Sign-in method).',
     'auth/too-many-requests':
       'Muitas tentativas. Tente novamente em alguns minutos.',
     'auth/network-request-failed': 'Falha de rede. Verifique sua conexão.',

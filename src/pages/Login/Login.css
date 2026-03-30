@@ -1,8 +1,10 @@
 .login-page {
   min-height: 100svh;
   display: flex;
-  align-items: stretch;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1rem, 4vw, 2.5rem);
+  box-sizing: border-box;
   /* Cor próxima às bordas da foto — evita “barras” óbvias em carregamento */
   background-color: #e8eaed;
   background-image:
@@ -31,12 +33,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: min(100%, 520px);
-  padding: clamp(1.25rem, 3vw, 2.5rem);
-  background: color-mix(in srgb, #fff 16%, transparent);
-  backdrop-filter: blur(8px) saturate(130%);
-  -webkit-backdrop-filter: blur(8px) saturate(130%);
-  border-left: 1px solid color-mix(in srgb, var(--border-default) 72%, transparent);
+  width: min(100%, 440px);
+  padding: clamp(1.25rem, 3vw, 2rem);
+  background: color-mix(in srgb, #fff 18%, transparent);
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+  border-radius: calc(var(--radius-lg) + 8px);
+  border: 1px solid color-mix(in srgb, var(--border-default) 72%, transparent);
+  box-shadow: 0 24px 50px -28px rgba(15, 23, 42, 0.45);
 }
 
 .login-card {
@@ -184,6 +188,17 @@
   text-decoration: underline;
 }
 
+button.login-form__link--inline {
+  display: inline;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
+  background: none;
+  border: none;
+  vertical-align: baseline;
+}
+
 .login-card__footer {
   margin: 1.75rem 0 0;
   text-align: center;
@@ -193,14 +208,15 @@
 
 @media (max-width: 768px) {
   .login-page {
+    align-items: center;
     justify-content: center;
+    padding: 1rem;
     background-position: center, center bottom;
   }
 
   .login-page__main {
     width: 100%;
-    min-height: 100svh;
-    border-left: none;
+    max-width: 400px;
     background: color-mix(in srgb, #fff 28%, transparent);
   }
 }

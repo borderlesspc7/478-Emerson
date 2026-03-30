@@ -10,6 +10,7 @@ import {
   firebaseErrorToMessage,
   loginWithEmail,
   logout,
+  registerWithEmail,
   subscribeAuth,
 } from '../services/authService'
 import type { AppUser } from '../types/user'
@@ -21,6 +22,7 @@ type AuthContextValue = {
   status: AuthStatus
   authReady: boolean
   login: (email: string, password: string) => Promise<void>
+  register: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   lastError: string | null
   clearError: () => void
@@ -64,6 +66,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const handleRegister = useCallback(async (email: string, password: string) => {
+    setLastError(null)
+    try {
+      await registerWithEmail(email, password)
+    } catch (e: unknown) {
+      const code =
+        e && typeof e === 'object' && 'code' in e
+          ? String((e as { code: string }).code)
+          : e instanceof Error
+          ? e.message
+          : 'unknown'
+      setLastError(firebaseErrorToMessage(code))
+      throw e
+    }
+  }, [])
+
   const handleLogout = useCallback(async () => {
     setLastError(null)
     await logout()
@@ -83,11 +101,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       status,
       authReady,
       login: handleLogin,
+      register: handleRegister,
       logout: handleLogout,
       lastError,
       clearError,
     }),
-    [user, status, authReady, handleLogin, handleLogout, lastError, clearError]
+    [
+      user,
+      status,
+      authReady,
+      handleLogin,
+      handleRegister,
+      handleLogout,
+      lastError,
+      clearError,
+    ]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

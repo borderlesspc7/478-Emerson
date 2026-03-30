@@ -1,0 +1,94 @@
+{
+  "common": {
+    "loadingSession": "Carregando sessão…",
+    "verifyingSession": "Verificando sessão…",
+    "guest": "hóspede",
+    "account": "Conta"
+  },
+  "nav": {
+    "mainAria": "Navegação principal",
+    "pagesAria": "Páginas",
+    "footerHint": "v1.0 · Guia do hóspede",
+    "expandShort": "Expandir",
+    "collapseShort": "Recolher",
+    "brand": "Guia da Zen",
+    "overview": "Visão geral",
+    "reservation": "Reserva",
+    "services": "Serviços",
+    "settings": "Configurações"
+  },
+  "layout": {
+    "panel": "Painel",
+    "expandSidebar": "Expandir barra lateral",
+    "collapseSidebar": "Recolher barra lateral",
+    "closeMenu": "Fechar menu de navegação",
+    "openMenu": "Abrir menu de navegação"
+  },
+  "header": {
+    "logout": "Sair"
+  },
+  "accessExpired": {
+    "title": "Acesso fora do período",
+    "lead": "O seu acesso ao painel só é válido durante a estadia (entre o check-in e o check-out). Contacte a equipa se precisar de ajuda.",
+    "logout": "Terminar sessão"
+  },
+  "login": {
+    "titleSignIn": "Entrar",
+    "titleSignUp": "Criar conta",
+    "subtitleCorp": "Acesse o painel com seu e-mail corporativo.",
+    "subtitleDev": "Ambiente local: crie o utilizador de teste (uma vez) ou altere e-mail e senha.",
+    "email": "E-mail",
+    "password": "Senha",
+    "emailPlaceholder": "voce@empresa.com",
+    "passwordPlaceholder": "••••••••",
+    "forgotPassword": "Esqueceu a senha?",
+    "submitSignIn": "Entrar na plataforma",
+    "submitSignUp": "Criar conta e entrar",
+    "errorEmailRequired": "Informe seu e-mail.",
+    "errorPasswordRequired": "Informe sua senha.",
+    "errorPasswordLength": "A senha deve ter pelo menos 6 caracteres.",
+    "footerHasAccount": "Já tem conta?",
+    "footerSignIn": "Entrar",
+    "footerFirstDev": "Primeira vez no ambiente local?",
+    "footerCreateDev": "Criar conta de teste",
+    "footerNoAccount": "Não tem conta?",
+    "footerRequestAccess": "Solicitar acesso"
+  },
+  "dashboard": {
+    "greeting": "Olá, {{name}}",
+    "lead": "Seu guia digital da estadia em um só lugar: reserva, acesso ao imóvel, Wi-Fi e solicitações de serviços.",
+    "ctaReservation": "Ver dados da reserva",
+    "ctaService": "Solicitar serviço",
+    "cardCheckin": "Check-in",
+    "cardCheckinValue": "Hoje, 15:00",
+    "cardCheckinMeta": "Entrada digital liberada",
+    "cardWifi": "Wi-Fi",
+    "cardWifiValue": "ZEN_GUEST",
+    "cardWifiMeta": "Senha: bemvindo2026",
+    "cardAccess": "Acesso",
+    "cardAccessValue": "Ativo",
+    "cardAccessMeta": "Válido durante a estadia",
+    "cardProperty": "Imóvel",
+    "cardPropertyValue": "Apto 402",
+    "cardPropertyMeta": "Rua Exemplo, 123",
+    "cardQuick": "Serviço rápido",
+    "cardQuickValue": "Limpeza",
+    "cardQuickMeta": "Solicite em 1 clique",
+    "cardSupport": "Suporte",
+    "cardSupportValue": "24h",
+    "cardSupportMeta": "Canal centralizado no app"
+  },
+  "placeholders": {
+    "reservationTitle": "Dados da Reserva",
+    "reservationDesc": "Endereço, unidade, datas de check-in/check-out e instruções da hospedagem.",
+    "servicesTitle": "Serviços",
+    "servicesDesc": "Solicite limpeza, suporte e extras durante sua estadia.",
+    "settingsTitle": "Configurações",
+    "settingsDesc": "Idioma, termos de uso e preferências básicas do hóspede."
+  },
+  "settings": {
+    "language": "Idioma",
+    "pt": "Português",
+    "en": "English"
+  }
+}

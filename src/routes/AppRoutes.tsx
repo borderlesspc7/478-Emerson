@@ -1,5 +1,8 @@
+import { useTranslation } from 'react-i18next'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppLayout } from '../components/Layout/Layout'
+import { LocaleSwitcher } from '../components/LocaleSwitcher/LocaleSwitcher'
+import { AccessExpiredPage } from '../pages/AccessExpired/AccessExpiredPage'
 import { LoginPage } from '../pages/Login/Login'
 import { DashboardPage } from '../pages/Dashboard/DashboardPage'
 import { PlaceholderPage } from '../pages/PlaceholderPage'
@@ -7,18 +10,21 @@ import { PATHS } from './path'
 import { ProtectedRoute } from './ProtectedRoute'
 
 export function AppRoutes() {
+  const { t } = useTranslation()
+
   return (
     <Routes>
       <Route path={PATHS.login} element={<LoginPage />} />
       <Route element={<ProtectedRoute />}>
+        <Route path={PATHS.accessExpired} element={<AccessExpiredPage />} />
         <Route element={<AppLayout />}>
           <Route path={PATHS.dashboard} element={<DashboardPage />} />
           <Route
             path={PATHS.reservation}
             element={
               <PlaceholderPage
-                title="Dados da Reserva"
-                description="Endereço, unidade, datas de check-in/check-out e instruções da hospedagem."
+                title={t('placeholders.reservationTitle')}
+                description={t('placeholders.reservationDesc')}
               />
             }
           />
@@ -26,8 +32,8 @@ export function AppRoutes() {
             path={PATHS.services}
             element={
               <PlaceholderPage
-                title="Serviços"
-                description="Solicite limpeza, suporte e extras durante sua estadia."
+                title={t('placeholders.servicesTitle')}
+                description={t('placeholders.servicesDesc')}
               />
             }
           />
@@ -35,9 +41,11 @@ export function AppRoutes() {
             path={PATHS.settings}
             element={
               <PlaceholderPage
-                title="Configurações"
-                description="Idioma, termos de uso e preferências básicas do hóspede."
-              />
+                title={t('placeholders.settingsTitle')}
+                description={t('placeholders.settingsDesc')}
+              >
+                <LocaleSwitcher />
+              </PlaceholderPage>
             }
           />
         </Route>

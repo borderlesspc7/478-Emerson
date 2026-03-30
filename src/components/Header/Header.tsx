@@ -11,6 +11,7 @@ type HeaderProps = {
   userInitial: string
   onLogout: () => void
   logoutLoading?: boolean
+  logoutLabel?: string
 }
 
 export function Header({
@@ -21,6 +22,7 @@ export function Header({
   userInitial,
   onLogout,
   logoutLoading,
+  logoutLabel = 'Sair',
 }: HeaderProps) {
   const menuBtnRef = useRef<HTMLButtonElement>(null)
 
@@ -68,7 +70,7 @@ export function Header({
           loading={logoutLoading}
           className="app-header__logout"
         >
-          Sair
+          {logoutLabel}
         </Button>
       </div>
     </header>

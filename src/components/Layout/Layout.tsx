@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
@@ -7,14 +8,8 @@ import { Header } from '../Header/Header'
 import { Sidebar } from '../Sidebar/Sidebar'
 import './Layout.css'
 
-const titles: Record<string, string> = {
-  [PATHS.dashboard]: 'Visão geral',
-  [PATHS.reservation]: 'Reserva',
-  [PATHS.services]: 'Serviços',
-  [PATHS.settings]: 'Configurações',
-}
-
 export function AppLayout() {
+  const { t } = useTranslation()
   const { user, logout } = useAuth()
   const location = useLocation()
   /** Drawer mobile (overlay) */
@@ -34,12 +29,20 @@ export function AppLayout() {
     }
   }, [isDesktop])
 
-  const title = titles[location.pathname] ?? 'Painel'
+  const title = useMemo(() => {
+    const map: Record<string, string> = {
+      [PATHS.dashboard]: t('nav.overview'),
+      [PATHS.reservation]: t('nav.reservation'),
+      [PATHS.services]: t('nav.services'),
+      [PATHS.settings]: t('nav.settings'),
+    }
+    return map[location.pathname] ?? t('layout.panel')
+  }, [location.pathname, t])
 
   const userLabel =
     user?.displayName?.trim() ||
     user?.email?.split('@')[0] ||
-    'Conta'
+    t('common.account')
   const userInitial = (userLabel[0] ?? '?').toUpperCase()
 
   async function handleLogout() {
@@ -53,11 +56,11 @@ export function AppLayout() {
 
   const menuAriaLabel = isDesktop
     ? desktopCollapsed
-      ? 'Expandir barra lateral'
-      : 'Recolher barra lateral'
+      ? t('layout.expandSidebar')
+      : t('layout.collapseSidebar')
     : mobileDrawerOpen
-      ? 'Fechar menu de navegação'
-      : 'Abrir menu de navegação'
+      ? t('layout.closeMenu')
+      : t('layout.openMenu')
 
   return (
     <div className="app-layout">
@@ -78,6 +81,7 @@ export function AppLayout() {
           userInitial={userInitial}
           onLogout={handleLogout}
           logoutLoading={logoutLoading}
+          logoutLabel={t('header.logout')}
         />
         <main className="app-layout__content" id="main-content">
           <Outlet />

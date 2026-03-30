@@ -1,5 +1,6 @@
 export const PATHS = {
   login: '/login',
+  accessExpired: '/acesso-expirado',
   dashboard: '/',
   reservation: '/reserva',
   services: '/servicos',
