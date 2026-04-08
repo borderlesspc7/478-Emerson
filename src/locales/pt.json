@@ -36,7 +36,7 @@
     "titleSignIn": "Entrar",
     "titleSignUp": "Criar conta",
     "subtitleCorp": "Acesse o painel com seu e-mail corporativo.",
-    "subtitleDev": "Ambiente local: crie o utilizador de teste (uma vez) ou altere e-mail e senha.",
+    "subtitleSignUp": "Crie a sua conta com e-mail e senha para aceder ao painel.",
     "email": "E-mail",
     "password": "Senha",
     "emailPlaceholder": "voce@empresa.com",
@@ -49,10 +49,8 @@
     "errorPasswordLength": "A senha deve ter pelo menos 6 caracteres.",
     "footerHasAccount": "Já tem conta?",
     "footerSignIn": "Entrar",
-    "footerFirstDev": "Primeira vez no ambiente local?",
-    "footerCreateDev": "Criar conta de teste",
     "footerNoAccount": "Não tem conta?",
-    "footerRequestAccess": "Solicitar acesso"
+    "footerCreateAccount": "Criar conta"
   },
   "dashboard": {
     "greeting": "Olá, {{name}}",

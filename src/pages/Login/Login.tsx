@@ -8,12 +8,6 @@ import { useAuth } from '../../hooks/useAuth'
 import { PATHS } from '../../routes/path'
 import './Login.css'
 
-/** Preenchido só em `npm run dev` — use “Criar conta” uma vez, depois “Entrar”. */
-const DEV_DEMO_EMAIL = 'demo@478-emerson.local'
-const DEV_DEMO_PASSWORD = 'Demo478!Emerson'
-
-const isSignupInDevEnabled = import.meta.env.DEV
-
 export function LoginPage() {
   const { t } = useTranslation()
   const { user, authReady, login, register, lastError, clearError } = useAuth()
@@ -25,12 +19,8 @@ export function LoginPage() {
   const passwordId = useId()
   const errorId = useId()
 
-  const [email, setEmail] = useState(() =>
-    isSignupInDevEnabled ? DEV_DEMO_EMAIL : ''
-  )
-  const [password, setPassword] = useState(() =>
-    isSignupInDevEnabled ? DEV_DEMO_PASSWORD : ''
-  )
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [isSignUpMode, setIsSignUpMode] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [fieldError, setFieldError] = useState<string | null>(null)
@@ -71,7 +61,7 @@ export function LoginPage() {
     }
     setSubmitting(true)
     try {
-      if (isSignUpMode && isSignupInDevEnabled) {
+      if (isSignUpMode) {
         await register(email, password)
       } else {
         await login(email, password)
@@ -97,14 +87,10 @@ export function LoginPage() {
               </span>
             </div>
             <h1 className="login-card__title">
-              {isSignUpMode && isSignupInDevEnabled
-                ? t('login.titleSignUp')
-                : t('login.titleSignIn')}
+              {isSignUpMode ? t('login.titleSignUp') : t('login.titleSignIn')}
             </h1>
             <p className="login-card__subtitle">
-              {isSignUpMode && isSignupInDevEnabled
-                ? t('login.subtitleDev')
-                : t('login.subtitleCorp')}
+              {isSignUpMode ? t('login.subtitleSignUp') : t('login.subtitleCorp')}
             </p>
           </header>
 
@@ -143,7 +129,7 @@ export function LoginPage() {
                 <label className="login-form__label" htmlFor={passwordId}>
                   {t('login.password')}
                 </label>
-                {!(isSignUpMode && isSignupInDevEnabled) && (
+                {!isSignUpMode && (
                   <Link
                     to="#"
                     className="login-form__link"
@@ -159,9 +145,7 @@ export function LoginPage() {
                 name="password"
                 type="password"
                 autoComplete={
-                  isSignUpMode && isSignupInDevEnabled
-                    ? 'new-password'
-                    : 'current-password'
+                  isSignUpMode ? 'new-password' : 'current-password'
                 }
                 className="login-form__input"
                 placeholder={t('login.passwordPlaceholder')}
@@ -179,47 +163,32 @@ export function LoginPage() {
               loading={submitting}
               className="login-form__submit"
             >
-              {isSignUpMode && isSignupInDevEnabled
-                ? t('login.submitSignUp')
-                : t('login.submitSignIn')}
+              {isSignUpMode ? t('login.submitSignUp') : t('login.submitSignIn')}
             </Button>
           </form>
 
           <p className="login-card__footer">
-            {isSignupInDevEnabled ? (
-              isSignUpMode ? (
-                <>
-                  {t('login.footerHasAccount')}{' '}
-                  <button
-                    type="button"
-                    className="login-form__link login-form__link--inline"
-                    onClick={() => setIsSignUpMode(false)}
-                  >
-                    {t('login.footerSignIn')}
-                  </button>
-                </>
-              ) : (
-                <>
-                  {t('login.footerFirstDev')}{' '}
-                  <button
-                    type="button"
-                    className="login-form__link login-form__link--inline"
-                    onClick={() => setIsSignUpMode(true)}
-                  >
-                    {t('login.footerCreateDev')}
-                  </button>
-                </>
-              )
+            {isSignUpMode ? (
+              <>
+                {t('login.footerHasAccount')}{' '}
+                <button
+                  type="button"
+                  className="login-form__link login-form__link--inline"
+                  onClick={() => setIsSignUpMode(false)}
+                >
+                  {t('login.footerSignIn')}
+                </button>
+              </>
             ) : (
               <>
                 {t('login.footerNoAccount')}{' '}
-                <Link
-                  to="#"
-                  className="login-form__link"
-                  onClick={(e) => e.preventDefault()}
+                <button
+                  type="button"
+                  className="login-form__link login-form__link--inline"
+                  onClick={() => setIsSignUpMode(true)}
                 >
-                  {t('login.footerRequestAccess')}
-                </Link>
+                  {t('login.footerCreateAccount')}
+                </button>
               </>
             )}
           </p>

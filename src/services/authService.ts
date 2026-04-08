@@ -53,7 +53,7 @@ export async function loginWithEmail(
   return mapUser(cred.user)
 }
 
-/** Apenas para desenvolvimento local; exige Email/Password ativo no Firebase. */
+/** Cadastro por e-mail (Firebase Auth). Exige provedor E-mail/senha ativo no projeto. */
 export async function registerWithEmail(
   email: string,
   password: string

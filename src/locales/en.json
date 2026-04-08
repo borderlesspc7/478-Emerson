@@ -36,7 +36,7 @@
     "titleSignIn": "Sign in",
     "titleSignUp": "Create account",
     "subtitleCorp": "Access the dashboard with your work email.",
-    "subtitleDev": "Local dev: create the test user once, or change email and password.",
+    "subtitleSignUp": "Create your account with email and password to access the dashboard.",
     "email": "Email",
     "password": "Password",
     "emailPlaceholder": "you@company.com",
@@ -49,10 +49,8 @@
     "errorPasswordLength": "Password must be at least 6 characters.",
     "footerHasAccount": "Already have an account?",
     "footerSignIn": "Sign in",
-    "footerFirstDev": "First time in local dev?",
-    "footerCreateDev": "Create test account",
     "footerNoAccount": "No account?",
-    "footerRequestAccess": "Request access"
+    "footerCreateAccount": "Create account"
   },
   "dashboard": {
     "greeting": "Hello, {{name}}",
