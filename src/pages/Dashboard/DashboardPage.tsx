@@ -1,91 +1,114 @@
 import { useTranslation } from 'react-i18next'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '../../components/ui/Button/Button'
 import { useAuth } from '../../hooks/useAuth'
-import './DashboardPage.css'
+import { useGuestStay } from '../../hooks/useGuestStay'
+import { formatStayDate, formatStayTime } from '../../lib/formatStayDates'
+import { PATHS } from '../../routes/path'
+import '../shared/guestContent.css'
 
 export function DashboardPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
+  const navigate = useNavigate()
   const { user } = useAuth()
+  const { stay } = useGuestStay()
+  const loc = i18n.language === 'en' ? 'en' : 'pt-BR'
+
   const guestName =
     user?.displayName || user?.email?.split('@')[0] || t('common.guest')
 
+  const { property, wifi, access } = stay
+
   return (
     <div className="page-dashboard">
-      <section className="page-dashboard__hero">
-        <h2 className="page-dashboard__heading">
+      <section className="guest-content__hero">
+        <h2 className="guest-content__heading">
           {t('dashboard.greeting', { name: guestName })}
         </h2>
-        <p className="page-dashboard__lead">{t('dashboard.lead')}</p>
-        <div className="page-dashboard__actions">
-          <Button variant="primary" size="md">
+        <p className="guest-content__lead">{t('dashboard.lead')}</p>
+        <div className="guest-content__actions">
+          <Button
+            variant="primary"
+            size="md"
+            type="button"
+            onClick={() => navigate(PATHS.reservation)}
+          >
             {t('dashboard.ctaReservation')}
           </Button>
-          <Button variant="secondary" size="md">
+          <Button
+            variant="secondary"
+            size="md"
+            type="button"
+            onClick={() => navigate(PATHS.services)}
+          >
             {t('dashboard.ctaService')}
           </Button>
         </div>
       </section>
 
-      <div className="page-dashboard__grid">
-        <article className="page-dashboard__card">
-          <h3 className="page-dashboard__card-title">
+      <div className="guest-content__grid">
+        <article className="guest-content__card">
+          <h3 className="guest-content__card-title">
             {t('dashboard.cardCheckin')}
           </h3>
-          <p className="page-dashboard__card-value">
-            {t('dashboard.cardCheckinValue')}
+          <p className="guest-content__card-value guest-content__card-value--sm">
+            {formatStayDate(stay.checkInAt, loc)}
           </p>
-          <p className="page-dashboard__card-meta">
-            {t('dashboard.cardCheckinMeta')}
-          </p>
-        </article>
-        <article className="page-dashboard__card">
-          <h3 className="page-dashboard__card-title">{t('dashboard.cardWifi')}</h3>
-          <p className="page-dashboard__card-value">
-            {t('dashboard.cardWifiValue')}
-          </p>
-          <p className="page-dashboard__card-meta">
-            {t('dashboard.cardWifiMeta')}
+          <p className="guest-content__card-meta">
+            {t('dashboard.cardCheckinMeta', {
+              time: formatStayTime(stay.checkInAt, loc),
+            })}
           </p>
         </article>
-        <article className="page-dashboard__card">
-          <h3 className="page-dashboard__card-title">
-            {t('dashboard.cardAccess')}
-          </h3>
-          <p className="page-dashboard__card-value page-dashboard__ok">
-            {t('dashboard.cardAccessValue')}
+
+        <article className="guest-content__card">
+          <h3 className="guest-content__card-title">{t('dashboard.cardWifi')}</h3>
+          <p className="guest-content__card-value guest-content__card-value--sm">
+            <span className="guest-content__code">{wifi.ssid}</span>
           </p>
-          <p className="page-dashboard__card-meta">
+          <p className="guest-content__card-meta">
+            {t('dashboard.cardWifiMeta', { password: wifi.password })}
+          </p>
+        </article>
+
+        <article className="guest-content__card">
+          <h3 className="guest-content__card-title">{t('dashboard.cardAccess')}</h3>
+          <p className="guest-content__card-value guest-content__card-value--ok guest-content__card-value--sm">
+            {access.summary}
+          </p>
+          <p className="guest-content__card-meta">
             {t('dashboard.cardAccessMeta')}
           </p>
         </article>
-        <article className="page-dashboard__card">
-          <h3 className="page-dashboard__card-title">
+
+        <article className="guest-content__card">
+          <h3 className="guest-content__card-title">
             {t('dashboard.cardProperty')}
           </h3>
-          <p className="page-dashboard__card-value">
-            {t('dashboard.cardPropertyValue')}
+          <p className="guest-content__card-value guest-content__card-value--sm">
+            {property.unit}
           </p>
-          <p className="page-dashboard__card-meta">
-            {t('dashboard.cardPropertyMeta')}
-          </p>
+          <p className="guest-content__card-meta">{property.addressLine}</p>
         </article>
-        <article className="page-dashboard__card">
-          <h3 className="page-dashboard__card-title">{t('dashboard.cardQuick')}</h3>
-          <p className="page-dashboard__card-value">
+
+        <article className="guest-content__card">
+          <h3 className="guest-content__card-title">{t('dashboard.cardQuick')}</h3>
+          <p className="guest-content__card-value guest-content__card-value--sm">
             {t('dashboard.cardQuickValue')}
           </p>
-          <p className="page-dashboard__card-meta">
+          <p className="guest-content__card-meta">
             {t('dashboard.cardQuickMeta')}
           </p>
         </article>
-        <article className="page-dashboard__card">
-          <h3 className="page-dashboard__card-title">
+
+        <article className="guest-content__card">
+          <h3 className="guest-content__card-title">
             {t('dashboard.cardSupport')}
           </h3>
-          <p className="page-dashboard__card-value">
+          <p className="guest-content__card-value guest-content__card-value--sm">
             {t('dashboard.cardSupportValue')}
           </p>
-          <p className="page-dashboard__card-meta">
+          <p className="guest-content__card-meta">
             {t('dashboard.cardSupportMeta')}
           </p>
         </article>

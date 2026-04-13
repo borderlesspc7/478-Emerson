@@ -1,0 +1,13 @@
+.page-reservation {
+  max-width: 900px;
+}
+
+.page-reservation__full {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 640px) {
+  .page-reservation__span-2 {
+    grid-column: span 2;
+  }
+}

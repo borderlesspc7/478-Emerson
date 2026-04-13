@@ -1,7 +1,31 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Ajuste conforme sua app: por padrão nega tudo até você liberar por coleção.
+    // Perfil do utilizador autenticado (sincronizado com Firebase Auth)
+    match /users/{userId} {
+      allow read, create, update: if request.auth != null
+        && request.auth.uid == userId;
+      allow delete: if false;
+    }
+
+    // Pedidos de serviço: uma coleção global; cada documento tem userId (isolamento por utilizador)
+    match /serviceRequests/{requestId} {
+      allow read: if request.auth != null
+        && resource.data.userId == request.auth.uid;
+
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && request.resource.data.serviceId is string
+        && request.resource.data.status == 'pending';
+
+      allow update: if request.auth != null
+        && resource.data.userId == request.auth.uid
+        && request.resource.data.userId == resource.data.userId;
+
+      allow delete: if request.auth != null
+        && resource.data.userId == request.auth.uid;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

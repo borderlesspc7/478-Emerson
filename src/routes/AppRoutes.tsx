@@ -5,6 +5,8 @@ import { LocaleSwitcher } from '../components/LocaleSwitcher/LocaleSwitcher'
 import { AccessExpiredPage } from '../pages/AccessExpired/AccessExpiredPage'
 import { LoginPage } from '../pages/Login/Login'
 import { DashboardPage } from '../pages/Dashboard/DashboardPage'
+import { ReservationPage } from '../pages/Reservation/ReservationPage'
+import { ServicesPage } from '../pages/Services/ServicesPage'
 import { PlaceholderPage } from '../pages/PlaceholderPage'
 import { PATHS } from './path'
 import { ProtectedRoute } from './ProtectedRoute'
@@ -19,24 +21,8 @@ export function AppRoutes() {
         <Route path={PATHS.accessExpired} element={<AccessExpiredPage />} />
         <Route element={<AppLayout />}>
           <Route path={PATHS.dashboard} element={<DashboardPage />} />
-          <Route
-            path={PATHS.reservation}
-            element={
-              <PlaceholderPage
-                title={t('placeholders.reservationTitle')}
-                description={t('placeholders.reservationDesc')}
-              />
-            }
-          />
-          <Route
-            path={PATHS.services}
-            element={
-              <PlaceholderPage
-                title={t('placeholders.servicesTitle')}
-                description={t('placeholders.servicesDesc')}
-              />
-            }
-          />
+          <Route path={PATHS.reservation} element={<ReservationPage />} />
+          <Route path={PATHS.services} element={<ServicesPage />} />
           <Route
             path={PATHS.settings}
             element={

@@ -1,7 +1,8 @@
 /**
  * Firebase Admin SDK — use apenas em Node (scripts, API, não no bundle Vite).
- * Defina GOOGLE_APPLICATION_CREDENTIALS com o caminho absoluto do JSON da service account.
+ * Carrega `.env` na raiz do projeto (GOOGLE_APPLICATION_CREDENTIALS, FIREBASE_STORAGE_BUCKET).
  */
+import "dotenv/config";
 import { readFileSync, existsSync } from "node:fs";
 import { resolve } from "node:path";
 import admin from "firebase-admin";
@@ -39,7 +40,10 @@ export function adminAuth() {
   return getAdminApp().auth();
 }
 
-/** Opcional: passe FIREBASE_STORAGE_BUCKET se o default não for emerson-1e6d2.appspot.com */
+/** Usa FIREBASE_STORAGE_BUCKET do `.env` ou o bucket default do projeto. */
 export function adminBucket(bucket?: string) {
-  return getAdminApp().storage().bucket(bucket ?? process.env.FIREBASE_STORAGE_BUCKET);
+  const name = bucket ?? process.env.FIREBASE_STORAGE_BUCKET;
+  return name
+    ? getAdminApp().storage().bucket(name)
+    : getAdminApp().storage().bucket();
 }

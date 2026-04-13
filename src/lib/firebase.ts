@@ -1,13 +1,15 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app'
 import { getAuth, type Auth } from 'firebase/auth'
+import { getFirestore, type Firestore } from 'firebase/firestore'
 
+/** Configuração do app web Firebase (projeto emerson-1e6d2) — Console → Definições do projeto. */
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: 'AIzaSyAlfuN-ClRQnwGUSA8o4IlrUbG873WZDRI',
+  authDomain: 'emerson-1e6d2.firebaseapp.com',
+  projectId: 'emerson-1e6d2',
+  storageBucket: 'emerson-1e6d2.firebasestorage.app',
+  messagingSenderId: '927933111658',
+  appId: '1:927933111658:web:b0ac5cf6de0fcbc5c11913',
 }
 
 function isConfigValid(): boolean {
@@ -15,12 +17,15 @@ function isConfigValid(): boolean {
     firebaseConfig.apiKey &&
       firebaseConfig.authDomain &&
       firebaseConfig.projectId &&
+      firebaseConfig.storageBucket &&
+      firebaseConfig.messagingSenderId &&
       firebaseConfig.appId
   )
 }
 
 let app: FirebaseApp | null = null
 let auth: Auth | null = null
+let firestore: Firestore | null = null
 
 export function getFirebaseApp(): FirebaseApp | null {
   if (!isConfigValid()) return null
@@ -37,6 +42,15 @@ export function getFirebaseAuth(): Auth | null {
     auth = getAuth(a)
   }
   return auth
+}
+
+export function getFirebaseFirestore(): Firestore | null {
+  const a = getFirebaseApp()
+  if (!a) return null
+  if (!firestore) {
+    firestore = getFirestore(a)
+  }
+  return firestore
 }
 
 export { isConfigValid as isFirebaseConfigured }

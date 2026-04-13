@@ -8,14 +8,23 @@ import {
   type User,
 } from 'firebase/auth'
 import { getFirebaseAuth, isFirebaseConfigured } from '../lib/firebase'
+import type { FirestoreUserDocument } from '../types/firestoreUser'
 import type { AppUser } from '../types/user'
+import {
+  fetchUserProfileFromFirestore,
+  syncUserProfileToFirestore,
+} from './userProfileFirestore'
 
-function mapUser(u: User): AppUser {
+function mapUser(
+  u: User,
+  profile: FirestoreUserDocument | null = null
+): AppUser {
   return {
     uid: u.uid,
     email: u.email,
-    displayName: u.displayName,
-    photoURL: u.photoURL,
+    displayName: u.displayName ?? profile?.displayName ?? null,
+    photoURL: u.photoURL ?? profile?.photoURL ?? null,
+    reservationCode: profile?.reservationCode ?? null,
   }
 }
 
@@ -31,7 +40,31 @@ export function subscribeAuth(
 
   return onAuthStateChanged(
     auth,
-    (firebaseUser) => onUser(firebaseUser ? mapUser(firebaseUser) : null),
+    (firebaseUser) => {
+      if (!firebaseUser) {
+        onUser(null)
+        return
+      }
+      void (async () => {
+        const uid = firebaseUser.uid
+        try {
+          await syncUserProfileToFirestore(firebaseUser)
+        } catch (e) {
+          console.error('[Firestore] syncUserProfileToFirestore', e)
+        }
+        const current = auth.currentUser
+        if (!current || current.uid !== uid) return
+
+        let profile: FirestoreUserDocument | null = null
+        try {
+          profile = await fetchUserProfileFromFirestore(uid)
+        } catch (e) {
+          console.error('[Firestore] fetchUserProfileFromFirestore', e)
+        }
+        if (!auth.currentUser || auth.currentUser.uid !== uid) return
+        onUser(mapUser(auth.currentUser, profile))
+      })()
+    },
     (err) => {
       onError?.(err)
       onUser(null)
@@ -49,8 +82,14 @@ export async function loginWithEmail(
   }
 
   await setPersistence(auth, browserLocalPersistence)
-  const cred = await signInWithEmailAndPassword(auth, email.trim(), password)
-  return mapUser(cred.user)
+  await signInWithEmailAndPassword(auth, email.trim(), password)
+  const u = auth.currentUser
+  if (!u) {
+    throw new Error('auth/user-missing')
+  }
+  await syncUserProfileToFirestore(u)
+  const profile = await fetchUserProfileFromFirestore(u.uid)
+  return mapUser(u, profile)
 }
 
 /** Cadastro por e-mail (Firebase Auth). Exige provedor E-mail/senha ativo no projeto. */
@@ -69,7 +108,9 @@ export async function registerWithEmail(
     email.trim(),
     password
   )
-  return mapUser(cred.user)
+  await syncUserProfileToFirestore(cred.user)
+  const profile = await fetchUserProfileFromFirestore(cred.user.uid)
+  return mapUser(cred.user, profile)
 }
 
 export async function logout(): Promise<void> {
@@ -95,6 +136,7 @@ export function firebaseErrorToMessage(code: string): string {
     'auth/invalid-api-key': 'Configuração do app inválida.',
     AUTH_NOT_CONFIGURED:
       'Autenticação não configurada. Verifique as variáveis de ambiente.',
+    'auth/user-missing': 'Sessão inválida após o login. Tente novamente.',
   }
 
   return map[code] ?? 'Não foi possível entrar. Tente novamente.'
