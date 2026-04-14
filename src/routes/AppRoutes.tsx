@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppLayout } from '../components/Layout/Layout'
 import { LocaleSwitcher } from '../components/LocaleSwitcher/LocaleSwitcher'
+import { ThemeSwitcher } from '../components/ThemeSwitcher/ThemeSwitcher'
 import { AccessExpiredPage } from '../pages/AccessExpired/AccessExpiredPage'
 import { LoginPage } from '../pages/Login/Login'
 import { DashboardPage } from '../pages/Dashboard/DashboardPage'
@@ -30,6 +31,7 @@ export function AppRoutes() {
                 title={t('placeholders.settingsTitle')}
                 description={t('placeholders.settingsDesc')}
               >
+                <ThemeSwitcher />
                 <LocaleSwitcher />
               </PlaceholderPage>
             }

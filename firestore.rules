@@ -16,6 +16,11 @@ service cloud.firestore {
       allow create: if request.auth != null
         && request.resource.data.userId == request.auth.uid
         && request.resource.data.serviceId is string
+        && request.resource.data.priceInCents is number
+        && request.resource.data.priceInCents >= 0
+        && request.resource.data.requesterName is string
+        && request.resource.data.reservationCode is string
+        && request.resource.data.propertyName is string
         && request.resource.data.status == 'pending';
 
       allow update: if request.auth != null

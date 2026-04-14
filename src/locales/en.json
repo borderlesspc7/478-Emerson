@@ -103,13 +103,22 @@
     "colService": "Service",
     "colStatus": "Status",
     "colDate": "Requested on",
+    "colGuest": "Guest",
+    "colReservation": "Reservation",
+    "colProperty": "Property",
+    "colPrice": "Price",
     "colActions": "Actions",
     "request": "Request",
+    "priceLabel": "Price",
     "historyLoading": "Loading history…",
     "historyEmpty": "No requests yet. Pick a service above to create your first one.",
     "requestedAt": "Requested on {{date}}",
     "statusPending": "Pending",
     "statusCompleted": "Completed",
+    "detailGuest": "Guest:",
+    "detailReservation": "Reservation:",
+    "detailProperty": "Property:",
+    "detailPrice": "Price:",
     "markComplete": "Mark service complete",
     "completedBadge": "Completed",
     "deleteRequest": "Delete request",
@@ -117,32 +126,38 @@
     "errorCreate": "Could not submit the request. Please try again.",
     "errorUpdate": "Could not mark as complete. Please try again.",
     "errorDelete": "Could not delete the request. Please try again.",
+    "notInformed": "not informed",
+    "whatsappMessage": "Hello, I am at {{property}} and would like to request {{service}} for {{price}}. My name is {{name}} and my reservation code is {{reservationCode}}.",
     "hint": "Requests are stored in the serviceRequests collection, linked to your account.",
     "items": {
       "cleaning": {
-        "title": "Extra cleaning",
-        "description": "Full or partial apartment cleaning during your stay."
+        "title": "Extra Cleaning",
+        "description": "Additional cleaning service to keep the property tidy during your stay."
       },
       "linen": {
-        "title": "Linens & towels",
-        "description": "Fresh sheets, towels or extra amenities."
+        "title": "Linen Change",
+        "description": "Fresh bed and bath linens for extra comfort."
       },
       "maintenance": {
-        "title": "Maintenance",
-        "description": "Issues with appliances, water, power or air conditioning."
+        "title": "Item Restocking",
+        "description": "Restock essential items such as paper goods, soap, water and amenities."
       },
       "concierge": {
-        "title": "Concierge",
-        "description": "Local tips, transport or special requests."
+        "title": "Laundry Form",
+        "description": "Laundry service request with a dedicated laundry form."
       }
     }
   },
   "placeholders": {
     "settingsTitle": "Settings",
-    "settingsDesc": "Language, terms and basic guest preferences."
+    "settingsDesc": "Language, theme and basic guest preferences."
   },
   "settings": {
     "language": "Language",
+    "theme": "Theme",
+    "themeDark": "Dark Mode",
+    "themeLight": "Light Mode",
+    "themeSystem": "System Default",
     "pt": "Português",
     "en": "English"
   }

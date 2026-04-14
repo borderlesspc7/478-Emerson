@@ -7,6 +7,10 @@ export type ServiceRequestRecord = {
   id: string
   userId: string
   serviceId: ServiceOfferId
+  priceInCents: number
+  requesterName: string | null
+  reservationCode: string | null
+  propertyName: string | null
   status: ServiceRequestStatus
   createdAt: Date | null
   updatedAt: Date | null

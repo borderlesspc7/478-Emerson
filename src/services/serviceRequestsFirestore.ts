@@ -40,6 +40,12 @@ function toDate(v: unknown): Date | null {
   return null
 }
 
+function toNullableString(v: unknown): string | null {
+  if (typeof v !== 'string') return null
+  const trimmed = v.trim()
+  return trimmed.length > 0 ? trimmed : null
+}
+
 function mapDoc(
   id: string,
   data: Record<string, unknown>
@@ -51,10 +57,19 @@ function mapDoc(
   const status = data.status
   const st: ServiceRequestStatus =
     status === 'completed' ? 'completed' : 'pending'
+  const rawPriceInCents = data.priceInCents
+  const priceInCents =
+    typeof rawPriceInCents === 'number' && Number.isFinite(rawPriceInCents)
+      ? Math.max(0, Math.round(rawPriceInCents))
+      : 0
   return {
     id,
     userId: uid,
     serviceId,
+    priceInCents,
+    requesterName: toNullableString(data.requesterName),
+    reservationCode: toNullableString(data.reservationCode),
+    propertyName: toNullableString(data.propertyName),
     status: st,
     createdAt: toDate(data.createdAt),
     updatedAt: toDate(data.updatedAt),
@@ -70,15 +85,26 @@ function serviceRequestsCollectionRef() {
 
 export async function createServiceRequest(
   uid: string,
-  serviceId: ServiceOfferId
+  serviceId: ServiceOfferId,
+  priceInCents: number,
+  metadata: {
+    requesterName: string
+    reservationCode: string
+    propertyName: string
+  }
 ): Promise<void> {
   if (!isFirebaseConfigured()) throw new Error('AUTH_NOT_CONFIGURED')
   const col = serviceRequestsCollectionRef()
   if (!col) throw new Error('AUTH_NOT_CONFIGURED')
+  const safePriceInCents = Math.max(0, Math.round(priceInCents))
 
   await addDoc(col, {
     userId: uid,
     serviceId,
+    priceInCents: safePriceInCents,
+    requesterName: metadata.requesterName,
+    reservationCode: metadata.reservationCode,
+    propertyName: metadata.propertyName,
     status: 'pending',
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),

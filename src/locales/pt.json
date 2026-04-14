@@ -101,15 +101,24 @@
     "listAria": "Lista de serviços disponíveis",
     "historyAria": "Tabela de pedidos: serviço, estado e data",
     "colService": "Serviço",
-    "colStatus": "Estado",
+    "colStatus": "Status",
     "colDate": "Data do pedido",
+    "colGuest": "Hóspede",
+    "colReservation": "Reserva",
+    "colProperty": "Imóvel",
+    "colPrice": "Valor",
     "colActions": "Ações",
     "request": "Solicitar",
+    "priceLabel": "Preço",
     "historyLoading": "A carregar o histórico…",
     "historyEmpty": "Ainda não há pedidos. Escolha um serviço acima para registar o primeiro.",
     "requestedAt": "Pedido em {{date}}",
     "statusPending": "Pendente",
     "statusCompleted": "Concluído",
+    "detailGuest": "Hóspede:",
+    "detailReservation": "Reserva:",
+    "detailProperty": "Imóvel:",
+    "detailPrice": "Valor:",
     "markComplete": "Serviço concluído",
     "completedBadge": "Concluído",
     "deleteRequest": "Deletar chamado",
@@ -117,32 +126,38 @@
     "errorCreate": "Não foi possível registar o pedido. Tente novamente.",
     "errorUpdate": "Não foi possível marcar como concluído. Tente novamente.",
     "errorDelete": "Não foi possível eliminar o pedido. Tente novamente.",
+    "notInformed": "não informado",
+    "whatsappMessage": "Olá, estou no {{property}} e gostaria de solicitar {{service}} no valor de {{price}}. Meu nome é {{name}} e meu código da reserva é {{reservationCode}}.",
     "hint": "Os pedidos são guardados na coleção serviceRequests, associados ao seu utilizador.",
     "items": {
       "cleaning": {
-        "title": "Limpeza extra",
-        "description": "Arrumação completa ou parcial do apartamento durante a estadia."
+        "title": "Limpeza Extra",
+        "description": "Serviço adicional de limpeza para manter o imóvel organizado durante a estadia."
       },
       "linen": {
-        "title": "Roupa de cama e banho",
-        "description": "Troca de lençóis, toalhas ou amenities adicionais."
+        "title": "Troca de Enxoval",
+        "description": "Substituição de roupas de cama e banho para maior conforto."
       },
       "maintenance": {
-        "title": "Manutenção",
-        "description": "Problemas com eletrodomésticos, água, luz ou ar condicionado."
+        "title": "Reposição de Itens",
+        "description": "Reposição de itens essenciais como papel, sabonete, água e amenities."
       },
       "concierge": {
-        "title": "Concierge",
-        "description": "Informações locais, transporte ou pedidos especiais."
+        "title": "Ficha de Lavanderia",
+        "description": "Solicitação de lavagem com preenchimento da ficha de lavanderia."
       }
     }
   },
   "placeholders": {
     "settingsTitle": "Configurações",
-    "settingsDesc": "Idioma, termos de uso e preferências básicas do hóspede."
+    "settingsDesc": "Idioma, tema e preferências básicas do hóspede."
   },
   "settings": {
     "language": "Idioma",
+    "theme": "Tema",
+    "themeDark": "Dark Mode",
+    "themeLight": "Light Mode",
+    "themeSystem": "Padrão do Sistema",
     "pt": "Português",
     "en": "English"
   }

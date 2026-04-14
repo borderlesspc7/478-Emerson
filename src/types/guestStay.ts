@@ -35,4 +35,5 @@ export type ServiceOfferId = 'cleaning' | 'linen' | 'maintenance' | 'concierge'
 
 export type ServiceOffer = {
   id: ServiceOfferId
+  priceInCents: number
 }

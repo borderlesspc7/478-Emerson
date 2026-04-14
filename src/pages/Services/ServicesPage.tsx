@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { FiCheck, FiTrash2 } from 'react-icons/fi'
 import { Button } from '../../components/ui/Button/Button'
 import { useAuth } from '../../hooks/useAuth'
 import { useGuestStay } from '../../hooks/useGuestStay'
@@ -17,6 +18,15 @@ type ActionState =
   | { kind: 'complete'; id: string }
   | { kind: 'delete'; id: string }
 
+function formatPrice(locale: string, valueInCents: number): string {
+  const loc = locale === 'en' ? 'en-US' : 'pt-BR'
+  return new Intl.NumberFormat(loc, {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 2,
+  }).format(valueInCents / 100)
+}
+
 function formatRequestedAt(date: Date | null, locale: string): string {
   if (!date || Number.isNaN(date.getTime())) return '—'
   const loc = locale === 'en' ? 'en' : 'pt-BR'
@@ -30,7 +40,7 @@ export function ServicesPage() {
   const { t, i18n } = useTranslation()
   const { user } = useAuth()
   const uid = user?.uid
-  const { serviceOffers } = useGuestStay()
+  const { stay, serviceOffers } = useGuestStay()
   const { requests, loading: historyLoading, error: historyError } =
     useServiceRequests(uid)
 
@@ -41,6 +51,17 @@ export function ServicesPage() {
   const [mutateError, setMutateError] = useState<string | null>(null)
 
   const locale = i18n.language
+  const userName = user?.displayName || t('common.guest')
+  const reservationCode =
+    user?.reservationCode || stay.reservationCode || t('servicesPage.notInformed')
+  const propertyName =
+    user?.stay?.propertyName ||
+    [stay.property.name, stay.property.unit].filter(Boolean).join(' - ')
+
+  const pricesByServiceId = useMemo(
+    () => new Map(serviceOffers.map((offer) => [offer.id, offer.priceInCents])),
+    [serviceOffers]
+  )
 
   const errorMessage = useMemo(() => {
     if (mutateError) return mutateError
@@ -56,14 +77,30 @@ export function ServicesPage() {
       setMutateError(null)
       setOfferLoadingId(id)
       try {
-        await createServiceRequest(uid, id)
+        const priceInCents = pricesByServiceId.get(id) ?? 0
+        await createServiceRequest(uid, id, priceInCents, {
+          requesterName: userName,
+          reservationCode,
+          propertyName,
+        })
+        const serviceName = t(`servicesPage.items.${id}.title`)
+        const price = formatPrice(locale, priceInCents)
+        const message = t('servicesPage.whatsappMessage', {
+          name: userName,
+          reservationCode,
+          property: propertyName,
+          service: serviceName,
+          price,
+        })
+        const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`
+        window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
       } catch {
         setMutateError(t('servicesPage.errorCreate'))
       } finally {
         setOfferLoadingId(null)
       }
     },
-    [uid, t]
+    [uid, t, locale, pricesByServiceId, userName, reservationCode, propertyName]
   )
 
   const handleComplete = useCallback(
@@ -121,30 +158,37 @@ export function ServicesPage() {
           {t('servicesPage.sectionCatalog')}
         </h3>
         <ul className="page-services__list" aria-label={t('servicesPage.listAria')}>
-          {serviceOffers.map(({ id }) => (
-            <li key={id} className="page-services__row">
-              <div className="page-services__body">
-                <h4 className="page-services__title">
-                  {t(`servicesPage.items.${id}.title`)}
-                </h4>
-                <p className="page-services__desc">
-                  {t(`servicesPage.items.${id}.description`)}
-                </p>
-              </div>
-              <div className="page-services__action">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="md"
-                  loading={offerLoadingId === id}
-                  disabled={!uid || offerLoadingId !== null}
-                  onClick={() => handleRequest(id)}
-                >
-                  {t('servicesPage.request')}
-                </Button>
-              </div>
-            </li>
-          ))}
+          {serviceOffers.map(({ id, priceInCents }) => {
+            const formattedPrice = formatPrice(locale, priceInCents)
+            return (
+              <li key={id} className="page-services__row">
+                <div className="page-services__body">
+                  <h4 className="page-services__title">
+                    {t(`servicesPage.items.${id}.title`)}
+                  </h4>
+                  <p className="page-services__desc">
+                    {t(`servicesPage.items.${id}.description`)}
+                  </p>
+                </div>
+                <div className="page-services__action">
+                  <span className="page-services__price-label">
+                    {t('servicesPage.priceLabel')}
+                  </span>
+                  <strong className="page-services__price-value">{formattedPrice}</strong>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="md"
+                    loading={offerLoadingId === id}
+                    disabled={!uid || offerLoadingId !== null}
+                    onClick={() => handleRequest(id)}
+                  >
+                    {t('servicesPage.request')}
+                  </Button>
+                </div>
+              </li>
+            )
+          })}
         </ul>
       </section>
 
@@ -194,6 +238,18 @@ export function ServicesPage() {
               <div className="page-services__history-cell" role="columnheader">
                 {t('servicesPage.colDate')}
               </div>
+              <div className="page-services__history-cell" role="columnheader">
+                {t('servicesPage.colGuest')}
+              </div>
+              <div className="page-services__history-cell" role="columnheader">
+                {t('servicesPage.colReservation')}
+              </div>
+              <div className="page-services__history-cell" role="columnheader">
+                {t('servicesPage.colProperty')}
+              </div>
+              <div className="page-services__history-cell" role="columnheader">
+                {t('servicesPage.colPrice')}
+              </div>
               <div
                 className="page-services__history-cell page-services__history-cell--actions"
                 role="columnheader"
@@ -206,6 +262,10 @@ export function ServicesPage() {
                 const isPending = req.status === 'pending'
                 const title = t(`servicesPage.items.${req.serviceId}.title`)
                 const requested = formatRequestedAt(req.createdAt, locale)
+                const requestPrice = formatPrice(locale, req.priceInCents)
+                const requestGuest = req.requesterName || userName
+                const requestReservation = req.reservationCode || reservationCode
+                const requestProperty = req.propertyName || propertyName
                 const statusLabel = isPending
                   ? t('servicesPage.statusPending')
                   : t('servicesPage.statusCompleted')
@@ -258,6 +318,38 @@ export function ServicesPage() {
                       </time>
                     </div>
                     <div
+                      className="page-services__history-cell"
+                      role="cell"
+                      data-label={t('servicesPage.colGuest')}
+                    >
+                      <span className="page-services__history-text">{requestGuest}</span>
+                    </div>
+                    <div
+                      className="page-services__history-cell"
+                      role="cell"
+                      data-label={t('servicesPage.colReservation')}
+                    >
+                      <span className="page-services__history-text">
+                        {requestReservation}
+                      </span>
+                    </div>
+                    <div
+                      className="page-services__history-cell"
+                      role="cell"
+                      data-label={t('servicesPage.colProperty')}
+                    >
+                      <span className="page-services__history-text">
+                        {requestProperty}
+                      </span>
+                    </div>
+                    <div
+                      className="page-services__history-cell"
+                      role="cell"
+                      data-label={t('servicesPage.colPrice')}
+                    >
+                      <span className="page-services__history-price">{requestPrice}</span>
+                    </div>
+                    <div
                       className="page-services__history-cell page-services__history-cell--actions"
                       role="cell"
                       data-label={t('servicesPage.colActions')}
@@ -267,25 +359,45 @@ export function ServicesPage() {
                           type="button"
                           variant="secondary"
                           size="sm"
+                          className="page-services__icon-button"
+                          aria-label={
+                            isPending
+                              ? t('servicesPage.markComplete')
+                              : t('servicesPage.completedBadge')
+                          }
+                          title={
+                            isPending
+                              ? t('servicesPage.markComplete')
+                              : t('servicesPage.completedBadge')
+                          }
+                          leftIcon={<FiCheck aria-hidden="true" />}
                           disabled={
                             !isPending || completing || deleting || !uid
                           }
                           loading={completing}
                           onClick={() => handleComplete(req.id)}
                         >
-                          {isPending
-                            ? t('servicesPage.markComplete')
-                            : t('servicesPage.completedBadge')}
+                          <span className="page-services__sr-only">
+                            {isPending
+                              ? t('servicesPage.markComplete')
+                              : t('servicesPage.completedBadge')}
+                          </span>
                         </Button>
                         <Button
                           type="button"
                           variant="danger"
                           size="sm"
+                          className="page-services__icon-button"
+                          aria-label={t('servicesPage.deleteRequest')}
+                          title={t('servicesPage.deleteRequest')}
+                          leftIcon={<FiTrash2 aria-hidden="true" />}
                           disabled={completing || deleting || !uid}
                           loading={deleting}
                           onClick={() => handleDelete(req.id)}
                         >
-                          {t('servicesPage.deleteRequest')}
+                          <span className="page-services__sr-only">
+                            {t('servicesPage.deleteRequest')}
+                          </span>
                         </Button>
                       </div>
                     </div>

@@ -27,8 +27,8 @@ export const mockGuestStay: GuestStay = {
 }
 
 export const mockServiceOffers: ServiceOffer[] = [
-  { id: 'cleaning' },
-  { id: 'linen' },
-  { id: 'maintenance' },
-  { id: 'concierge' },
+  { id: 'cleaning', priceInCents: 18000 },
+  { id: 'linen', priceInCents: 12000 },
+  { id: 'maintenance', priceInCents: 9000 },
+  { id: 'concierge', priceInCents: 7000 },
 ]

@@ -1,0 +1,46 @@
+.theme-switcher {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-default);
+}
+
+.theme-switcher__label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.theme-switcher__buttons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.theme-switcher__btn {
+  padding: 0.45rem 0.85rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  background: var(--surface-subtle);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.theme-switcher__btn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.theme-switcher__btn.is-active {
+  color: var(--color-primary);
+  background: var(--color-primary-muted);
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--border-default));
+}
