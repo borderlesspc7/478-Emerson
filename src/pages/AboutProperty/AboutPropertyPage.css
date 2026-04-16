@@ -1,0 +1,21 @@
+.page-about-property {
+  max-width: 1100px;
+}
+
+.page-about-property__actions {
+  margin-top: 1rem;
+}
+
+.page-about-property__placeholder {
+  margin-top: 0.75rem;
+  min-height: 8.5rem;
+  border: 1px dashed var(--border-default);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface-subtle) 70%, transparent);
+}
+
+@media (min-width: 640px) {
+  .page-about-property__span-2 {
+    grid-column: span 2;
+  }
+}

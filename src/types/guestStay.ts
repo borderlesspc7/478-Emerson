@@ -17,6 +17,9 @@ export type GuestAccess = {
   summary: string
   /** Instruções detalhadas (porta, fechadura, cofre, etc.) */
   instructions: string
+  doorPassword?: string | null
+  floor?: string | null
+  garageSpot?: string | null
 }
 
 export type GuestStay = {

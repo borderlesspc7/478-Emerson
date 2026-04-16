@@ -14,6 +14,7 @@
     "brand": "Guia da Zen",
     "overview": "Visão geral",
     "reservation": "Reserva",
+    "aboutProperty": "Sobre o Apartamento",
     "services": "Serviços",
     "settings": "Configurações"
   },
@@ -91,6 +92,27 @@
     "summaryPeriod": "Período",
     "summaryProperty": "Imóvel",
     "summaryUnit": "Unidade"
+  },
+  "aboutProperty": {
+    "title": "Sobre o Apartamento",
+    "lead": "Informações essenciais para chegada e acesso ao imóvel durante a sua estadia.",
+    "howToArrive": "Como chegar",
+    "openMaps": "Abrir no Maps",
+    "howToAccess": "Como acessar",
+    "access": {
+      "unitNumber": "Número do imóvel",
+      "floor": "Andar",
+      "doorPassword": "Senha de acesso",
+      "garageSpot": "Número da vaga de garagem"
+    },
+    "futureCards": {
+      "garageVideo": "Vaga de garagem (vídeo)",
+      "elevators": "Elevadores",
+      "wifi": "Wi-Fi",
+      "appliances": "Eletros",
+      "houseRules": "Regras da casa",
+      "faq": "FAQ"
+    }
   },
   "servicesPage": {
     "title": "Serviços",

@@ -7,6 +7,7 @@ import { AccessExpiredPage } from '../pages/AccessExpired/AccessExpiredPage'
 import { LoginPage } from '../pages/Login/Login'
 import { DashboardPage } from '../pages/Dashboard/DashboardPage'
 import { ReservationPage } from '../pages/Reservation/ReservationPage'
+import { AboutPropertyPage } from '../pages/AboutProperty/AboutPropertyPage'
 import { ServicesPage } from '../pages/Services/ServicesPage'
 import { PlaceholderPage } from '../pages/PlaceholderPage'
 import { PATHS } from './path'
@@ -23,6 +24,7 @@ export function AppRoutes() {
         <Route element={<AppLayout />}>
           <Route path={PATHS.dashboard} element={<DashboardPage />} />
           <Route path={PATHS.reservation} element={<ReservationPage />} />
+          <Route path={PATHS.aboutProperty} element={<AboutPropertyPage />} />
           <Route path={PATHS.services} element={<ServicesPage />} />
           <Route
             path={PATHS.settings}

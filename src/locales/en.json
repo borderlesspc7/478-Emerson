@@ -14,6 +14,7 @@
     "brand": "Guia da Zen",
     "overview": "Overview",
     "reservation": "Reservation",
+    "aboutProperty": "About the Apartment",
     "services": "Services",
     "settings": "Settings"
   },
@@ -91,6 +92,27 @@
     "summaryPeriod": "Period",
     "summaryProperty": "Property",
     "summaryUnit": "Unit"
+  },
+  "aboutProperty": {
+    "title": "About the Apartment",
+    "lead": "Essential information to arrive and access the property during your stay.",
+    "howToArrive": "How to arrive",
+    "openMaps": "Open in Maps",
+    "howToAccess": "How to access",
+    "access": {
+      "unitNumber": "Property number",
+      "floor": "Floor",
+      "doorPassword": "Door password",
+      "garageSpot": "Garage spot number"
+    },
+    "futureCards": {
+      "garageVideo": "Garage spot (video)",
+      "elevators": "Elevators",
+      "wifi": "Wi-Fi",
+      "appliances": "Appliances",
+      "houseRules": "House rules",
+      "faq": "FAQ"
+    }
   },
   "servicesPage": {
     "title": "Services",

@@ -21,6 +21,9 @@ export const mockGuestStay: GuestStay = {
     summary: 'Entrada digital ativa durante a estadia.',
     instructions:
       'Use o teclado ao lado da porta: digite o código 1842# e aguarde o sinal verde. O cofre na sala contém a chave extra (código enviado por SMS). Mantenha a porta da varanda fechada ao sair.',
+    doorPassword: '1842#',
+    floor: '4º andar',
+    garageSpot: 'Vaga 27',
   },
   notes:
     'Check-out até 11h. Depósito de lixo no hall (porta à esquerda das elevadoras).',
