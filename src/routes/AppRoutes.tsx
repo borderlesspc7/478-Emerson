@@ -8,6 +8,7 @@ import { LoginPage } from '../pages/Login/Login'
 import { DashboardPage } from '../pages/Dashboard/DashboardPage'
 import { ReservationPage } from '../pages/Reservation/ReservationPage'
 import { AboutPropertyPage } from '../pages/AboutProperty/AboutPropertyPage'
+import { CondoPage } from '../pages/Condo/CondoPage'
 import { ServicesPage } from '../pages/Services/ServicesPage'
 import { PlaceholderPage } from '../pages/PlaceholderPage'
 import { PATHS } from './path'
@@ -25,6 +26,7 @@ export function AppRoutes() {
           <Route path={PATHS.dashboard} element={<DashboardPage />} />
           <Route path={PATHS.reservation} element={<ReservationPage />} />
           <Route path={PATHS.aboutProperty} element={<AboutPropertyPage />} />
+          <Route path={PATHS.condo} element={<CondoPage />} />
           <Route path={PATHS.services} element={<ServicesPage />} />
           <Route
             path={PATHS.settings}

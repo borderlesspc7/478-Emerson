@@ -15,6 +15,7 @@
     "overview": "Overview",
     "reservation": "Reservation",
     "aboutProperty": "About the Apartment",
+    "condo": "Condominium",
     "services": "Services",
     "settings": "Settings"
   },
@@ -105,13 +106,114 @@
       "doorPassword": "Door password",
       "garageSpot": "Garage spot number"
     },
-    "futureCards": {
-      "garageVideo": "Garage spot (video)",
-      "elevators": "Elevators",
-      "wifi": "Wi-Fi",
-      "appliances": "Appliances",
-      "houseRules": "House rules",
-      "faq": "FAQ"
+    "cards": {
+      "garageVideo": {
+        "title": "Garage Spot",
+        "description": "See the entry and exit flow for the garage to avoid confusion during access.",
+        "cta": "Watch explanatory video"
+      },
+      "elevators": {
+        "title": "Elevators",
+        "description": "Use the social elevator to reach the apartment. The service elevator should only be used for moving, large loads, or maintenance."
+      },
+      "wifi": {
+        "title": "Wi-Fi"
+      },
+      "appliances": {
+        "title": "Appliances",
+        "items": {
+          "fridge": "Double-door refrigerator with freezer.",
+          "microwave": "Microwave for quick meal heating.",
+          "stove": "4-burner cooktop with built-in electric oven.",
+          "washer": "Washer-dryer available in the service area."
+        }
+      },
+      "houseRules": {
+        "title": "House Rules",
+        "items": {
+          "quietHours": "Respect quiet hours between 10 PM and 8 AM for neighbors' comfort.",
+          "visitors": "Visitors should be communicated to the front desk in advance.",
+          "smoking": "Smoking is not allowed inside the apartment.",
+          "care": "When leaving, turn off AC and lights, and check doors/windows."
+        }
+      }
+    },
+    "faq": {
+      "title": "FAQ",
+      "lead": "Quick answers for the most common stay questions."
+    }
+  },
+  "condo": {
+    "title": "Condominium",
+    "lead": "Check important building rules and guidance for using shared areas during your stay.",
+    "rulesSectionTitle": "Building rules",
+    "faqTitle": "Condominium FAQ",
+    "faqLead": "Frequently asked questions to make your day-to-day easier.",
+    "faqMovedTitle": "FAQ moved to About the Apartment",
+    "faqMovedLead": "Frequently asked questions were moved to About the Apartment to centralize stay guidance.",
+    "cards": {
+      "internalRules": {
+        "title": "Internal Rules",
+        "summary": "General rules for safety and coexistence.",
+        "details": "Maintain respectful behavior in all building areas. Avoid excessive noise, keep common spaces preserved, and follow front-desk guidance. If you have questions about specific permissions, contact building management."
+      },
+      "commonAreas": {
+        "title": "Common Areas",
+        "summary": "Guidelines for elevators, lobby, and shared spaces.",
+        "details": "Use elevators and hallways responsibly and do not block passages. Children must be supervised by a responsible adult in common areas. Do not leave personal items in shared spaces."
+      },
+      "wasteDisposal": {
+        "title": "Waste Disposal",
+        "summary": "How to separate and dispose of waste properly.",
+        "details": "Separate recyclables from organic waste whenever possible. Use properly closed bags and dispose only at designated building collection points. Do not leave trash in hallways, stairs, or the garage."
+      },
+      "garageRules": {
+        "title": "Garage Rules",
+        "summary": "Proper use of parking spots and internal circulation.",
+        "details": "Park only in the space assigned to your unit. Respect speed limits and watch for pedestrians. Blocking maneuvering areas, other parking spots, or emergency access routes is not allowed."
+      }
+    },
+    "faq": {
+      "quietHours": {
+        "question": "What are the quiet hours?",
+        "answer": "Recommended quiet hours are from 10 PM to 8 AM. During this time, avoid loud music, dragging furniture, or any noise that may disturb neighbors."
+      },
+      "pets": {
+        "question": "Are pets allowed?",
+        "answer": "Yes, as long as pets are supervised and on a leash in common areas. The owner is responsible for immediate cleaning and preventing disturbances."
+      },
+      "parties": {
+        "question": "Can I host parties in the apartment?",
+        "answer": "Small gatherings are allowed with common sense. Events with loud sound, excessive traffic, or neighborhood impact are not permitted."
+      },
+      "poolUse": {
+        "question": "How does pool access work?",
+        "answer": "Follow the condominium schedule and pool rules. Children must be accompanied and glass containers are not allowed in wet areas."
+      },
+      "gymAccess": {
+        "question": "Is there a gym in the building?",
+        "answer": "When available, gym access must follow operating hours and equipment safety rules. Please sanitize equipment after use."
+      },
+      "deliveries": {
+        "question": "How do I receive deliveries?",
+        "answer": "Deliveries must follow front-desk procedures. Always provide the correct unit number to simplify identification and pickup."
+      },
+      "visitors": {
+        "question": "Can visitors enter freely?",
+        "answer": "Visitor entry depends on the front-desk identification policy. Prior authorization or phone/intercom confirmation may be required."
+      },
+      "barbecueBooking": {
+        "question": "How do I book the barbecue area or lounge?",
+        "answer": "When available, reservations must follow building management rules, be made in advance, and comply with time limits."
+      },
+      "maintenance": {
+        "question": "What should I do if maintenance is needed?",
+        "answer": "Issues inside the apartment should be reported in the app services section. Urgent common-area issues must be reported to the front desk immediately."
+      },
+      "emergency": {
+        "question": "What should I do in emergencies?",
+        "answer": "In medical or safety emergencies, call public emergency services (911 in your region) and notify the front desk. Stay calm and follow local guidance."
+      }
     }
   },
   "servicesPage": {

@@ -1,5 +1,5 @@
 import { useMemo } from 'react'
-import { FiInfo } from 'react-icons/fi'
+import { FiInfo, FiShield } from 'react-icons/fi'
 import { GiLotusFlower } from 'react-icons/gi'
 import {
   MdKeyboardDoubleArrowLeft,
@@ -45,6 +45,11 @@ export function Sidebar({
           to: PATHS.aboutProperty,
           labelKey: 'nav.aboutProperty' as const,
           icon: FiInfo,
+        },
+        {
+          to: PATHS.condo,
+          labelKey: 'nav.condo' as const,
+          icon: FiShield,
         },
         { to: PATHS.services, labelKey: 'nav.services' as const, icon: IconUsers },
         {

@@ -4,6 +4,7 @@ export const PATHS = {
   dashboard: '/',
   reservation: '/reserva',
   aboutProperty: '/sobre-apartamento',
+  condo: '/condominio',
   services: '/servicos',
   settings: '/configuracoes',
 } as const

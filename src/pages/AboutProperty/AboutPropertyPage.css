@@ -6,12 +6,73 @@
   margin-top: 1rem;
 }
 
-.page-about-property__placeholder {
-  margin-top: 0.75rem;
-  min-height: 8.5rem;
-  border: 1px dashed var(--border-default);
-  border-radius: var(--radius-md);
-  background: color-mix(in srgb, var(--surface-subtle) 70%, transparent);
+.page-about-property__info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-height: 13rem;
+}
+
+.page-about-property__list {
+  margin: 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.page-about-property__faq {
+  margin-top: 2rem;
+  scroll-margin-top: calc(var(--header-height) + 1rem);
+}
+
+.page-about-property__faq-lead {
+  margin-bottom: 1rem;
+}
+
+.page-about-property__accordion {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.page-about-property__accordion-item {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: var(--surface-elevated);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+.page-about-property__accordion-item:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 4px;
+}
+
+.page-about-property__accordion-trigger {
+  width: 100%;
+  border: none;
+  background: transparent;
+  padding: 1rem 1.125rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-align: left;
+  color: var(--text-primary);
+}
+
+.page-about-property__accordion-panel {
+  padding: 0 1.125rem 1rem;
+}
+
+.page-about-property__chevron {
+  transition: transform 0.2s ease;
+  color: var(--text-muted);
+}
+
+.page-about-property__chevron.is-open {
+  transform: rotate(180deg);
 }
 
 @media (min-width: 640px) {
