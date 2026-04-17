@@ -1,5 +1,6 @@
 export interface AppUser {
   uid: string
+  role?: 'guest' | 'admin'
   email: string | null
   displayName: string | null
   photoURL: string | null

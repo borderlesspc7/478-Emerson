@@ -7,6 +7,7 @@ import {
 } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
 import { NavLink } from 'react-router-dom'
+import { useAuth } from '../../hooks/useAuth'
 import { PATHS } from '../../routes/path'
 import './Sidebar.css'
 
@@ -30,12 +31,23 @@ export function Sidebar({
   onToggleSidebar,
 }: SidebarProps) {
   const { t } = useTranslation()
+  const { user } = useAuth()
   const backdrop = showBackdrop ?? false
+  const isAdmin = user?.role === 'admin'
 
   const nav = useMemo(
     () =>
       [
         { to: PATHS.dashboard, labelKey: 'nav.overview' as const, icon: IconHome },
+        ...(isAdmin
+          ? [
+              {
+                to: PATHS.admin,
+                labelKey: 'nav.admin' as const,
+                icon: FiShield,
+              },
+            ]
+          : []),
         {
           to: PATHS.reservation,
           labelKey: 'nav.reservation' as const,
@@ -46,11 +58,6 @@ export function Sidebar({
           labelKey: 'nav.aboutProperty' as const,
           icon: FiInfo,
         },
-        {
-          to: PATHS.condo,
-          labelKey: 'nav.condo' as const,
-          icon: FiShield,
-        },
         { to: PATHS.services, labelKey: 'nav.services' as const, icon: IconUsers },
         {
           to: PATHS.settings,
@@ -58,7 +65,7 @@ export function Sidebar({
           icon: IconSettings,
         },
       ] as const,
-    []
+    [isAdmin]
   )
 
   return (

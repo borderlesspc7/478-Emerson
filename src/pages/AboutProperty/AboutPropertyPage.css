@@ -1,5 +1,61 @@
 .page-about-property {
   max-width: 1100px;
+  --about-rule-card-closed-height: 10.5rem;
+  --about-rule-card-open-height: 19rem;
+}
+
+.page-about-property__tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin: 0 0 1.25rem;
+  padding: 0.35rem;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--surface-subtle) 78%, transparent);
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+.page-about-property__tab {
+  flex: 0 0 auto;
+  min-width: max-content;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  padding: 0.625rem 0.9rem;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.page-about-property__tab:hover {
+  color: var(--text-primary);
+  background: color-mix(in srgb, var(--surface-elevated) 85%, transparent);
+}
+
+.page-about-property__tab.is-active {
+  color: var(--color-primary);
+  border-color: color-mix(in srgb, var(--color-primary) 35%, transparent);
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  box-shadow: inset 0 -2px 0 var(--color-primary);
+}
+
+.page-about-property__tab:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+.page-about-property__tab-panel {
+  animation: about-tab-fade 0.24s ease both;
 }
 
 .page-about-property__actions {
@@ -18,6 +74,89 @@
   padding-left: 1rem;
   display: grid;
   gap: 0.45rem;
+}
+
+.page-about-property__rules {
+  margin-top: 2rem;
+}
+
+.page-about-property__rules-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.page-about-property__rule-card {
+  cursor: pointer;
+  min-height: 0;
+}
+
+.page-about-property__rule-card-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  height: var(--about-rule-card-closed-height);
+  overflow: hidden;
+  margin: 0;
+  transition: height 0.3s ease-in-out;
+}
+
+.page-about-property__rule-card-shell.is-open {
+  height: var(--about-rule-card-open-height);
+}
+
+.page-about-property__rule-trigger {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.page-about-property__rule-icon {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-primary);
+  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
+}
+
+.page-about-property__rule-title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--text-primary);
+}
+
+.page-about-property__rule-collapse {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: all 0.3s ease-in-out;
+}
+
+.page-about-property__rule-collapse.is-open {
+  grid-template-rows: 1fr;
+}
+
+.page-about-property__rule-content {
+  min-height: 0;
+  overflow: hidden;
+  border-top: 1px solid var(--border-default);
+  padding-top: 0.75rem;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: all 0.3s ease-in-out;
+}
+
+.page-about-property__rule-collapse.is-open .page-about-property__rule-content {
+  opacity: 1;
+  transform: translateY(0);
+  overflow-y: auto;
+  padding-right: 0.25rem;
 }
 
 .page-about-property__faq {
@@ -45,6 +184,12 @@
 .page-about-property__accordion-item:focus-visible {
   outline: 2px solid var(--color-ring);
   outline-offset: 4px;
+}
+
+.page-about-property__rule-card:focus-visible .page-about-property__rule-card-shell {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 4px;
+  border-radius: var(--radius-md);
 }
 
 .page-about-property__accordion-trigger {
@@ -78,5 +223,33 @@
 @media (min-width: 640px) {
   .page-about-property__span-2 {
     grid-column: span 2;
+  }
+}
+
+@media (min-width: 760px) {
+  .page-about-property__rules-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .page-about-property {
+    --about-rule-card-closed-height: 10rem;
+    --about-rule-card-open-height: 17rem;
+  }
+
+  .page-about-property__tabs {
+    padding-right: 0.5rem;
+  }
+}
+
+@keyframes about-tab-fade {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

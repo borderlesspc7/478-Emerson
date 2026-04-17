@@ -14,12 +14,15 @@ import {
 import { getFirebaseFirestore, isFirebaseConfigured } from '../lib/firebase'
 import type { ServiceOfferId } from '../types/guestStay'
 import type { ServiceRequestRecord, ServiceRequestStatus } from '../types/serviceRequest'
+import { getGuestSessionReservationCode } from '../lib/guestAccess'
 
 /**
  * Coleção de topo (uma “tabela” de pedidos).
  * Cada documento tem `userId` — só o dono pode ler/alterar (ver firestore.rules).
  */
 export const SERVICE_REQUESTS_COLLECTION = 'serviceRequests'
+const LOCAL_SERVICE_REQUESTS_KEY = 'zen_local_service_requests_v1'
+const LOCAL_SERVICE_REQUESTS_EVENT = 'zen:local-service-requests:changed'
 
 const OFFER_IDS: ServiceOfferId[] = [
   'cleaning',
@@ -83,6 +86,72 @@ function serviceRequestsCollectionRef() {
   return collection(db, SERVICE_REQUESTS_COLLECTION)
 }
 
+type LocalServiceRequestRow = {
+  id: string
+  userId: string
+  serviceId: ServiceOfferId
+  priceInCents: number
+  requesterName: string | null
+  reservationCode: string | null
+  propertyName: string | null
+  status: ServiceRequestStatus
+  createdAt: string
+  updatedAt: string
+  completedAt: string | null
+}
+
+function isGuestUid(uid: string): boolean {
+  return uid.startsWith('guest-')
+}
+
+function readLocalRows(): LocalServiceRequestRow[] {
+  if (typeof window === 'undefined') return []
+  try {
+    const raw = window.localStorage.getItem(LOCAL_SERVICE_REQUESTS_KEY)
+    if (!raw) return []
+    const parsed = JSON.parse(raw)
+    if (!Array.isArray(parsed)) return []
+    return parsed as LocalServiceRequestRow[]
+  } catch {
+    return []
+  }
+}
+
+function writeLocalRows(rows: LocalServiceRequestRow[]): void {
+  if (typeof window === 'undefined') return
+  window.localStorage.setItem(LOCAL_SERVICE_REQUESTS_KEY, JSON.stringify(rows))
+  window.dispatchEvent(new Event(LOCAL_SERVICE_REQUESTS_EVENT))
+}
+
+function localRowToRecord(row: LocalServiceRequestRow): ServiceRequestRecord {
+  const toMaybeDate = (value: string | null) => (value ? new Date(value) : null)
+  return {
+    id: row.id,
+    userId: row.userId,
+    serviceId: row.serviceId,
+    priceInCents: row.priceInCents,
+    requesterName: row.requesterName,
+    reservationCode: row.reservationCode,
+    propertyName: row.propertyName,
+    status: row.status,
+    createdAt: toMaybeDate(row.createdAt),
+    updatedAt: toMaybeDate(row.updatedAt),
+    completedAt: toMaybeDate(row.completedAt),
+  }
+}
+
+function listLocalRecordsByUid(uid: string): ServiceRequestRecord[] {
+  const items = readLocalRows()
+    .filter((row) => row.userId === uid)
+    .map(localRowToRecord)
+  items.sort((a, b) => {
+    const ta = a.createdAt?.getTime() ?? 0
+    const tb = b.createdAt?.getTime() ?? 0
+    return tb - ta
+  })
+  return items
+}
+
 export async function createServiceRequest(
   uid: string,
   serviceId: ServiceOfferId,
@@ -93,6 +162,28 @@ export async function createServiceRequest(
     propertyName: string
   }
 ): Promise<void> {
+  if (isGuestUid(uid)) {
+    const now = new Date().toISOString()
+    const guestReservation = getGuestSessionReservationCode()
+    const row: LocalServiceRequestRow = {
+      id: `local-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
+      userId: uid,
+      serviceId,
+      priceInCents: Math.max(0, Math.round(priceInCents)),
+      requesterName: metadata.requesterName || null,
+      reservationCode: metadata.reservationCode || guestReservation || null,
+      propertyName: metadata.propertyName || null,
+      status: 'pending',
+      createdAt: now,
+      updatedAt: now,
+      completedAt: null,
+    }
+    const rows = readLocalRows()
+    rows.unshift(row)
+    writeLocalRows(rows)
+    return
+  }
+
   if (!isFirebaseConfigured()) throw new Error('AUTH_NOT_CONFIGURED')
   const col = serviceRequestsCollectionRef()
   if (!col) throw new Error('AUTH_NOT_CONFIGURED')
@@ -112,9 +203,21 @@ export async function createServiceRequest(
 }
 
 export async function markServiceRequestCompleted(
-  _uid: string,
+  uid: string,
   requestId: string
 ): Promise<void> {
+  if (isGuestUid(uid)) {
+    const rows = readLocalRows()
+    const now = new Date().toISOString()
+    const next = rows.map((row) =>
+      row.id === requestId && row.userId === uid
+        ? { ...row, status: 'completed' as const, completedAt: now, updatedAt: now }
+        : row
+    )
+    writeLocalRows(next)
+    return
+  }
+
   const db = getFirebaseFirestore()
   if (!db) throw new Error('AUTH_NOT_CONFIGURED')
   const ref = doc(db, SERVICE_REQUESTS_COLLECTION, requestId)
@@ -126,9 +229,17 @@ export async function markServiceRequestCompleted(
 }
 
 export async function deleteServiceRequest(
-  _uid: string,
+  uid: string,
   requestId: string
 ): Promise<void> {
+  if (isGuestUid(uid)) {
+    const next = readLocalRows().filter(
+      (row) => !(row.id === requestId && row.userId === uid)
+    )
+    writeLocalRows(next)
+    return
+  }
+
   const db = getFirebaseFirestore()
   if (!db) throw new Error('AUTH_NOT_CONFIGURED')
   await deleteDoc(doc(db, SERVICE_REQUESTS_COLLECTION, requestId))
@@ -139,6 +250,27 @@ export function subscribeServiceRequests(
   onNext: (items: ServiceRequestRecord[]) => void,
   onError?: (e: Error) => void
 ): Unsubscribe {
+  if (isGuestUid(uid)) {
+    const emit = () => onNext(listLocalRecordsByUid(uid))
+    emit()
+    if (typeof window === 'undefined') {
+      return () => {}
+    }
+
+    const onLocalChanged = () => emit()
+    const onStorage = (event: StorageEvent) => {
+      if (event.key === LOCAL_SERVICE_REQUESTS_KEY) emit()
+    }
+
+    window.addEventListener(LOCAL_SERVICE_REQUESTS_EVENT, onLocalChanged)
+    window.addEventListener('storage', onStorage)
+
+    return () => {
+      window.removeEventListener(LOCAL_SERVICE_REQUESTS_EVENT, onLocalChanged)
+      window.removeEventListener('storage', onStorage)
+    }
+  }
+
   const col = serviceRequestsCollectionRef()
   if (!col) {
     onNext([])

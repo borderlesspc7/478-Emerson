@@ -44,5 +44,9 @@ export function ProtectedRoute() {
     return <Navigate to={PATHS.accessExpired} replace />
   }
 
+  if (user.role === 'guest' && location.pathname === PATHS.admin) {
+    return <Navigate to={PATHS.dashboard} replace />
+  }
+
   return <Outlet />
 }

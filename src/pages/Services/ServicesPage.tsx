@@ -40,6 +40,7 @@ export function ServicesPage() {
   const { t, i18n } = useTranslation()
   const { user } = useAuth()
   const uid = user?.uid
+  const canManageRequests = user?.role === 'admin'
   const { stay, serviceOffers } = useGuestStay()
   const { requests, loading: historyLoading, error: historyError } =
     useServiceRequests(uid)
@@ -105,7 +106,7 @@ export function ServicesPage() {
 
   const handleComplete = useCallback(
     async (requestId: string) => {
-      if (!uid) return
+      if (!uid || !canManageRequests) return
       setMutateError(null)
       setActionLoading({ kind: 'complete', id: requestId })
       try {
@@ -116,12 +117,12 @@ export function ServicesPage() {
         setActionLoading(null)
       }
     },
-    [uid, t]
+    [uid, canManageRequests, t]
   )
 
   const handleDelete = useCallback(
     async (requestId: string) => {
-      if (!uid) return
+      if (!uid || !canManageRequests) return
       setMutateError(null)
       setActionLoading({ kind: 'delete', id: requestId })
       try {
@@ -132,7 +133,7 @@ export function ServicesPage() {
         setActionLoading(null)
       }
     },
-    [uid, t]
+    [uid, canManageRequests, t]
   )
 
   const historyHeadingId = 'services-history-heading'
@@ -250,12 +251,14 @@ export function ServicesPage() {
               <div className="page-services__history-cell" role="columnheader">
                 {t('servicesPage.colPrice')}
               </div>
-              <div
-                className="page-services__history-cell page-services__history-cell--actions"
-                role="columnheader"
-              >
-                {t('servicesPage.colActions')}
-              </div>
+              {canManageRequests ? (
+                <div
+                  className="page-services__history-cell page-services__history-cell--actions"
+                  role="columnheader"
+                >
+                  {t('servicesPage.colActions')}
+                </div>
+              ) : null}
             </div>
             <div className="page-services__history-body" role="rowgroup">
               {requests.map((req) => {
@@ -349,58 +352,60 @@ export function ServicesPage() {
                     >
                       <span className="page-services__history-price">{requestPrice}</span>
                     </div>
-                    <div
-                      className="page-services__history-cell page-services__history-cell--actions"
-                      role="cell"
-                      data-label={t('servicesPage.colActions')}
-                    >
-                      <div className="page-services__history-actions">
-                        <Button
-                          type="button"
-                          variant="secondary"
-                          size="sm"
-                          className="page-services__icon-button"
-                          aria-label={
-                            isPending
-                              ? t('servicesPage.markComplete')
-                              : t('servicesPage.completedBadge')
-                          }
-                          title={
-                            isPending
-                              ? t('servicesPage.markComplete')
-                              : t('servicesPage.completedBadge')
-                          }
-                          leftIcon={<FiCheck aria-hidden="true" />}
-                          disabled={
-                            !isPending || completing || deleting || !uid
-                          }
-                          loading={completing}
-                          onClick={() => handleComplete(req.id)}
-                        >
-                          <span className="page-services__sr-only">
-                            {isPending
-                              ? t('servicesPage.markComplete')
-                              : t('servicesPage.completedBadge')}
-                          </span>
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="danger"
-                          size="sm"
-                          className="page-services__icon-button"
-                          aria-label={t('servicesPage.deleteRequest')}
-                          title={t('servicesPage.deleteRequest')}
-                          leftIcon={<FiTrash2 aria-hidden="true" />}
-                          disabled={completing || deleting || !uid}
-                          loading={deleting}
-                          onClick={() => handleDelete(req.id)}
-                        >
-                          <span className="page-services__sr-only">
-                            {t('servicesPage.deleteRequest')}
-                          </span>
-                        </Button>
+                    {canManageRequests ? (
+                      <div
+                        className="page-services__history-cell page-services__history-cell--actions"
+                        role="cell"
+                        data-label={t('servicesPage.colActions')}
+                      >
+                        <div className="page-services__history-actions">
+                          <Button
+                            type="button"
+                            variant="secondary"
+                            size="sm"
+                            className="page-services__icon-button"
+                            aria-label={
+                              isPending
+                                ? t('servicesPage.markComplete')
+                                : t('servicesPage.completedBadge')
+                            }
+                            title={
+                              isPending
+                                ? t('servicesPage.markComplete')
+                                : t('servicesPage.completedBadge')
+                            }
+                            leftIcon={<FiCheck aria-hidden="true" />}
+                            disabled={
+                              !isPending || completing || deleting || !uid || !canManageRequests
+                            }
+                            loading={completing}
+                            onClick={() => handleComplete(req.id)}
+                          >
+                            <span className="page-services__sr-only">
+                              {isPending
+                                ? t('servicesPage.markComplete')
+                                : t('servicesPage.completedBadge')}
+                            </span>
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="danger"
+                            size="sm"
+                            className="page-services__icon-button"
+                            aria-label={t('servicesPage.deleteRequest')}
+                            title={t('servicesPage.deleteRequest')}
+                            leftIcon={<FiTrash2 aria-hidden="true" />}
+                            disabled={completing || deleting || !uid || !canManageRequests}
+                            loading={deleting}
+                            onClick={() => handleDelete(req.id)}
+                          >
+                            <span className="page-services__sr-only">
+                              {t('servicesPage.deleteRequest')}
+                            </span>
+                          </Button>
+                        </div>
                       </div>
-                    </div>
+                    ) : null}
                   </div>
                 )
               })}

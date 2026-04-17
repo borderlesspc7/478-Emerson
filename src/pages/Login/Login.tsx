@@ -10,15 +10,19 @@ import './Login.css'
 
 export function LoginPage() {
   const { t } = useTranslation()
-  const { user, authReady, login, register, lastError, clearError } = useAuth()
+  const { user, authReady, login, loginWithReservation, register, lastError, clearError } =
+    useAuth()
   const location = useLocation()
   const from =
     (location.state as { from?: string } | null)?.from ?? PATHS.dashboard
 
+  const reservationId = useId()
   const emailId = useId()
   const passwordId = useId()
   const errorId = useId()
 
+  const [authMode, setAuthMode] = useState<'guest' | 'admin'>('guest')
+  const [reservationCode, setReservationCode] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isSignUpMode, setIsSignUpMode] = useState(false)
@@ -27,7 +31,7 @@ export function LoginPage() {
 
   useEffect(() => {
     clearError()
-  }, [email, password, isSignUpMode, clearError, t])
+  }, [reservationCode, email, password, isSignUpMode, authMode, clearError, t])
 
   if (authReady && user) {
     return <Navigate to={from} replace />
@@ -47,6 +51,23 @@ export function LoginPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setFieldError(null)
+
+    if (authMode === 'guest') {
+      if (!reservationCode.trim()) {
+        setFieldError(t('login.errorReservationRequired'))
+        return
+      }
+      setSubmitting(true)
+      try {
+        await loginWithReservation(reservationCode)
+      } catch {
+        /* erro já em lastError */
+      } finally {
+        setSubmitting(false)
+      }
+      return
+    }
+
     if (!email.trim()) {
       setFieldError(t('login.errorEmailRequired'))
       return
@@ -87,12 +108,41 @@ export function LoginPage() {
               </span>
             </div>
             <h1 className="login-card__title">
-              {isSignUpMode ? t('login.titleSignUp') : t('login.titleSignIn')}
+              {authMode === 'guest'
+                ? t('login.titleGuest')
+                : isSignUpMode
+                ? t('login.titleSignUp')
+                : t('login.titleSignIn')}
             </h1>
             <p className="login-card__subtitle">
-              {isSignUpMode ? t('login.subtitleSignUp') : t('login.subtitleCorp')}
+              {authMode === 'guest'
+                ? t('login.subtitleGuest')
+                : isSignUpMode
+                ? t('login.subtitleSignUp')
+                : t('login.subtitleCorp')}
             </p>
           </header>
+
+          <div className="login-card__modes" role="tablist" aria-label={t('login.modeAria')}>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={authMode === 'guest'}
+              className={`login-card__mode-btn ${authMode === 'guest' ? 'is-active' : ''}`}
+              onClick={() => setAuthMode('guest')}
+            >
+              {t('login.modeGuest')}
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={authMode === 'admin'}
+              className={`login-card__mode-btn ${authMode === 'admin' ? 'is-active' : ''}`}
+              onClick={() => setAuthMode('admin')}
+            >
+              {t('login.modeAdmin')}
+            </button>
+          </div>
 
           <form
             className="login-form"
@@ -105,55 +155,74 @@ export function LoginPage() {
               message={fieldError || lastError}
             />
 
-            <div className="login-form__field">
-              <label className="login-form__label" htmlFor={emailId}>
-                {t('login.email')}
-              </label>
-              <input
-                id={emailId}
-                name="email"
-                type="email"
-                autoComplete="email"
-                inputMode="email"
-                className="login-form__input"
-                placeholder={t('login.emailPlaceholder')}
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                aria-invalid={invalid && !fieldError ? undefined : undefined}
-                disabled={submitting}
-              />
-            </div>
-
-            <div className="login-form__field">
-              <div className="login-form__row">
-                <label className="login-form__label" htmlFor={passwordId}>
-                  {t('login.password')}
+            {authMode === 'guest' ? (
+              <div className="login-form__field">
+                <label className="login-form__label" htmlFor={reservationId}>
+                  {t('login.reservationCode')}
                 </label>
-                {!isSignUpMode && (
-                  <Link
-                    to="#"
-                    className="login-form__link"
-                    onClick={(e) => e.preventDefault()}
-                    tabIndex={-1}
-                  >
-                    {t('login.forgotPassword')}
-                  </Link>
-                )}
+                <input
+                  id={reservationId}
+                  name="reservationCode"
+                  type="text"
+                  autoComplete="off"
+                  className="login-form__input"
+                  placeholder={t('login.reservationPlaceholder')}
+                  value={reservationCode}
+                  onChange={(e) => setReservationCode(e.target.value.toUpperCase())}
+                  disabled={submitting}
+                />
               </div>
-              <input
-                id={passwordId}
-                name="password"
-                type="password"
-                autoComplete={
-                  isSignUpMode ? 'new-password' : 'current-password'
-                }
-                className="login-form__input"
-                placeholder={t('login.passwordPlaceholder')}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={submitting}
-              />
-            </div>
+            ) : (
+              <>
+                <div className="login-form__field">
+                  <label className="login-form__label" htmlFor={emailId}>
+                    {t('login.email')}
+                  </label>
+                  <input
+                    id={emailId}
+                    name="email"
+                    type="email"
+                    autoComplete="email"
+                    inputMode="email"
+                    className="login-form__input"
+                    placeholder={t('login.emailPlaceholder')}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    aria-invalid={invalid && !fieldError ? undefined : undefined}
+                    disabled={submitting}
+                  />
+                </div>
+
+                <div className="login-form__field">
+                  <div className="login-form__row">
+                    <label className="login-form__label" htmlFor={passwordId}>
+                      {t('login.password')}
+                    </label>
+                    {!isSignUpMode && (
+                      <Link
+                        to="#"
+                        className="login-form__link"
+                        onClick={(e) => e.preventDefault()}
+                        tabIndex={-1}
+                      >
+                        {t('login.forgotPassword')}
+                      </Link>
+                    )}
+                  </div>
+                  <input
+                    id={passwordId}
+                    name="password"
+                    type="password"
+                    autoComplete={isSignUpMode ? 'new-password' : 'current-password'}
+                    className="login-form__input"
+                    placeholder={t('login.passwordPlaceholder')}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    disabled={submitting}
+                  />
+                </div>
+              </>
+            )}
 
             <Button
               type="submit"
@@ -163,35 +232,41 @@ export function LoginPage() {
               loading={submitting}
               className="login-form__submit"
             >
-              {isSignUpMode ? t('login.submitSignUp') : t('login.submitSignIn')}
+              {authMode === 'guest'
+                ? t('login.submitGuest')
+                : isSignUpMode
+                ? t('login.submitSignUp')
+                : t('login.submitSignIn')}
             </Button>
           </form>
 
-          <p className="login-card__footer">
-            {isSignUpMode ? (
-              <>
-                {t('login.footerHasAccount')}{' '}
-                <button
-                  type="button"
-                  className="login-form__link login-form__link--inline"
-                  onClick={() => setIsSignUpMode(false)}
-                >
-                  {t('login.footerSignIn')}
-                </button>
-              </>
-            ) : (
-              <>
-                {t('login.footerNoAccount')}{' '}
-                <button
-                  type="button"
-                  className="login-form__link login-form__link--inline"
-                  onClick={() => setIsSignUpMode(true)}
-                >
-                  {t('login.footerCreateAccount')}
-                </button>
-              </>
-            )}
-          </p>
+          {authMode === 'admin' ? (
+            <p className="login-card__footer">
+              {isSignUpMode ? (
+                <>
+                  {t('login.footerHasAccount')}{' '}
+                  <button
+                    type="button"
+                    className="login-form__link login-form__link--inline"
+                    onClick={() => setIsSignUpMode(false)}
+                  >
+                    {t('login.footerSignIn')}
+                  </button>
+                </>
+              ) : (
+                <>
+                  {t('login.footerNoAccount')}{' '}
+                  <button
+                    type="button"
+                    className="login-form__link login-form__link--inline"
+                    onClick={() => setIsSignUpMode(true)}
+                  >
+                    {t('login.footerCreateAccount')}
+                  </button>
+                </>
+              )}
+            </p>
+          ) : null}
         </div>
       </main>
     </div>

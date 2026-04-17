@@ -6,9 +6,9 @@ import { ThemeSwitcher } from '../components/ThemeSwitcher/ThemeSwitcher'
 import { AccessExpiredPage } from '../pages/AccessExpired/AccessExpiredPage'
 import { LoginPage } from '../pages/Login/Login'
 import { DashboardPage } from '../pages/Dashboard/DashboardPage'
+import { AdminDashboardPage } from '../pages/Admin/AdminDashboardPage'
 import { ReservationPage } from '../pages/Reservation/ReservationPage'
 import { AboutPropertyPage } from '../pages/AboutProperty/AboutPropertyPage'
-import { CondoPage } from '../pages/Condo/CondoPage'
 import { ServicesPage } from '../pages/Services/ServicesPage'
 import { PlaceholderPage } from '../pages/PlaceholderPage'
 import { PATHS } from './path'
@@ -24,9 +24,9 @@ export function AppRoutes() {
         <Route path={PATHS.accessExpired} element={<AccessExpiredPage />} />
         <Route element={<AppLayout />}>
           <Route path={PATHS.dashboard} element={<DashboardPage />} />
+          <Route path={PATHS.admin} element={<AdminDashboardPage />} />
           <Route path={PATHS.reservation} element={<ReservationPage />} />
           <Route path={PATHS.aboutProperty} element={<AboutPropertyPage />} />
-          <Route path={PATHS.condo} element={<CondoPage />} />
           <Route path={PATHS.services} element={<ServicesPage />} />
           <Route
             path={PATHS.settings}

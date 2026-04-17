@@ -2,9 +2,9 @@ export const PATHS = {
   login: '/login',
   accessExpired: '/acesso-expirado',
   dashboard: '/',
+  admin: '/admin',
   reservation: '/reserva',
   aboutProperty: '/sobre-apartamento',
-  condo: '/condominio',
   services: '/servicos',
   settings: '/configuracoes',
 } as const

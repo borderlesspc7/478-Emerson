@@ -32,9 +32,9 @@ export function AppLayout() {
   const title = useMemo(() => {
     const map: Record<string, string> = {
       [PATHS.dashboard]: t('nav.overview'),
+      [PATHS.admin]: t('nav.admin'),
       [PATHS.reservation]: t('nav.reservation'),
       [PATHS.services]: t('nav.services'),
-      [PATHS.condo]: t('nav.condo'),
       [PATHS.settings]: t('nav.settings'),
     }
     return map[location.pathname] ?? t('layout.panel')

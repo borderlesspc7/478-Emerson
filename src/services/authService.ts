@@ -21,6 +21,7 @@ function mapUser(
 ): AppUser {
   return {
     uid: u.uid,
+    role: 'admin',
     email: u.email,
     displayName: u.displayName ?? profile?.displayName ?? null,
     photoURL: u.photoURL ?? profile?.photoURL ?? null,
@@ -137,6 +138,8 @@ export function firebaseErrorToMessage(code: string): string {
     AUTH_NOT_CONFIGURED:
       'Autenticação não configurada. Verifique as variáveis de ambiente.',
     'auth/user-missing': 'Sessão inválida após o login. Tente novamente.',
+    'reservation/not-found':
+      'Reserva não encontrada. Confirme o código liberado pelo administrador.',
   }
 
   return map[code] ?? 'Não foi possível entrar. Tente novamente.'

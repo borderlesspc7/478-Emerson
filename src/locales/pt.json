@@ -13,9 +13,9 @@
     "collapseShort": "Recolher",
     "brand": "Guia da Zen",
     "overview": "Visão geral",
+    "admin": "Área Admin",
     "reservation": "Reserva",
     "aboutProperty": "Sobre o Apartamento",
-    "condo": "Condomínio",
     "services": "Serviços",
     "settings": "Configurações"
   },
@@ -37,15 +37,24 @@
   "login": {
     "titleSignIn": "Entrar",
     "titleSignUp": "Criar conta",
+    "titleGuest": "Acesso do hóspede",
     "subtitleCorp": "Acesse o painel com seu e-mail corporativo.",
     "subtitleSignUp": "Crie a sua conta com e-mail e senha para aceder ao painel.",
+    "subtitleGuest": "Entre apenas com o número da reserva liberado pelo administrador.",
+    "modeAria": "Modo de autenticação",
+    "modeGuest": "Hóspede",
+    "modeAdmin": "Admin",
+    "reservationCode": "Número da reserva",
+    "reservationPlaceholder": "Ex: ZEN-2026-9001",
     "email": "E-mail",
     "password": "Senha",
     "emailPlaceholder": "voce@empresa.com",
     "passwordPlaceholder": "••••••••",
     "forgotPassword": "Esqueceu a senha?",
+    "submitGuest": "Entrar com reserva",
     "submitSignIn": "Entrar na plataforma",
     "submitSignUp": "Criar conta e entrar",
+    "errorReservationRequired": "Informe o número da reserva.",
     "errorEmailRequired": "Informe seu e-mail.",
     "errorPasswordRequired": "Informe sua senha.",
     "errorPasswordLength": "A senha deve ter pelo menos 6 caracteres.",
@@ -97,6 +106,12 @@
   "aboutProperty": {
     "title": "Sobre o Apartamento",
     "lead": "Informações essenciais para chegada e acesso ao imóvel durante a sua estadia.",
+    "tabs": {
+      "aria": "Abas de conteúdo da página Sobre o Apartamento",
+      "local": "O Local",
+      "condo": "O Condomínio",
+      "faq": "Dúvidas (FAQ)"
+    },
     "howToArrive": "Como chegar",
     "openMaps": "Abrir no Maps",
     "howToAccess": "Como acessar",
@@ -138,82 +153,119 @@
         }
       }
     },
-    "faq": {
-      "title": "FAQ",
-      "lead": "Respostas rápidas para as dúvidas mais comuns da estadia."
-    }
-  },
-  "condo": {
-    "title": "Condomínio",
-    "lead": "Consulte regras importantes e orientações para uso das áreas comuns durante a sua estadia.",
-    "rulesSectionTitle": "Normas do condomínio",
-    "faqTitle": "FAQ do condomínio",
-    "faqLead": "Perguntas frequentes para agilizar o dia a dia no prédio.",
-    "faqMovedTitle": "FAQ agora em Sobre o Apartamento",
-    "faqMovedLead": "As perguntas frequentes foram movidas para a página Sobre o Apartamento para centralizar as orientações da estadia.",
-    "cards": {
-      "internalRules": {
-        "title": "Regimento Interno",
-        "summary": "Regras gerais de convivência e segurança.",
-        "details": "Mantenha conduta respeitosa em todas as áreas do prédio. Evite ruídos excessivos, preserve as áreas comuns e siga as orientações da portaria. Em caso de dúvida sobre permissões específicas, entre em contacto com a administração."
-      },
-      "commonAreas": {
-        "title": "Áreas Comuns",
-        "summary": "Orientações para elevadores, hall e áreas partilhadas.",
-        "details": "Use elevadores e corredores com cuidado, sem bloquear passagens. Crianças devem estar acompanhadas por um responsável nas áreas comuns. Não deixe objetos pessoais em espaços partilhados."
-      },
-      "wasteDisposal": {
-        "title": "Descarte de Lixo",
-        "summary": "Como separar e descartar resíduos corretamente.",
-        "details": "Separe recicláveis de resíduos orgânicos sempre que possível. Utilize sacos bem fechados e descarte apenas nos pontos indicados do condomínio. Não deixe lixo em corredores, escadas ou garagem."
-      },
-      "garageRules": {
-        "title": "Regras da Garagem",
-        "summary": "Uso correto da vaga e circulação interna.",
-        "details": "Estacione apenas na vaga designada para a unidade. Respeite o limite de velocidade e mantenha atenção redobrada com pedestres. É proibido ocupar áreas de manobra, vagas de terceiros ou acessos de emergência."
+    "condoRules": {
+      "sectionTitle": "Normas do condomínio",
+      "cards": {
+        "internalRules": {
+          "title": "Regimento Interno",
+          "summary": "Regras gerais de convivência e segurança.",
+          "details": "Mantenha conduta respeitosa em todas as áreas do prédio. Evite ruídos excessivos, preserve as áreas comuns e siga as orientações da portaria. Em caso de dúvida sobre permissões específicas, entre em contacto com a administração."
+        },
+        "commonAreas": {
+          "title": "Áreas Comuns",
+          "summary": "Orientações para elevadores, hall e áreas partilhadas.",
+          "details": "Use elevadores e corredores com cuidado, sem bloquear passagens. Crianças devem estar acompanhadas por um responsável nas áreas comuns. Não deixe objetos pessoais em espaços partilhados."
+        },
+        "wasteDisposal": {
+          "title": "Descarte de Lixo",
+          "summary": "Como separar e descartar resíduos corretamente.",
+          "details": "Separe recicláveis de resíduos orgânicos sempre que possível. Utilize sacos bem fechados e descarte apenas nos pontos indicados do condomínio. Não deixe lixo em corredores, escadas ou garagem."
+        },
+        "garageRules": {
+          "title": "Regras da Garagem",
+          "summary": "Uso correto da vaga e circulação interna.",
+          "details": "Estacione apenas na vaga designada para a unidade. Respeite o limite de velocidade e mantenha atenção redobrada com pedestres. É proibido ocupar áreas de manobra, vagas de terceiros ou acessos de emergência."
+        }
       }
     },
     "faq": {
-      "quietHours": {
-        "question": "Qual é o horário de silêncio?",
-        "answer": "O horário de silêncio recomendado é das 22h às 8h. Nesse período, evite música alta, arrastar móveis ou qualquer ruído que possa incomodar os demais moradores."
-      },
-      "pets": {
-        "question": "Animais de estimação são permitidos?",
-        "answer": "Sim, desde que estejam sob supervisão e com guia nas áreas comuns. O tutor é responsável por limpeza imediata e por evitar incômodo aos vizinhos."
-      },
-      "parties": {
-        "question": "Posso fazer festas no apartamento?",
-        "answer": "Reuniões pequenas são permitidas com bom senso. Eventos com som alto, grande circulação de pessoas ou impacto na vizinhança não são permitidos."
-      },
-      "poolUse": {
-        "question": "Como funciona o uso da piscina?",
-        "answer": "Respeite os horários e regras do condomínio para piscina. Crianças devem estar acompanhadas e não é permitido consumir vidro na área molhada."
-      },
-      "gymAccess": {
-        "question": "Há academia no condomínio?",
-        "answer": "Quando disponível, o uso da academia deve seguir o horário definido e as orientações de segurança dos equipamentos. Após o uso, higienize os aparelhos."
-      },
-      "deliveries": {
-        "question": "Como recebo encomendas?",
-        "answer": "As entregas devem seguir o procedimento da portaria. Sempre informe corretamente o número da unidade para facilitar a identificação e retirada."
-      },
-      "visitors": {
-        "question": "Visitantes podem entrar livremente?",
-        "answer": "A entrada de visitantes depende da política de identificação da portaria. Pode ser necessário autorizar previamente ou confirmar por telefone/interfone."
-      },
-      "barbecueBooking": {
-        "question": "Como reservar churrasqueira ou salão?",
-        "answer": "A reserva, quando disponível, deve ser feita conforme as regras da administração do condomínio, com antecedência e respeito aos limites de horário."
-      },
-      "maintenance": {
-        "question": "O que fazer em caso de manutenção?",
-        "answer": "Problemas dentro do apartamento devem ser reportados pelo app na seção de serviços. Situações urgentes em área comum devem ser informadas à portaria imediatamente."
-      },
-      "emergency": {
-        "question": "O que fazer em emergências?",
-        "answer": "Em emergência médica ou de segurança, acione os serviços públicos (192/193/190) e informe a portaria. Mantenha calma e siga as orientações no local."
+      "title": "FAQ",
+      "lead": "Respostas rápidas para as dúvidas mais comuns da estadia.",
+      "items": {
+        "quietHours": {
+          "question": "Qual é o horário de silêncio?",
+          "answer": "O horário de silêncio recomendado é das 22h às 8h. Nesse período, evite música alta, arrastar móveis ou qualquer ruído que possa incomodar os demais moradores."
+        },
+        "pets": {
+          "question": "Animais de estimação são permitidos?",
+          "answer": "Sim, desde que estejam sob supervisão e com guia nas áreas comuns. O tutor é responsável por limpeza imediata e por evitar incômodo aos vizinhos."
+        },
+        "parties": {
+          "question": "Posso fazer festas no apartamento?",
+          "answer": "Reuniões pequenas são permitidas com bom senso. Eventos com som alto, grande circulação de pessoas ou impacto na vizinhança não são permitidos."
+        },
+        "poolUse": {
+          "question": "Como funciona o uso da piscina?",
+          "answer": "Respeite os horários e regras do condomínio para piscina. Crianças devem estar acompanhadas e não é permitido consumir vidro na área molhada."
+        },
+        "gymAccess": {
+          "question": "Há academia no condomínio?",
+          "answer": "Quando disponível, o uso da academia deve seguir o horário definido e as orientações de segurança dos equipamentos. Após o uso, higienize os aparelhos."
+        },
+        "deliveries": {
+          "question": "Como recebo encomendas?",
+          "answer": "As entregas devem seguir o procedimento da portaria. Sempre informe corretamente o número da unidade para facilitar a identificação e retirada."
+        },
+        "visitors": {
+          "question": "Visitantes podem entrar livremente?",
+          "answer": "A entrada de visitantes depende da política de identificação da portaria. Pode ser necessário autorizar previamente ou confirmar por telefone/interfone."
+        },
+        "barbecueBooking": {
+          "question": "Como reservar churrasqueira ou salão?",
+          "answer": "A reserva, quando disponível, deve ser feita conforme as regras da administração do condomínio, com antecedência e respeito aos limites de horário."
+        },
+        "maintenance": {
+          "question": "O que fazer em caso de manutenção?",
+          "answer": "Problemas dentro do apartamento devem ser reportados pelo app na seção de serviços. Situações urgentes em área comum devem ser informadas à portaria imediatamente."
+        },
+        "emergency": {
+          "question": "O que fazer em emergências?",
+          "answer": "Em emergência médica ou de segurança, acione os serviços públicos (192/193/190) e informe a portaria. Mantenha calma e siga as orientações no local."
+        }
       }
+    }
+  },
+  "admin": {
+    "title": "Área do Admin",
+    "lead": "Controle centralizado de acessos e serviços solicitados pelos hóspedes.",
+    "tabs": {
+      "aria": "Abas da área administrativa",
+      "guests": "Hóspedes Ativos",
+      "create": "Criar Acesso",
+      "services": "Gestão de Serviços"
+    },
+    "status": {
+      "active": "Ativo",
+      "future": "Futuro",
+      "expired": "Expirado",
+      "pending": "Pendente",
+      "completed": "Concluído"
+    },
+    "guests": {
+      "colReservation": "Nº da Reserva",
+      "colCheckIn": "Check-in",
+      "colCheckOut": "Check-out",
+      "colStatus": "Status"
+    },
+    "create": {
+      "reservationCode": "Número da Reserva",
+      "reservationPlaceholder": "Ex: ZEN-2026-9001",
+      "startDate": "Data de Início",
+      "endDate": "Data de Fim",
+      "submit": "Gerar Acesso",
+      "errorRequired": "Preencha todos os campos obrigatórios para gerar o acesso.",
+      "errorDateRange": "A data de fim deve ser igual ou posterior à data de início.",
+      "success": "Acesso gerado com sucesso. O hóspede foi adicionado à visão geral."
+    },
+    "services": {
+      "pendingTitle": "Pedidos Pendentes",
+      "historyTitle": "Histórico de Concluídos",
+      "guestAreaLabel": "Área do hóspede",
+      "requestedAt": "Solicitado em {{date}}",
+      "complete": "Concluir",
+      "delete": "Excluir",
+      "pendingEmpty": "Nenhum serviço pendente no momento.",
+      "historyEmpty": "Ainda não há serviços concluídos."
     }
   },
   "servicesPage": {

@@ -1,11 +1,10 @@
-export const condoRuleCardKeys = [
-  'internalRules',
+export const aboutPropertyRuleCardKeys = [
   'commonAreas',
   'wasteDisposal',
   'garageRules',
 ] as const
 
-export const condoFaqKeys = [
+export const aboutPropertyFaqKeys = [
   'quietHours',
   'pets',
   'parties',
@@ -18,5 +17,4 @@ export const condoFaqKeys = [
   'emergency',
 ] as const
 
-export type CondoRuleCardKey = (typeof condoRuleCardKeys)[number]
-export type CondoFaqKey = (typeof condoFaqKeys)[number]
+export type AboutPropertyRuleCardKey = (typeof aboutPropertyRuleCardKeys)[number]

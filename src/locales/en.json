@@ -13,9 +13,9 @@
     "collapseShort": "Collapse",
     "brand": "Guia da Zen",
     "overview": "Overview",
+    "admin": "Admin Area",
     "reservation": "Reservation",
     "aboutProperty": "About the Apartment",
-    "condo": "Condominium",
     "services": "Services",
     "settings": "Settings"
   },
@@ -37,15 +37,24 @@
   "login": {
     "titleSignIn": "Sign in",
     "titleSignUp": "Create account",
+    "titleGuest": "Guest access",
     "subtitleCorp": "Access the dashboard with your work email.",
     "subtitleSignUp": "Create your account with email and password to access the dashboard.",
+    "subtitleGuest": "Sign in using only the reservation code provided by the admin.",
+    "modeAria": "Authentication mode",
+    "modeGuest": "Guest",
+    "modeAdmin": "Admin",
+    "reservationCode": "Reservation number",
+    "reservationPlaceholder": "Ex: ZEN-2026-9001",
     "email": "Email",
     "password": "Password",
     "emailPlaceholder": "you@company.com",
     "passwordPlaceholder": "••••••••",
     "forgotPassword": "Forgot password?",
+    "submitGuest": "Sign in with reservation",
     "submitSignIn": "Sign in",
     "submitSignUp": "Create account and sign in",
+    "errorReservationRequired": "Please enter the reservation number.",
     "errorEmailRequired": "Please enter your email.",
     "errorPasswordRequired": "Please enter your password.",
     "errorPasswordLength": "Password must be at least 6 characters.",
@@ -97,6 +106,12 @@
   "aboutProperty": {
     "title": "About the Apartment",
     "lead": "Essential information to arrive and access the property during your stay.",
+    "tabs": {
+      "aria": "About the Apartment content tabs",
+      "local": "The Place",
+      "condo": "The Condominium",
+      "faq": "FAQ"
+    },
     "howToArrive": "How to arrive",
     "openMaps": "Open in Maps",
     "howToAccess": "How to access",
@@ -138,82 +153,119 @@
         }
       }
     },
-    "faq": {
-      "title": "FAQ",
-      "lead": "Quick answers for the most common stay questions."
-    }
-  },
-  "condo": {
-    "title": "Condominium",
-    "lead": "Check important building rules and guidance for using shared areas during your stay.",
-    "rulesSectionTitle": "Building rules",
-    "faqTitle": "Condominium FAQ",
-    "faqLead": "Frequently asked questions to make your day-to-day easier.",
-    "faqMovedTitle": "FAQ moved to About the Apartment",
-    "faqMovedLead": "Frequently asked questions were moved to About the Apartment to centralize stay guidance.",
-    "cards": {
-      "internalRules": {
-        "title": "Internal Rules",
-        "summary": "General rules for safety and coexistence.",
-        "details": "Maintain respectful behavior in all building areas. Avoid excessive noise, keep common spaces preserved, and follow front-desk guidance. If you have questions about specific permissions, contact building management."
-      },
-      "commonAreas": {
-        "title": "Common Areas",
-        "summary": "Guidelines for elevators, lobby, and shared spaces.",
-        "details": "Use elevators and hallways responsibly and do not block passages. Children must be supervised by a responsible adult in common areas. Do not leave personal items in shared spaces."
-      },
-      "wasteDisposal": {
-        "title": "Waste Disposal",
-        "summary": "How to separate and dispose of waste properly.",
-        "details": "Separate recyclables from organic waste whenever possible. Use properly closed bags and dispose only at designated building collection points. Do not leave trash in hallways, stairs, or the garage."
-      },
-      "garageRules": {
-        "title": "Garage Rules",
-        "summary": "Proper use of parking spots and internal circulation.",
-        "details": "Park only in the space assigned to your unit. Respect speed limits and watch for pedestrians. Blocking maneuvering areas, other parking spots, or emergency access routes is not allowed."
+    "condoRules": {
+      "sectionTitle": "Building rules",
+      "cards": {
+        "internalRules": {
+          "title": "Internal Rules",
+          "summary": "General rules for safety and coexistence.",
+          "details": "Maintain respectful behavior in all building areas. Avoid excessive noise, keep common spaces preserved, and follow front-desk guidance. If you have questions about specific permissions, contact building management."
+        },
+        "commonAreas": {
+          "title": "Common Areas",
+          "summary": "Guidelines for elevators, lobby, and shared spaces.",
+          "details": "Use elevators and hallways responsibly and do not block passages. Children must be supervised by a responsible adult in common areas. Do not leave personal items in shared spaces."
+        },
+        "wasteDisposal": {
+          "title": "Waste Disposal",
+          "summary": "How to separate and dispose of waste properly.",
+          "details": "Separate recyclables from organic waste whenever possible. Use properly closed bags and dispose only at designated building collection points. Do not leave trash in hallways, stairs, or the garage."
+        },
+        "garageRules": {
+          "title": "Garage Rules",
+          "summary": "Proper use of parking spots and internal circulation.",
+          "details": "Park only in the space assigned to your unit. Respect speed limits and watch for pedestrians. Blocking maneuvering areas, other parking spots, or emergency access routes is not allowed."
+        }
       }
     },
     "faq": {
-      "quietHours": {
-        "question": "What are the quiet hours?",
-        "answer": "Recommended quiet hours are from 10 PM to 8 AM. During this time, avoid loud music, dragging furniture, or any noise that may disturb neighbors."
-      },
-      "pets": {
-        "question": "Are pets allowed?",
-        "answer": "Yes, as long as pets are supervised and on a leash in common areas. The owner is responsible for immediate cleaning and preventing disturbances."
-      },
-      "parties": {
-        "question": "Can I host parties in the apartment?",
-        "answer": "Small gatherings are allowed with common sense. Events with loud sound, excessive traffic, or neighborhood impact are not permitted."
-      },
-      "poolUse": {
-        "question": "How does pool access work?",
-        "answer": "Follow the condominium schedule and pool rules. Children must be accompanied and glass containers are not allowed in wet areas."
-      },
-      "gymAccess": {
-        "question": "Is there a gym in the building?",
-        "answer": "When available, gym access must follow operating hours and equipment safety rules. Please sanitize equipment after use."
-      },
-      "deliveries": {
-        "question": "How do I receive deliveries?",
-        "answer": "Deliveries must follow front-desk procedures. Always provide the correct unit number to simplify identification and pickup."
-      },
-      "visitors": {
-        "question": "Can visitors enter freely?",
-        "answer": "Visitor entry depends on the front-desk identification policy. Prior authorization or phone/intercom confirmation may be required."
-      },
-      "barbecueBooking": {
-        "question": "How do I book the barbecue area or lounge?",
-        "answer": "When available, reservations must follow building management rules, be made in advance, and comply with time limits."
-      },
-      "maintenance": {
-        "question": "What should I do if maintenance is needed?",
-        "answer": "Issues inside the apartment should be reported in the app services section. Urgent common-area issues must be reported to the front desk immediately."
-      },
-      "emergency": {
-        "question": "What should I do in emergencies?",
-        "answer": "In medical or safety emergencies, call public emergency services (911 in your region) and notify the front desk. Stay calm and follow local guidance."
+      "title": "FAQ",
+      "lead": "Quick answers for the most common stay questions.",
+      "items": {
+        "quietHours": {
+          "question": "What are the quiet hours?",
+          "answer": "Recommended quiet hours are from 10 PM to 8 AM. During this time, avoid loud music, dragging furniture, or any noise that may disturb neighbors."
+        },
+        "pets": {
+          "question": "Are pets allowed?",
+          "answer": "Yes, as long as pets are supervised and on a leash in common areas. The owner is responsible for immediate cleaning and preventing disturbances."
+        },
+        "parties": {
+          "question": "Can I host parties in the apartment?",
+          "answer": "Small gatherings are allowed with common sense. Events with loud sound, excessive traffic, or neighborhood impact are not permitted."
+        },
+        "poolUse": {
+          "question": "How does pool access work?",
+          "answer": "Follow the condominium schedule and pool rules. Children must be accompanied and glass containers are not allowed in wet areas."
+        },
+        "gymAccess": {
+          "question": "Is there a gym in the building?",
+          "answer": "When available, gym access must follow operating hours and equipment safety rules. Please sanitize equipment after use."
+        },
+        "deliveries": {
+          "question": "How do I receive deliveries?",
+          "answer": "Deliveries must follow front-desk procedures. Always provide the correct unit number to simplify identification and pickup."
+        },
+        "visitors": {
+          "question": "Can visitors enter freely?",
+          "answer": "Visitor entry depends on the front-desk identification policy. Prior authorization or phone/intercom confirmation may be required."
+        },
+        "barbecueBooking": {
+          "question": "How do I book the barbecue area or lounge?",
+          "answer": "When available, reservations must follow building management rules, be made in advance, and comply with time limits."
+        },
+        "maintenance": {
+          "question": "What should I do if maintenance is needed?",
+          "answer": "Issues inside the apartment should be reported in the app services section. Urgent common-area issues must be reported to the front desk immediately."
+        },
+        "emergency": {
+          "question": "What should I do in emergencies?",
+          "answer": "In medical or safety emergencies, call public emergency services (911 in your region) and notify the front desk. Stay calm and follow local guidance."
+        }
       }
+    }
+  },
+  "admin": {
+    "title": "Admin Dashboard",
+    "lead": "Centralized control of guest access windows and requested services.",
+    "tabs": {
+      "aria": "Admin dashboard tabs",
+      "guests": "Active Guests",
+      "create": "Create Access",
+      "services": "Service Management"
+    },
+    "status": {
+      "active": "Active",
+      "future": "Future",
+      "expired": "Expired",
+      "pending": "Pending",
+      "completed": "Completed"
+    },
+    "guests": {
+      "colReservation": "Reservation Number",
+      "colCheckIn": "Check-in",
+      "colCheckOut": "Check-out",
+      "colStatus": "Status"
+    },
+    "create": {
+      "reservationCode": "Reservation Number",
+      "reservationPlaceholder": "Ex: ZEN-2026-9001",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "submit": "Generate Access",
+      "errorRequired": "Fill in all required fields to generate access.",
+      "errorDateRange": "End date must be the same as or later than start date.",
+      "success": "Access generated successfully. Guest added to the overview."
+    },
+    "services": {
+      "pendingTitle": "Pending Requests",
+      "historyTitle": "Completed History",
+      "guestAreaLabel": "Guest area",
+      "requestedAt": "Requested at {{date}}",
+      "complete": "Complete",
+      "delete": "Delete",
+      "pendingEmpty": "No pending services at the moment.",
+      "historyEmpty": "No completed services yet."
     }
   },
   "servicesPage": {
