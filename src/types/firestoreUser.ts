@@ -12,4 +12,5 @@ export type FirestoreUserDocument = {
   updatedAt: Timestamp | null
   /** Preenchido depois pela API / admin */
   reservationCode?: string | null
+  role?: 'guest' | 'admin' | null
 }

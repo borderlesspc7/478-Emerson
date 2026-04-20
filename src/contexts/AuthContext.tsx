@@ -9,59 +9,33 @@ import {
 import {
   firebaseErrorToMessage,
   loginWithEmail,
+  loginWithStaysReservation,
   logout,
   registerWithEmail,
   subscribeAuth,
 } from '../services/authService'
-import { mockGuestStay } from '../data/mockGuestStay'
-import {
-  clearGuestSession,
-  findGuestAccessByReservation,
-  getGuestSessionReservationCode,
-  saveGuestSession,
-} from '../lib/guestAccess'
+import { StaysApiError } from '../services/staysClient'
+import { clearGuestSession } from '../lib/guestAccess'
 import type { AppUser } from '../types/user'
-
-export type AuthStatus = 'idle' | 'loading' | 'authenticated' | 'unauthenticated'
 
 type AuthContextValue = {
   user: AppUser | null
-  status: AuthStatus
+  status: 'idle' | 'loading' | 'authenticated' | 'unauthenticated'
   authReady: boolean
-  login: (email: string, password: string) => Promise<void>
-  loginWithReservation: (reservationCode: string) => Promise<void>
+  /** Hóspede: código da reserva Stays + senha padrão (Firebase JIT). */
+  loginGuest: (reservationCode: string, password: string) => Promise<void>
+  /** Admin: e-mail e senha corporativos. */
+  loginAdmin: (email: string, password: string) => Promise<void>
   register: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   lastError: string | null
   clearError: () => void
 }
 
+export type AuthStatus = AuthContextValue['status']
+
 // eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext<AuthContextValue | null>(null)
-
-function toIsoBoundary(date: string, endOfDay: boolean): string {
-  return `${date}T${endOfDay ? '23:59:59' : '00:00:00'}`
-}
-
-function buildGuestUserFromReservation(reservationCode: string): AppUser | null {
-  const access = findGuestAccessByReservation(reservationCode)
-  if (!access) return null
-
-  return {
-    uid: `guest-${access.reservationCode}`,
-    role: 'guest',
-    email: null,
-    displayName: `Hóspede ${access.reservationCode}`,
-    photoURL: null,
-    reservationCode: access.reservationCode,
-    stay: {
-      checkInAt: toIsoBoundary(access.startDate, false),
-      checkOutAt: toIsoBoundary(access.endDate, true),
-      propertyName: mockGuestStay.property.name,
-      unit: mockGuestStay.property.unit,
-    },
-  }
-}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null)
@@ -69,17 +43,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [lastError, setLastError] = useState<string | null>(null)
 
   useEffect(() => {
-    const guestReservation = getGuestSessionReservationCode()
-    if (guestReservation) {
-      const guestUser = buildGuestUserFromReservation(guestReservation)
-      if (guestUser) {
-        setUser(guestUser)
-        setAuthReady(true)
-        return () => {}
-      }
-      clearGuestSession()
-    }
-
     const unsub = subscribeAuth(
       (u) => {
         setUser(u)
@@ -93,7 +56,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsub
   }, [])
 
-  const handleLogin = useCallback(async (email: string, password: string) => {
+  const handleGuestLogin = useCallback(async (reservationCode: string, password: string) => {
+    setLastError(null)
+    try {
+      await loginWithStaysReservation(reservationCode, password)
+    } catch (e: unknown) {
+      if (e instanceof StaysApiError) {
+        const msg =
+          e.code === 'stays/not-configured'
+            ? firebaseErrorToMessage('stays/not-configured')
+            : e.message
+        setLastError(msg)
+        throw e
+      }
+      const code =
+        e && typeof e === 'object' && 'code' in e
+          ? String((e as { code: string }).code)
+          : e instanceof Error
+          ? e.message
+          : 'unknown'
+      setLastError(firebaseErrorToMessage(code))
+      throw e
+    }
+  }, [])
+
+  const handleAdminLogin = useCallback(async (email: string, password: string) => {
     setLastError(null)
     try {
       await loginWithEmail(email, password)
@@ -107,20 +94,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLastError(firebaseErrorToMessage(code))
       throw e
     }
-  }, [])
-
-  const handleReservationLogin = useCallback(async (reservationCode: string) => {
-    setLastError(null)
-    const guestUser = buildGuestUserFromReservation(reservationCode)
-    if (!guestUser) {
-      const error = new Error('reservation/not-found')
-      setLastError(firebaseErrorToMessage('reservation/not-found'))
-      throw error
-    }
-
-    saveGuestSession(guestUser.reservationCode ?? reservationCode)
-    setUser(guestUser)
-    setAuthReady(true)
   }, [])
 
   const handleRegister = useCallback(async (email: string, password: string) => {
@@ -141,13 +114,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const handleLogout = useCallback(async () => {
     setLastError(null)
-    if (user?.role === 'guest') {
-      clearGuestSession()
-      setUser(null)
-      return
-    }
+    clearGuestSession()
     await logout()
-  }, [user?.role])
+  }, [])
 
   const clearError = useCallback(() => setLastError(null), [])
 
@@ -162,8 +131,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       status,
       authReady,
-      login: handleLogin,
-      loginWithReservation: handleReservationLogin,
+      loginGuest: handleGuestLogin,
+      loginAdmin: handleAdminLogin,
       register: handleRegister,
       logout: handleLogout,
       lastError,
@@ -173,8 +142,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       user,
       status,
       authReady,
-      handleLogin,
-      handleReservationLogin,
+      handleGuestLogin,
+      handleAdminLogin,
       handleRegister,
       handleLogout,
       lastError,

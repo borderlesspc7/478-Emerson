@@ -1,3 +1,5 @@
+import type { GuestStay, ServiceOffer } from './guestStay'
+
 export interface AppUser {
   uid: string
   role?: 'guest' | 'admin'
@@ -11,4 +13,8 @@ export interface AppUser {
     propertyName?: string | null
     unit?: string | null
   }
+  /** Preenchido para hóspedes com integração Stays (substitui mock de estadia). */
+  guestStay?: GuestStay | null
+  /** Catálogo de serviços extras com preços (API ou fallback). */
+  serviceOffers?: ServiceOffer[] | null
 }

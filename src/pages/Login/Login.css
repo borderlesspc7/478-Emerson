@@ -197,6 +197,13 @@
   border-color: var(--border-strong);
 }
 
+.login-form__hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: color-mix(in srgb, var(--text-muted, #64748b) 92%, transparent);
+}
+
 .login-form__input:focus {
   outline: none;
   border-color: var(--color-primary);

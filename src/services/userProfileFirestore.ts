@@ -21,6 +21,39 @@ function userDocRef(uid: string) {
  * Cria ou atualiza `users/{uid}` com dados do Auth (merge).
  * Na primeira vez grava `createdAt`; depois só atualiza `updatedAt` e campos de perfil.
  */
+/**
+ * Perfil mínimo de hóspede (JIT) — deve ser gravado antes do restante do fluxo depender do Firestore.
+ */
+export async function ensureGuestProfileDocument(
+  uid: string,
+  data: {
+    reservationCode: string
+    displayName: string
+    email: string | null
+  }
+): Promise<void> {
+  if (!isFirebaseConfigured()) return
+  const ref = userDocRef(uid)
+  if (!ref) return
+
+  const snap = await getDoc(ref)
+  const isNew = !snap.exists()
+
+  const payload: Record<string, unknown> = {
+    role: 'guest',
+    reservationCode: data.reservationCode,
+    displayName: data.displayName,
+    email: data.email,
+    updatedAt: serverTimestamp(),
+  }
+
+  if (isNew) {
+    payload.createdAt = serverTimestamp()
+  }
+
+  await setDoc(ref, payload, { merge: true })
+}
+
 export async function syncUserProfileToFirestore(user: User): Promise<void> {
   if (!isFirebaseConfigured()) return
 
@@ -62,5 +95,6 @@ export async function fetchUserProfileFromFirestore(
     createdAt: (d.createdAt as Timestamp | undefined) ?? null,
     updatedAt: (d.updatedAt as Timestamp | undefined) ?? null,
     reservationCode: (d.reservationCode as string | null | undefined) ?? null,
+    role: (d.role as FirestoreUserDocument['role'] | undefined) ?? null,
   }
 }

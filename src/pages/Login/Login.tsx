@@ -10,19 +10,20 @@ import './Login.css'
 
 export function LoginPage() {
   const { t } = useTranslation()
-  const { user, authReady, login, loginWithReservation, register, lastError, clearError } =
-    useAuth()
+  const { user, authReady, loginGuest, loginAdmin, register, lastError, clearError } = useAuth()
   const location = useLocation()
   const from =
     (location.state as { from?: string } | null)?.from ?? PATHS.dashboard
 
   const reservationId = useId()
+  const passwordGuestId = useId()
   const emailId = useId()
-  const passwordId = useId()
+  const passwordAdminId = useId()
   const errorId = useId()
 
   const [authMode, setAuthMode] = useState<'guest' | 'admin'>('guest')
   const [reservationCode, setReservationCode] = useState('')
+  const [guestPassword, setGuestPassword] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isSignUpMode, setIsSignUpMode] = useState(false)
@@ -31,7 +32,16 @@ export function LoginPage() {
 
   useEffect(() => {
     clearError()
-  }, [reservationCode, email, password, isSignUpMode, authMode, clearError, t])
+  }, [
+    reservationCode,
+    guestPassword,
+    email,
+    password,
+    isSignUpMode,
+    authMode,
+    clearError,
+    t,
+  ])
 
   if (authReady && user) {
     return <Navigate to={from} replace />
@@ -57,9 +67,13 @@ export function LoginPage() {
         setFieldError(t('login.errorReservationRequired'))
         return
       }
+      if (!guestPassword) {
+        setFieldError(t('login.errorPasswordRequired'))
+        return
+      }
       setSubmitting(true)
       try {
-        await loginWithReservation(reservationCode)
+        await loginGuest(reservationCode, guestPassword)
       } catch {
         /* erro já em lastError */
       } finally {
@@ -76,7 +90,7 @@ export function LoginPage() {
       setFieldError(t('login.errorPasswordRequired'))
       return
     }
-    if (password.length < 6) {
+    if (isSignUpMode && password.length < 6) {
       setFieldError(t('login.errorPasswordLength'))
       return
     }
@@ -85,7 +99,7 @@ export function LoginPage() {
       if (isSignUpMode) {
         await register(email, password)
       } else {
-        await login(email, password)
+        await loginAdmin(email, password)
       }
     } catch {
       /* erro já em lastError */
@@ -156,22 +170,41 @@ export function LoginPage() {
             />
 
             {authMode === 'guest' ? (
-              <div className="login-form__field">
-                <label className="login-form__label" htmlFor={reservationId}>
-                  {t('login.reservationCode')}
-                </label>
-                <input
-                  id={reservationId}
-                  name="reservationCode"
-                  type="text"
-                  autoComplete="off"
-                  className="login-form__input"
-                  placeholder={t('login.reservationPlaceholder')}
-                  value={reservationCode}
-                  onChange={(e) => setReservationCode(e.target.value.toUpperCase())}
-                  disabled={submitting}
-                />
-              </div>
+              <>
+                <div className="login-form__field">
+                  <label className="login-form__label" htmlFor={reservationId}>
+                    {t('login.reservationCode')}
+                  </label>
+                  <input
+                    id={reservationId}
+                    name="reservationCode"
+                    type="text"
+                    autoComplete="off"
+                    className="login-form__input"
+                    placeholder={t('login.reservationPlaceholder')}
+                    value={reservationCode}
+                    onChange={(e) => setReservationCode(e.target.value.toUpperCase())}
+                    disabled={submitting}
+                  />
+                </div>
+                <div className="login-form__field">
+                  <label className="login-form__label" htmlFor={passwordGuestId}>
+                    {t('login.password')}
+                  </label>
+                  <input
+                    id={passwordGuestId}
+                    name="password"
+                    type="password"
+                    autoComplete="current-password"
+                    className="login-form__input"
+                    placeholder={t('login.guestPasswordPlaceholder')}
+                    value={guestPassword}
+                    onChange={(e) => setGuestPassword(e.target.value)}
+                    disabled={submitting}
+                  />
+                  <p className="login-form__hint">{t('login.guestPasswordHint')}</p>
+                </div>
+              </>
             ) : (
               <>
                 <div className="login-form__field">
@@ -188,14 +221,13 @@ export function LoginPage() {
                     placeholder={t('login.emailPlaceholder')}
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    aria-invalid={invalid && !fieldError ? undefined : undefined}
                     disabled={submitting}
                   />
                 </div>
 
                 <div className="login-form__field">
                   <div className="login-form__row">
-                    <label className="login-form__label" htmlFor={passwordId}>
+                    <label className="login-form__label" htmlFor={passwordAdminId}>
                       {t('login.password')}
                     </label>
                     {!isSignUpMode && (
@@ -210,7 +242,7 @@ export function LoginPage() {
                     )}
                   </div>
                   <input
-                    id={passwordId}
+                    id={passwordAdminId}
                     name="password"
                     type="password"
                     autoComplete={isSignUpMode ? 'new-password' : 'current-password'}

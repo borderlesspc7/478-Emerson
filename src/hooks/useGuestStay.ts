@@ -9,25 +9,33 @@ export type UseGuestStayResult = {
 }
 
 /**
- * Dados da estadia para o hóspede. Hoje: mock; depois: fetch Stays + cache.
+ * Dados da estadia: integração Stays (`user.guestStay`) ou mock quando não configurado.
  */
 export function useGuestStay(): UseGuestStayResult {
   const { user } = useAuth()
 
-  return useMemo(
-    () => {
+  return useMemo(() => {
+    if (user?.role === 'guest' && user.guestStay) {
       const stay: GuestStay = {
-        ...mockGuestStay,
-        reservationCode: user?.reservationCode || mockGuestStay.reservationCode,
-        checkInAt: user?.stay?.checkInAt || mockGuestStay.checkInAt,
-        checkOutAt: user?.stay?.checkOutAt || mockGuestStay.checkOutAt,
+        ...user.guestStay,
+        reservationCode: user.reservationCode ?? user.guestStay.reservationCode,
       }
-
       return {
         stay,
-        serviceOffers: mockServiceOffers,
+        serviceOffers: user.serviceOffers ?? mockServiceOffers,
       }
-    },
-    [user?.reservationCode, user?.stay?.checkInAt, user?.stay?.checkOutAt]
-  )
+    }
+
+    const stay: GuestStay = {
+      ...mockGuestStay,
+      reservationCode: user?.reservationCode || mockGuestStay.reservationCode,
+      checkInAt: user?.stay?.checkInAt || mockGuestStay.checkInAt,
+      checkOutAt: user?.stay?.checkOutAt || mockGuestStay.checkOutAt,
+    }
+
+    return {
+      stay,
+      serviceOffers: mockServiceOffers,
+    }
+  }, [user])
 }

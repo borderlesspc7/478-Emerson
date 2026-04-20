@@ -1,4 +1,4 @@
-import { useMemo, useState, type KeyboardEvent } from 'react'
+import { useMemo, useState, type KeyboardEvent, type ReactElement } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
   FiChevronDown,
@@ -25,7 +25,7 @@ function getGoogleMapsSearchUrl(address: string): string {
 const applianceKeys = ['fridge', 'microwave', 'stove', 'washer'] as const
 const houseRuleKeys = ['quietHours', 'visitors', 'smoking', 'care'] as const
 const tabKeys = ['local', 'condo', 'faq'] as const
-const ruleCardIcons: Record<AboutPropertyRuleCardKey, JSX.Element> = {
+const ruleCardIcons: Record<AboutPropertyRuleCardKey, ReactElement> = {
   commonAreas: <FiShield aria-hidden />,
   wasteDisposal: <FiTrash2 aria-hidden />,
   garageRules: <FiTruck aria-hidden />,
@@ -35,6 +35,7 @@ export function AboutPropertyPage() {
   const { t } = useTranslation()
   const { stay } = useGuestStay()
   const { property, access, wifi } = stay
+  const listingDescription = property.description?.trim()
   const [activeTab, setActiveTab] = useState<(typeof tabKeys)[number]>('local')
   const [expandedRules, setExpandedRules] = useState<Record<AboutPropertyRuleCardKey, boolean>>({
     commonAreas: false,
@@ -111,6 +112,14 @@ export function AboutPropertyPage() {
       >
         {activeTab === 'local' ? (
           <div className="guest-content__grid">
+            {listingDescription ? (
+              <article className="guest-content__card page-about-property__span-2">
+                <h3 className="guest-content__card-title">
+                  {t('aboutProperty.listingDescription')}
+                </h3>
+                <p className="guest-content__prose">{listingDescription}</p>
+              </article>
+            ) : null}
             <article className="guest-content__card page-about-property__span-2">
               <h3 className="guest-content__card-title">{t('aboutProperty.howToArrive')}</h3>
               <p className="guest-content__card-value guest-content__card-value--sm">

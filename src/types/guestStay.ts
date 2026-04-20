@@ -6,6 +6,8 @@ export type GuestProperty = {
   addressLine: string
   city: string
   postalCode?: string | null
+  /** Texto comercial do imóvel (ex.: descrição Stays HTML → texto). */
+  description?: string | null
 }
 
 export type GuestWifi = {
