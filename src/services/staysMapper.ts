@@ -1,5 +1,5 @@
-import { mockServiceOffers } from '../data/mockGuestStay'
-import type { GuestStay, ServiceOffer, ServiceOfferId } from '../types/guestStay'
+import { htmlToDescriptionPlainText } from '../lib/propertyDescriptionCards'
+import type { GuestStay, ServiceOffer } from '../types/guestStay'
 import type {
   StaysBooking,
   StaysExtraService,
@@ -69,8 +69,32 @@ function buildCityLine(address: StaysPropertyListing['address']): string {
   if (!address) return ''
   const city = address.city ?? ''
   const state = address.stateCode ?? address.state ?? ''
-  if (city && state) return `${city}, ${state}`
-  return city || state
+  const region = address.region?.trim()
+  const cityState = city && state ? `${city}, ${state}` : city || state
+  if (region && cityState) return `${cityState} · ${region}`
+  if (region) return region
+  return cityState
+}
+
+function partyFromBooking(booking: StaysBooking): GuestStay['party'] {
+  const d = booking.guestsDetails
+  if (!d) return null
+  const adults = typeof d.adults === 'number' && d.adults >= 0 ? d.adults : 0
+  const children = typeof d.children === 'number' && d.children >= 0 ? d.children : 0
+  const infants = typeof d.infants === 'number' && d.infants >= 0 ? d.infants : 0
+  if (adults + children + infants === 0) return null
+  return { adults, children, infants }
+}
+
+function priceFromBooking(booking: StaysBooking): GuestStay['totalPrice'] {
+  const p = booking.price
+  const amount = p?._f_total
+  const cur = p?.currency
+  if (typeof amount !== 'number' || !Number.isFinite(amount)) return null
+  return {
+    amount,
+    currency: typeof cur === 'string' && cur.trim() ? cur.trim() : 'BRL',
+  }
 }
 
 function truncate(text: string, max: number): string {
@@ -158,36 +182,26 @@ function harvestWifiFromCustomFields(
   return null
 }
 
-function mapExtraToOfferId(nameLower: string): ServiceOfferId | null {
-  if (/limp|clean/i.test(nameLower)) return 'cleaning'
-  if (/lenç|linen|roupa|bed|toalh/i.test(nameLower)) return 'linen'
-  if (/manuten|maint|repar/i.test(nameLower)) return 'maintenance'
-  if (/concierg|recep|porteir|portaria/i.test(nameLower)) return 'concierge'
-  return null
-}
-
 /**
- * Sobrepõe preços vindos dos extras da reserva aos itens padrão do app (IDs fixos para i18n).
- * Valores `_f_val` tratados como valor monetário na moeda da reserva → centavos = round(val * 100).
+ * Converte extras da reserva Stays em ofertas com nome e valor (quando o catálogo Firestore estiver vazio).
+ * Valores `_f_val` em unidades monetárias → centavos = round(val * 100).
  */
 export function mapExtraServicesToServiceOffers(extras: StaysExtraService[]): ServiceOffer[] {
-  const byId = new Map<ServiceOfferId, number>(
-    mockServiceOffers.map((o) => [o.id, o.priceInCents])
-  )
-
-  for (const ex of extras) {
-    const label = pickLocalized(ex._msname).toLowerCase()
-    const id = mapExtraToOfferId(label)
+  return extras.map((ex, idx) => {
+    const name = pickLocalized(ex._msname) || `Serviço extra ${idx + 1}`
+    const desc = typeof ex.desc === 'string' ? ex.desc.trim() : ''
+    const rawId = ex._id ?? ex._idextra ?? `idx-${idx}`
+    const id = `stays-${String(rawId)}`
     const val = ex._f_val
-    if (id != null && typeof val === 'number' && Number.isFinite(val)) {
-      byId.set(id, Math.max(0, Math.round(val * 100)))
+    const priceInCents =
+      typeof val === 'number' && Number.isFinite(val) ? Math.max(0, Math.round(val * 100)) : 0
+    return {
+      id,
+      name,
+      description: desc || 'Serviço adicional associado à reserva na Stays.',
+      priceInCents,
     }
-  }
-
-  return (['cleaning', 'linen', 'maintenance', 'concierge'] as const).map((id) => ({
-    id,
-    priceInCents: byId.get(id) ?? 0,
-  }))
+  })
 }
 
 export type StaysGuestStayBundle = {
@@ -218,7 +232,9 @@ export function mapStaysToGuestStayBundle(
   const addressLine = buildAddressLine(addr) || '—'
   const city = buildCityLine(addr) || '—'
 
-  const descCommercial = listing?._msdesc ? stripHtml(pickLocalized(listing._msdesc)) : ''
+  const descCommercial = listing?._msdesc
+    ? htmlToDescriptionPlainText(pickLocalized(listing._msdesc))
+    : ''
 
   const lmsAccess = listing?._msaccess ? stripHtml(pickLocalized(listing._msaccess)) : ''
   const lmsNotes = listing?._msnotes ? stripHtml(pickLocalized(listing._msnotes)) : ''
@@ -275,6 +291,7 @@ export function mapStaysToGuestStayBundle(
     property: {
       name: propertyName,
       unit,
+      subtype: listing?.subtype?.trim() || null,
       floor: addr?.additional?.trim() || null,
       addressLine,
       city,
@@ -292,6 +309,8 @@ export function mapStaysToGuestStayBundle(
       garageSpot: garageFromBlob,
     },
     notes: internalNote || null,
+    party: partyFromBooking(booking),
+    totalPrice: priceFromBooking(booking),
   }
 
   return { guestStay, primaryGuest }

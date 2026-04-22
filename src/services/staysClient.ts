@@ -1,5 +1,9 @@
 import axios, { AxiosError, type AxiosInstance } from 'axios'
-import { buildBasicAuthorizationHeader, getStaysEnv, type StaysCredentials } from './staysEnv'
+import {
+  buildBasicAuthorizationHeader,
+  getStaysEnv,
+  type StaysCredentials,
+} from './staysEnv'
 
 export class StaysApiError extends Error {
   status?: number
@@ -24,13 +28,21 @@ function mapAxiosError(error: unknown): StaysApiError {
 
   const status = error.response?.status
   if (status === 401) {
-    return new StaysApiError('Credenciais da API Stays inválidas ou expiradas.', 401, 'stays/unauthorized')
+    return new StaysApiError(
+      'Não autorizado (401) na API Stays. No App Center → Stays → External API, confira o par client id / client secret: VITE_STAYS_LOGIN = id, VITE_STAYS_PASSWORD = secret (não trocar), sem aspas ou espaços no .env, depois guarde o ficheiro e reinicie o npm run dev. A URL base tem de ser …/external/v1 do mesmo ambiente do painel (ex. bsc.stays.com.br).',
+      401,
+      'stays/unauthorized'
+    )
   }
   if (status === 403) {
     return new StaysApiError('Acesso negado à API Stays.', 403, 'stays/forbidden')
   }
   if (status === 404) {
-    return new StaysApiError('Reserva não encontrada na Stays.', 404, 'stays/not-found')
+    return new StaysApiError(
+      'Reserva não encontrada (404). Use o código como no painel Stays, confirme a URL de API em VITE_STAYS_BASE_URL (App Center → Stays API) e as credenciais de acesso à reserva.',
+      404,
+      'stays/not-found'
+    )
   }
   if (status && status >= 500) {
     return new StaysApiError('Serviço Stays indisponível. Tente novamente em instantes.', status, 'stays/server-error')
@@ -89,18 +101,30 @@ export async function withStaysRetry<T>(
 }
 
 let singleton: AxiosInstance | null = null
+let lastCredsKey: string | null = null
+
+function credsKey(c: StaysCredentials): string {
+  return JSON.stringify([c.baseUrl, c.login, c.password])
+}
 
 export function getStaysAxios(): AxiosInstance | null {
   const env = getStaysEnv()
-  if (!env) return null
-  if (!singleton) {
+  if (!env) {
+    singleton = null
+    lastCredsKey = null
+    return null
+  }
+  const key = credsKey(env)
+  if (!singleton || key !== lastCredsKey) {
     singleton = createStaysAxiosInstance(env)
+    lastCredsKey = key
   }
   return singleton
 }
 
 export function resetStaysAxiosForTests(): void {
   singleton = null
+  lastCredsKey = null
 }
 
 function createStaysAxiosInstance(creds: StaysCredentials): AxiosInstance {

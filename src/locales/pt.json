@@ -3,7 +3,8 @@
     "loadingSession": "Carregando sessão…",
     "verifyingSession": "Verificando sessão…",
     "guest": "hóspede",
-    "account": "Conta"
+    "account": "Conta",
+    "descriptionBlockTitle": "Conteúdo {{n}}"
   },
   "nav": {
     "mainAria": "Navegação principal",
@@ -40,23 +41,22 @@
     "titleGuest": "Acesso do hóspede",
     "subtitleCorp": "Acesse o painel com seu e-mail corporativo.",
     "subtitleSignUp": "Crie a sua conta com e-mail e senha para aceder ao painel.",
-    "subtitleGuest": "Use o código da sua reserva na Stays e a senha padrão fornecida pela equipe.",
+    "subtitleGuest": "Cole o link da reserva (parâmetro reserve=) ou só o código curto, ex. IU08J. A API do app é diferente do link /i/account-overview/ do site.",
     "modeAria": "Modo de autenticação",
     "modeGuest": "Hóspede",
     "modeAdmin": "Admin",
-    "reservationCode": "Código da reserva",
-    "reservationPlaceholder": "Ex: ZEN-2026-9001",
+    "reservationCode": "Código de acesso (Stays)",
+    "reservationPlaceholder": "Ex.: IZ07J",
+    "reservationStaysHint": "Pode colar a URL: usamos o valor de ?reserve= (ex. IU08J). A base da API fica em VITE_STAYS_BASE_URL (…/external/v1), não o endereço /i/… do site.",
     "email": "E-mail",
     "password": "Senha",
     "emailPlaceholder": "voce@empresa.com",
     "passwordPlaceholder": "••••••••",
-    "guestPasswordPlaceholder": "Senha padrão do hóspede",
-    "guestPasswordHint": "Utilize a senha padrão informada pela equipe (a mesma usada no cadastro automático).",
     "forgotPassword": "Esqueceu a senha?",
     "submitGuest": "Entrar com reserva",
     "submitSignIn": "Entrar na plataforma",
     "submitSignUp": "Criar conta e entrar",
-    "errorReservationRequired": "Informe o número da reserva.",
+    "errorReservationRequired": "Informe o código de acesso da reserva (Stays).",
     "errorEmailRequired": "Informe seu e-mail.",
     "errorPasswordRequired": "Informe sua senha.",
     "errorPasswordLength": "A senha deve ter pelo menos 6 caracteres.",
@@ -72,6 +72,10 @@
     "ctaService": "Solicitar serviço",
     "cardCheckin": "Check-in",
     "cardCheckinMeta": "Horário de entrada: {{time}}",
+    "cardCheckout": "Check-out",
+    "cardCheckoutMeta": "Horário de saída: {{time}}",
+    "cardParty": "Hóspedes",
+    "cardPropertyAddress": "Endereço",
     "cardWifi": "Wi-Fi",
     "cardWifiMeta": "Senha: {{password}}",
     "cardAccess": "Acesso",
@@ -88,8 +92,8 @@
     "title": "Sua reserva",
     "lead": "Endereço, unidade, datas, Wi-Fi e instruções de acesso — tudo o que precisa para a estadia.",
     "sectionStay": "Estadia",
-    "cardCode": "Código da reserva",
-    "cardCodeMeta": "Apresente em caso de suporte",
+    "cardCode": "Código de acesso (Stays)",
+    "cardCodeMeta": "O mesmo id/código de acesso de quando entrou no app (painel Stays).",
     "cardProperty": "Imóvel",
     "cardAddress": "Endereço",
     "cardCheckIn": "Check-in",
@@ -103,7 +107,20 @@
     "sectionSummary": "Resumo rápido",
     "summaryPeriod": "Período",
     "summaryProperty": "Imóvel",
-    "summaryUnit": "Unidade"
+    "summaryUnit": "Unidade",
+    "summaryPrice": "Valor (reserva)",
+    "summaryParty": "Hóspedes",
+    "sectionPropertyDesc": "Sobre o imóvel",
+    "cardDescription": "Descrição",
+    "sectionBooking": "Reserva e grupo",
+    "cardParty": "Hóspedes",
+    "cardTotal": "Valor total",
+    "cardSubtype": "Tipo",
+    "cardDoor": "Código / porta",
+    "cardGarage": "Vaga / estacionamento",
+    "partyAdults": "{{count}} adulto(s)",
+    "partyChildren": "{{count}} criança(s)",
+    "partyInfants": "{{count}} bebé(s)"
   },
   "aboutProperty": {
     "title": "Sobre o Apartamento",
@@ -245,14 +262,14 @@
       "completed": "Concluído"
     },
     "guests": {
-      "colReservation": "Nº da Reserva",
+      "colReservation": "Código (Stays)",
       "colCheckIn": "Check-in",
       "colCheckOut": "Check-out",
       "colStatus": "Status"
     },
     "create": {
-      "reservationCode": "Número da Reserva",
-      "reservationPlaceholder": "Ex: ZEN-2026-9001",
+      "reservationCode": "Código de acesso (Stays)",
+      "reservationPlaceholder": "Ex.: IZ07J",
       "startDate": "Data de Início",
       "endDate": "Data de Fim",
       "submit": "Gerar Acesso",
@@ -274,9 +291,12 @@
   "servicesPage": {
     "title": "Serviços",
     "lead": "Solicite serviços durante a estadia. O histórico fica guardado na sua conta.",
+    "leadAdmin": "Crie, edite e remova itens do catálogo. Os hóspedes veem esta lista no painel e registam os pedidos aí.",
     "sectionCatalog": "Solicitar um serviço",
     "sectionHistory": "Serviços solicitados",
     "sectionHistoryLead": "Lista dos seus pedidos e respetivo estado.",
+    "sectionHistoryLeadAdmin": "Todos os pedidos de todos os hóspedes (atualiza em tempo real).",
+    "unknownService": "Serviço (catálogo alterado ou removido)",
     "listAria": "Lista de serviços disponíveis",
     "historyAria": "Tabela de pedidos: serviço, estado e data",
     "colService": "Serviço",
@@ -302,29 +322,34 @@
     "completedBadge": "Concluído",
     "deleteRequest": "Deletar chamado",
     "errorListen": "Não foi possível carregar o histórico. Verifique a ligação e as regras do Firestore.",
+    "errorCatalogListen": "Não foi possível carregar o catálogo. Verifique a ligação e as regras do Firestore.",
     "errorCreate": "Não foi possível registar o pedido. Tente novamente.",
     "errorUpdate": "Não foi possível marcar como concluído. Tente novamente.",
     "errorDelete": "Não foi possível eliminar o pedido. Tente novamente.",
     "notInformed": "não informado",
     "whatsappMessage": "Olá, estou no {{property}} e gostaria de solicitar {{service}} no valor de {{price}}. Meu nome é {{name}} e meu código da reserva é {{reservationCode}}.",
     "hint": "Os pedidos são guardados na coleção serviceRequests, associados ao seu utilizador.",
-    "items": {
-      "cleaning": {
-        "title": "Limpeza Extra",
-        "description": "Serviço adicional de limpeza para manter o imóvel organizado durante a estadia."
-      },
-      "linen": {
-        "title": "Troca de Enxoval",
-        "description": "Substituição de roupas de cama e banho para maior conforto."
-      },
-      "maintenance": {
-        "title": "Reposição de Itens",
-        "description": "Reposição de itens essenciais como papel, sabonete, água e amenities."
-      },
-      "concierge": {
-        "title": "Ficha de Lavanderia",
-        "description": "Solicitação de lavagem com preenchimento da ficha de lavanderia."
-      }
+    "admin": {
+      "sectionManage": "Catálogo de serviços (hóspedes veem esta lista para solicitar)",
+      "hint": "Novo serviço: preencha nome, descrição e valor. Editar ou apagar: use os botões em cada item.",
+      "fieldName": "Nome",
+      "fieldDescription": "Descrição",
+      "fieldPrice": "Valor (R$)",
+      "pricePlaceholder": "Ex: 150,00",
+      "add": "Adicionar serviço",
+      "save": "Guardar alterações",
+      "edit": "Editar",
+      "remove": "Remover",
+      "cancelEdit": "Cancelar edição",
+      "editing": "A editar: {{name}}",
+      "listAria": "Itens atuais do catálogo",
+      "catalogLoading": "A carregar o catálogo…",
+      "catalogEmpty": "Ainda não há serviços no catálogo. Adicione o primeiro acima.",
+      "errorNameRequired": "Indique o nome do serviço.",
+      "errorSave": "Não foi possível guardar. Verifique a ligação e tente de novo.",
+      "errorPermission": "Sessão sem permissão de admin no Firestore. Saia, entre novamente e confirme o documento users/{uid} com role \"admin\".",
+      "errorDelete": "Não foi possível remover o item.",
+      "confirmDeleteOffer": "Remover este serviço do catálogo? (Pedidos antigos no histórico mantêm o nome gravado no pedido.)"
     }
   },
   "placeholders": {

@@ -63,11 +63,21 @@ export async function syncUserProfileToFirestore(user: User): Promise<void> {
   const snap = await getDoc(ref)
   const isNew = !snap.exists()
 
+  const emailLower = user.email?.toLowerCase() ?? ''
+  const isGuestEmail = emailLower.endsWith('@zen.com.br')
+
   const payload: Record<string, unknown> = {
     email: user.email ?? null,
     displayName: user.displayName ?? null,
     photoURL: user.photoURL ?? null,
     updatedAt: serverTimestamp(),
+  }
+
+  if (!isGuestEmail) {
+    const prevRole = snap.data()?.['role'] as string | undefined
+    if (prevRole !== 'guest') {
+      payload.role = 'admin'
+    }
   }
 
   if (isNew) {

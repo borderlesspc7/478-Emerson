@@ -2,6 +2,8 @@
 export type GuestProperty = {
   name: string
   unit: string
+  /** Ex.: `apartment` da Stays, quando existir. */
+  subtype?: string | null
   floor?: string | null
   addressLine: string
   city: string
@@ -34,11 +36,16 @@ export type GuestStay = {
   access: GuestAccess
   /** Observações gerais da hospedagem */
   notes?: string | null
+  /** Composição do grupo (dados Stays `guestsDetails`, quando existirem). */
+  party?: { adults: number; children: number; infants: number } | null
+  /** Valor total da reserva na Stays, para exibição. */
+  totalPrice?: { amount: number; currency: string } | null
 }
 
-export type ServiceOfferId = 'cleaning' | 'linen' | 'maintenance' | 'concierge'
-
+/** Oferta exibida ao hóspede: catálogo Firestore, extras Stays ou mock de desenvolvimento. */
 export type ServiceOffer = {
-  id: ServiceOfferId
+  id: string
+  name: string
+  description: string
   priceInCents: number
 }

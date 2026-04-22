@@ -43,13 +43,36 @@ function segment(pathSegment: string): string {
 }
 
 /**
+ * Código de reserva / acesso (Stays: id curto, `partnerCode` ou id longo — ver documentação).
+ * Só `trim`; preserve o casing tal como no painel Stays (a documentação mostra códigos como `CJ01G`).
+ */
+export function normalizeStaysReservationId(raw: string): string {
+  return raw.trim()
+}
+
+/**
  * GET /external/v1/booking/reservations/{reservationId}
- * Documentação: short/long id ou partnerCode.
+ * `reservationId` aceita id curto/longo e também `partnerCode` (ver API Stays).
+ * Se 404, tenta de novo com o mesmo id em MAIÚSCULAS, caso o utilizador tenha introduzido outro casing.
  */
 export async function fetchReservation(reservationCode: string): Promise<StaysBooking> {
+  const raw = normalizeStaysReservationId(reservationCode)
+  if (!raw) {
+    throw new StaysApiError('Código de reserva vazio.', undefined, 'stays/invalid-id')
+  }
   const client = requireStaysAxios()
-  const path = `booking/reservations/${segment(reservationCode)}`
-  return cached(`GET:${path}`, () => withStaysRetry(() => client.get<StaysBooking>(path).then((r) => r.data)))
+  const getOne = (id: string) => {
+    const path = `booking/reservations/${segment(id)}`
+    return cached(`GET:${path}`, () => withStaysRetry(() => client.get<StaysBooking>(path).then((r) => r.data)))
+  }
+  try {
+    return await getOne(raw)
+  } catch (e) {
+    if (e instanceof StaysApiError && e.code === 'stays/not-found' && raw !== raw.toUpperCase()) {
+      return await getOne(raw.toUpperCase())
+    }
+    throw e
+  }
 }
 
 /**
@@ -98,7 +121,7 @@ export type StaysGuestProfile = StaysGuestStayBundle & {
 export async function fetchGuestProfileFromStays(
   reservationCode: string
 ): Promise<StaysGuestProfile> {
-  const normalized = reservationCode.trim().toUpperCase()
+  const normalized = normalizeStaysReservationId(reservationCode)
   const booking = await fetchReservation(normalized)
 
   if (booking.type === 'canceled') {

@@ -16,14 +16,12 @@ export function LoginPage() {
     (location.state as { from?: string } | null)?.from ?? PATHS.dashboard
 
   const reservationId = useId()
-  const passwordGuestId = useId()
   const emailId = useId()
   const passwordAdminId = useId()
   const errorId = useId()
 
   const [authMode, setAuthMode] = useState<'guest' | 'admin'>('guest')
   const [reservationCode, setReservationCode] = useState('')
-  const [guestPassword, setGuestPassword] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isSignUpMode, setIsSignUpMode] = useState(false)
@@ -32,16 +30,7 @@ export function LoginPage() {
 
   useEffect(() => {
     clearError()
-  }, [
-    reservationCode,
-    guestPassword,
-    email,
-    password,
-    isSignUpMode,
-    authMode,
-    clearError,
-    t,
-  ])
+  }, [reservationCode, email, password, isSignUpMode, authMode, clearError, t])
 
   if (authReady && user) {
     return <Navigate to={from} replace />
@@ -67,13 +56,9 @@ export function LoginPage() {
         setFieldError(t('login.errorReservationRequired'))
         return
       }
-      if (!guestPassword) {
-        setFieldError(t('login.errorPasswordRequired'))
-        return
-      }
       setSubmitting(true)
       try {
-        await loginGuest(reservationCode, guestPassword)
+        await loginGuest(reservationCode)
       } catch {
         /* erro já em lastError */
       } finally {
@@ -183,26 +168,10 @@ export function LoginPage() {
                     className="login-form__input"
                     placeholder={t('login.reservationPlaceholder')}
                     value={reservationCode}
-                    onChange={(e) => setReservationCode(e.target.value.toUpperCase())}
+                    onChange={(e) => setReservationCode(e.target.value)}
                     disabled={submitting}
                   />
-                </div>
-                <div className="login-form__field">
-                  <label className="login-form__label" htmlFor={passwordGuestId}>
-                    {t('login.password')}
-                  </label>
-                  <input
-                    id={passwordGuestId}
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    className="login-form__input"
-                    placeholder={t('login.guestPasswordPlaceholder')}
-                    value={guestPassword}
-                    onChange={(e) => setGuestPassword(e.target.value)}
-                    disabled={submitting}
-                  />
-                  <p className="login-form__hint">{t('login.guestPasswordHint')}</p>
+                  <p className="login-form__hint">{t('login.reservationStaysHint')}</p>
                 </div>
               </>
             ) : (

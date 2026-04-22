@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '../../components/ui/Button/Button'
 import { useAuth } from '../../hooks/useAuth'
 import { useGuestStay } from '../../hooks/useGuestStay'
+import { formatPartyLine } from '../../lib/formatGuestStay'
 import { formatStayDate, formatStayTime } from '../../lib/formatStayDates'
 import { PATHS } from '../../routes/path'
 import '../shared/guestContent.css'
@@ -17,7 +18,7 @@ export function DashboardPage() {
   const guestName =
     user?.displayName || user?.email?.split('@')[0] || t('common.guest')
 
-  const { property, wifi, access } = stay
+  const { property, wifi, access, party } = stay
 
   return (
     <div className="page-dashboard">
@@ -62,6 +63,29 @@ export function DashboardPage() {
         </article>
 
         <article className="guest-content__card">
+          <h3 className="guest-content__card-title">
+            {t('dashboard.cardCheckout')}
+          </h3>
+          <p className="guest-content__card-value guest-content__card-value--sm">
+            {formatStayDate(stay.checkOutAt, loc)}
+          </p>
+          <p className="guest-content__card-meta">
+            {t('dashboard.cardCheckoutMeta', {
+              time: formatStayTime(stay.checkOutAt, loc),
+            })}
+          </p>
+        </article>
+
+        {party ? (
+          <article className="guest-content__card">
+            <h3 className="guest-content__card-title">{t('dashboard.cardParty')}</h3>
+            <p className="guest-content__card-value guest-content__card-value--sm">
+              {formatPartyLine(party, t)}
+            </p>
+          </article>
+        ) : null}
+
+        <article className="guest-content__card">
           <h3 className="guest-content__card-title">{t('dashboard.cardWifi')}</h3>
           <p className="guest-content__card-value guest-content__card-value--sm">
             <span className="guest-content__code">{wifi.ssid}</span>
@@ -86,9 +110,15 @@ export function DashboardPage() {
             {t('dashboard.cardProperty')}
           </h3>
           <p className="guest-content__card-value guest-content__card-value--sm">
-            {property.unit}
+            {property.name}
           </p>
-          <p className="guest-content__card-meta">{property.addressLine}</p>
+          <p className="guest-content__card-meta">
+            {[property.unit, property.subtype, property.floor].filter(Boolean).join(' · ')}
+          </p>
+          <p className="guest-content__card-meta">
+            {t('dashboard.cardPropertyAddress')}: {property.addressLine}
+            {property.city ? `, ${property.city}` : ''}
+          </p>
         </article>
 
         <article className="guest-content__card">

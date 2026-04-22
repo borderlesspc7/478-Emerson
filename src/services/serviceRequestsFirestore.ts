@@ -12,27 +12,19 @@ import {
   type Unsubscribe,
 } from 'firebase/firestore'
 import { getFirebaseFirestore, isFirebaseConfigured } from '../lib/firebase'
-import type { ServiceOfferId } from '../types/guestStay'
 import type { ServiceRequestRecord, ServiceRequestStatus } from '../types/serviceRequest'
 import { getGuestSessionReservationCode } from '../lib/guestAccess'
 
 /**
  * Coleção de topo (uma “tabela” de pedidos).
- * Cada documento tem `userId` — só o dono pode ler/alterar (ver firestore.rules).
+ * Cada documento tem `userId` — o dono lê o seu; admin pode ver todos (ver firestore.rules).
  */
 export const SERVICE_REQUESTS_COLLECTION = 'serviceRequests'
 const LOCAL_SERVICE_REQUESTS_KEY = 'zen_local_service_requests_v1'
 const LOCAL_SERVICE_REQUESTS_EVENT = 'zen:local-service-requests:changed'
 
-const OFFER_IDS: ServiceOfferId[] = [
-  'cleaning',
-  'linen',
-  'maintenance',
-  'concierge',
-]
-
-function isOfferId(v: unknown): v is ServiceOfferId {
-  return typeof v === 'string' && OFFER_IDS.includes(v as ServiceOfferId)
+function isNonEmptyStringId(v: unknown): v is string {
+  return typeof v === 'string' && v.trim().length > 0
 }
 
 function toDate(v: unknown): Date | null {
@@ -54,7 +46,7 @@ function mapDoc(
   data: Record<string, unknown>
 ): ServiceRequestRecord | null {
   const serviceId = data.serviceId
-  if (!isOfferId(serviceId)) return null
+  if (!isNonEmptyStringId(serviceId)) return null
   const uid = data.userId
   if (typeof uid !== 'string' || !uid) return null
   const status = data.status
@@ -68,7 +60,8 @@ function mapDoc(
   return {
     id,
     userId: uid,
-    serviceId,
+    serviceId: serviceId.trim(),
+    serviceName: toNullableString(data.serviceName),
     priceInCents,
     requesterName: toNullableString(data.requesterName),
     reservationCode: toNullableString(data.reservationCode),
@@ -89,7 +82,8 @@ function serviceRequestsCollectionRef() {
 type LocalServiceRequestRow = {
   id: string
   userId: string
-  serviceId: ServiceOfferId
+  serviceId: string
+  serviceName: string | null
   priceInCents: number
   requesterName: string | null
   reservationCode: string | null
@@ -129,6 +123,7 @@ function localRowToRecord(row: LocalServiceRequestRow): ServiceRequestRecord {
     id: row.id,
     userId: row.userId,
     serviceId: row.serviceId,
+    serviceName: row.serviceName,
     priceInCents: row.priceInCents,
     requesterName: row.requesterName,
     reservationCode: row.reservationCode,
@@ -154,9 +149,10 @@ function listLocalRecordsByUid(uid: string): ServiceRequestRecord[] {
 
 export async function createServiceRequest(
   uid: string,
-  serviceId: ServiceOfferId,
+  serviceId: string,
   priceInCents: number,
   metadata: {
+    serviceName: string
     requesterName: string
     reservationCode: string
     propertyName: string
@@ -169,6 +165,7 @@ export async function createServiceRequest(
       id: `local-${Date.now()}-${Math.random().toString(16).slice(2, 8)}`,
       userId: uid,
       serviceId,
+      serviceName: metadata.serviceName || null,
       priceInCents: Math.max(0, Math.round(priceInCents)),
       requesterName: metadata.requesterName || null,
       reservationCode: metadata.reservationCode || guestReservation || null,
@@ -192,6 +189,7 @@ export async function createServiceRequest(
   await addDoc(col, {
     userId: uid,
     serviceId,
+    serviceName: metadata.serviceName,
     priceInCents: safePriceInCents,
     requesterName: metadata.requesterName,
     reservationCode: metadata.reservationCode,
@@ -277,7 +275,6 @@ export function subscribeServiceRequests(
     return () => {}
   }
 
-  /** Só `where` — ordenamos no cliente para não exigir índice composto no Firestore. */
   const q = query(col, where('userId', '==', uid))
   return onSnapshot(
     q,
@@ -297,5 +294,34 @@ export function subscribeServiceRequests(
     (err) => {
       onError?.(err)
     }
+  )
+}
+
+/** Listagem de todos os pedidos (vista do admin). */
+export function subscribeServiceRequestsForAdmin(
+  onNext: (items: ServiceRequestRecord[]) => void,
+  onError?: (e: Error) => void
+): Unsubscribe {
+  const col = serviceRequestsCollectionRef()
+  if (!col) {
+    onNext([])
+    return () => {}
+  }
+  return onSnapshot(
+    col,
+    (snap) => {
+      const items: ServiceRequestRecord[] = []
+      for (const d of snap.docs) {
+        const row = mapDoc(d.id, d.data() as Record<string, unknown>)
+        if (row) items.push(row)
+      }
+      items.sort((a, b) => {
+        const ta = a.createdAt?.getTime() ?? 0
+        const tb = b.createdAt?.getTime() ?? 0
+        return tb - ta
+      })
+      onNext(items)
+    },
+    (err) => onError?.(err)
   )
 }

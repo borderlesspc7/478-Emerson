@@ -220,6 +220,10 @@
   transform: rotate(180deg);
 }
 
+.page-about-property__description-heading {
+  margin-bottom: 0.5rem;
+}
+
 @media (min-width: 640px) {
   .page-about-property__span-2 {
     grid-column: span 2;

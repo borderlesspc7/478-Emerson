@@ -1,5 +1,8 @@
 import { startTransition, useEffect, useState } from 'react'
-import { subscribeServiceRequests } from '../services/serviceRequestsFirestore'
+import {
+  subscribeServiceRequests,
+  subscribeServiceRequestsForAdmin,
+} from '../services/serviceRequestsFirestore'
 import type { ServiceRequestRecord } from '../types/serviceRequest'
 
 export type UseServiceRequestsResult = {
@@ -8,7 +11,15 @@ export type UseServiceRequestsResult = {
   error: string | null
 }
 
-export function useServiceRequests(uid: string | undefined): UseServiceRequestsResult {
+/**
+ * Hóspede/Admin: o próprio utilizador.
+ * `adminView === true`: lista global de pedidos (apenas role admin no ecrã).
+ */
+export function useServiceRequests(
+  uid: string | undefined,
+  options?: { adminView?: boolean }
+): UseServiceRequestsResult {
+  const adminView = options?.adminView === true
   const [requests, setRequests] = useState<ServiceRequestRecord[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -27,6 +38,26 @@ export function useServiceRequests(uid: string | undefined): UseServiceRequestsR
       setLoading(true)
       setError(null)
     })
+
+    if (adminView) {
+      const unsub = subscribeServiceRequestsForAdmin(
+        (items) => {
+          startTransition(() => {
+            setRequests(items)
+            setLoading(false)
+            setError(null)
+          })
+        },
+        () => {
+          startTransition(() => {
+            setRequests([])
+            setError('firestore/listen-failed')
+            setLoading(false)
+          })
+        }
+      )
+      return unsub
+    }
 
     const unsub = subscribeServiceRequests(
       uid,
@@ -47,7 +78,7 @@ export function useServiceRequests(uid: string | undefined): UseServiceRequestsR
     )
 
     return unsub
-  }, [uid])
+  }, [uid, adminView])
 
   return { requests, loading, error }
 }

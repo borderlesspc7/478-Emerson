@@ -95,6 +95,140 @@
   line-height: 1.5;
 }
 
+/* Admin: catálogo */
+.page-services__catalog--admin {
+  margin-bottom: 0;
+  padding: 0 0 1.5rem;
+  border-bottom: 1px solid var(--border-default);
+}
+
+.page-services__admin-hint {
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.page-services__admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 520px;
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.125rem;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+}
+
+.page-services__editing-label {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+.page-services__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.page-services__label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.page-services__input,
+.page-services__textarea {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  font: inherit;
+  font-size: 0.9375rem;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: var(--surface-page);
+  color: var(--text-primary);
+  box-sizing: border-box;
+}
+
+.page-services__textarea {
+  resize: vertical;
+  min-height: 4rem;
+}
+
+.page-services__admin-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.page-services__catalog-loading {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.page-services__empty {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.page-services__admin-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.page-services__admin-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem 1.125rem;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+}
+
+@media (min-width: 560px) {
+  .page-services__admin-row {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+}
+
+.page-services__admin-name {
+  display: block;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.page-services__admin-desc {
+  margin: 0.25rem 0 0.35rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--text-muted);
+}
+
+.page-services__admin-price {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.page-services__admin-row-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
 .page-services__error {
   margin: 0 0 1rem;
   padding: 0.75rem 1rem;

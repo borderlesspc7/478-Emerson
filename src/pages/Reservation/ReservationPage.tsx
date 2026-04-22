@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next'
+import { PropertyDescriptionCardList } from '../../components/PropertyDescriptionCardList'
 import { useGuestStay } from '../../hooks/useGuestStay'
+import { formatPartyLine, formatTotalPrice } from '../../lib/formatGuestStay'
 import {
   formatStayDate,
   formatStayDateTime,
@@ -12,7 +14,7 @@ export function ReservationPage() {
   const { t, i18n } = useTranslation()
   const { stay } = useGuestStay()
   const loc = i18n.language === 'en' ? 'en' : 'pt-BR'
-  const { property, wifi, access, notes } = stay
+  const { property, wifi, access, notes, party, totalPrice } = stay
 
   const addressFull = [property.addressLine, property.city, property.postalCode]
     .filter(Boolean)
@@ -47,7 +49,7 @@ export function ReservationPage() {
             {property.name}
           </p>
           <p className="guest-content__card-meta">
-            {[property.unit, property.floor].filter(Boolean).join(' · ')}
+            {[property.unit, property.subtype, property.floor].filter(Boolean).join(' · ')}
           </p>
         </article>
 
@@ -85,6 +87,51 @@ export function ReservationPage() {
         </article>
       </div>
 
+      {property.description ? (
+        <>
+          <h3 className="guest-content__section">
+            {t('reservation.sectionPropertyDesc')}
+          </h3>
+          <div className="guest-content__grid">
+            <PropertyDescriptionCardList
+              description={property.description}
+              fallbackTitleKey="common.descriptionBlockTitle"
+              cardClassName="guest-content__card page-reservation__span-2"
+            />
+          </div>
+        </>
+      ) : null}
+
+      {party || totalPrice ? (
+        <>
+          <h3 className="guest-content__section">
+            {t('reservation.sectionBooking')}
+          </h3>
+          <div className="guest-content__grid">
+            {party ? (
+              <article className="guest-content__card">
+                <h4 className="guest-content__card-title">
+                  {t('reservation.cardParty')}
+                </h4>
+                <p className="guest-content__card-value guest-content__card-value--sm">
+                  {formatPartyLine(party, t)}
+                </p>
+              </article>
+            ) : null}
+            {totalPrice ? (
+              <article className="guest-content__card">
+                <h4 className="guest-content__card-title">
+                  {t('reservation.cardTotal')}
+                </h4>
+                <p className="guest-content__card-value guest-content__card-value--sm">
+                  {formatTotalPrice(totalPrice, loc)}
+                </p>
+              </article>
+            ) : null}
+          </div>
+        </>
+      ) : null}
+
       <h3 className="guest-content__section">{t('reservation.sectionWifi')}</h3>
       <div className="guest-content__grid">
         <article className="guest-content__card">
@@ -118,6 +165,30 @@ export function ReservationPage() {
             {access.instructions}
           </p>
         </article>
+        {access.doorPassword || access.garageSpot ? (
+          <>
+            {access.doorPassword ? (
+              <article className="guest-content__card">
+                <h4 className="guest-content__card-title">
+                  {t('reservation.cardDoor')}
+                </h4>
+                <p className="guest-content__card-value guest-content__card-value--sm">
+                  <span className="guest-content__code">{access.doorPassword}</span>
+                </p>
+              </article>
+            ) : null}
+            {access.garageSpot ? (
+              <article className="guest-content__card">
+                <h4 className="guest-content__card-title">
+                  {t('reservation.cardGarage')}
+                </h4>
+                <p className="guest-content__card-value guest-content__card-value--sm">
+                  {access.garageSpot}
+                </p>
+              </article>
+            ) : null}
+          </>
+        ) : null}
       </div>
 
       {notes ? (
@@ -146,8 +217,22 @@ export function ReservationPage() {
         <dd className="guest-content__dd">{property.name}</dd>
         <dt className="guest-content__dt">{t('reservation.summaryUnit')}</dt>
         <dd className="guest-content__dd">
-          {[property.unit, property.floor].filter(Boolean).join(' · ')}
+          {[property.unit, property.subtype, property.floor].filter(Boolean).join(' · ')}
         </dd>
+        {party ? (
+          <>
+            <dt className="guest-content__dt">{t('reservation.summaryParty')}</dt>
+            <dd className="guest-content__dd">{formatPartyLine(party, t)}</dd>
+          </>
+        ) : null}
+        {totalPrice ? (
+          <>
+            <dt className="guest-content__dt">{t('reservation.summaryPrice')}</dt>
+            <dd className="guest-content__dd">
+              {formatTotalPrice(totalPrice, loc)}
+            </dd>
+          </>
+        ) : null}
       </dl>
     </div>
   )

@@ -30,8 +30,28 @@ export const mockGuestStay: GuestStay = {
 }
 
 export const mockServiceOffers: ServiceOffer[] = [
-  { id: 'cleaning', priceInCents: 18000 },
-  { id: 'linen', priceInCents: 12000 },
-  { id: 'maintenance', priceInCents: 9000 },
-  { id: 'concierge', priceInCents: 7000 },
+  {
+    id: 'mock-cleaning',
+    name: 'Limpeza extra',
+    description: 'Limpeza completa do apartamento fora do horário padrão.',
+    priceInCents: 18000,
+  },
+  {
+    id: 'mock-linen',
+    name: 'Roupa de cama e banho',
+    description: 'Troca adicional de lençóis e toalhas.',
+    priceInCents: 12000,
+  },
+  {
+    id: 'mock-maintenance',
+    name: 'Manutenção leve',
+    description: 'Pequenos reparos ou ajustes durante a estadia.',
+    priceInCents: 9000,
+  },
+  {
+    id: 'mock-concierge',
+    name: 'Concierge / apoio',
+    description: 'Suporte e orientação durante a estadia.',
+    priceInCents: 7000,
+  },
 ]

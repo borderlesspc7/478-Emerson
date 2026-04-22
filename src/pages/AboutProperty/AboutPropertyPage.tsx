@@ -8,6 +8,7 @@ import {
   FiTrash2,
   FiTruck,
 } from 'react-icons/fi'
+import { PropertyDescriptionCardList } from '../../components/PropertyDescriptionCardList'
 import { Button } from '../../components/ui/Button/Button'
 import {
   aboutPropertyFaqKeys,
@@ -35,7 +36,7 @@ export function AboutPropertyPage() {
   const { t } = useTranslation()
   const { stay } = useGuestStay()
   const { property, access, wifi } = stay
-  const listingDescription = property.description?.trim()
+  const hasListingDescription = Boolean(property.description?.trim())
   const [activeTab, setActiveTab] = useState<(typeof tabKeys)[number]>('local')
   const [expandedRules, setExpandedRules] = useState<Record<AboutPropertyRuleCardKey, boolean>>({
     commonAreas: false,
@@ -112,13 +113,17 @@ export function AboutPropertyPage() {
       >
         {activeTab === 'local' ? (
           <div className="guest-content__grid">
-            {listingDescription ? (
-              <article className="guest-content__card page-about-property__span-2">
-                <h3 className="guest-content__card-title">
+            {hasListingDescription ? (
+              <>
+                <h3 className="guest-content__section page-about-property__span-2 page-about-property__description-heading">
                   {t('aboutProperty.listingDescription')}
                 </h3>
-                <p className="guest-content__prose">{listingDescription}</p>
-              </article>
+                <PropertyDescriptionCardList
+                  description={property.description}
+                  fallbackTitleKey="common.descriptionBlockTitle"
+                  cardClassName="guest-content__card page-about-property__span-2"
+                />
+              </>
             ) : null}
             <article className="guest-content__card page-about-property__span-2">
               <h3 className="guest-content__card-title">{t('aboutProperty.howToArrive')}</h3>

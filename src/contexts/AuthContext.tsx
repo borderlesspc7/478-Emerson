@@ -8,6 +8,7 @@ import {
 } from 'react'
 import {
   firebaseErrorToMessage,
+  GUEST_APP_DEFAULT_PASSWORD,
   loginWithEmail,
   loginWithStaysReservation,
   logout,
@@ -22,8 +23,8 @@ type AuthContextValue = {
   user: AppUser | null
   status: 'idle' | 'loading' | 'authenticated' | 'unauthenticated'
   authReady: boolean
-  /** Hóspede: código da reserva Stays + senha padrão (Firebase JIT). */
-  loginGuest: (reservationCode: string, password: string) => Promise<void>
+  /** Hóspede: código da reserva Stays (a senha JIT é aplicada internamente). */
+  loginGuest: (reservationCode: string) => Promise<void>
   /** Admin: e-mail e senha corporativos. */
   loginAdmin: (email: string, password: string) => Promise<void>
   register: (email: string, password: string) => Promise<void>
@@ -56,10 +57,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsub
   }, [])
 
-  const handleGuestLogin = useCallback(async (reservationCode: string, password: string) => {
+  const handleGuestLogin = useCallback(async (reservationCode: string) => {
     setLastError(null)
     try {
-      await loginWithStaysReservation(reservationCode, password)
+      await loginWithStaysReservation(reservationCode, GUEST_APP_DEFAULT_PASSWORD)
     } catch (e: unknown) {
       if (e instanceof StaysApiError) {
         const msg =

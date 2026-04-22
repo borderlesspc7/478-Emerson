@@ -1,6 +1,12 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    function isAdmin() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+
     // Perfil do utilizador autenticado (sincronizado com Firebase Auth)
     match /users/{userId} {
       allow read, create, update: if request.auth != null
@@ -8,10 +14,16 @@ service cloud.firestore {
       allow delete: if false;
     }
 
-    // Pedidos de serviço: uma coleção global; cada documento tem userId (isolamento por utilizador)
+    // Catálogo de serviços: leitura para autenticados; escrita só admin
+    match /serviceCatalog/{itemId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Pedidos de serviço: o dono vê o seu; admin vê e gere todos
     match /serviceRequests/{requestId} {
       allow read: if request.auth != null
-        && resource.data.userId == request.auth.uid;
+        && (resource.data.userId == request.auth.uid || isAdmin());
 
       allow create: if request.auth != null
         && request.resource.data.userId == request.auth.uid
@@ -21,14 +33,16 @@ service cloud.firestore {
         && request.resource.data.requesterName is string
         && request.resource.data.reservationCode is string
         && request.resource.data.propertyName is string
+        && (!('serviceName' in request.resource.data)
+          || request.resource.data.serviceName is string)
         && request.resource.data.status == 'pending';
 
       allow update: if request.auth != null
-        && resource.data.userId == request.auth.uid
+        && (resource.data.userId == request.auth.uid || isAdmin())
         && request.resource.data.userId == resource.data.userId;
 
       allow delete: if request.auth != null
-        && resource.data.userId == request.auth.uid;
+        && (resource.data.userId == request.auth.uid || isAdmin());
     }
 
     match /{document=**} {

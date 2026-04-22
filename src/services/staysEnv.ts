@@ -7,6 +7,27 @@ export type StaysCredentials = {
 /**
  * Lê credenciais da API Stays via variáveis Vite (nunca fixas no código-fonte).
  */
+const STAYS_DEV_PREFIX_DEFAULT = '/__stays'
+
+/**
+ * No browser, chamadas directas a `https://...stays.com.br/external/...` falham
+ * (CORS; o preflight OPTIONS muitas vezes 401). Em `import.meta.env.DEV` usamos
+ * o proxy do Vite: mesma origem com prefixo `VITE_STAYS_DEV_PREFIX` (defeito
+ * /__stays) → o servidor encaminha para a URL real. Em `build` o proxy não existe
+ * (usar função/Cloud proxy ou o que a Stays permitir). Desligar: VITE_STAYS_NO_DEV_PROXY=1
+ */
+function resolveStaysBaseUrl(raw: string): string {
+  const trimmed = String(raw).trim().replace(/\/+$/, '')
+  const noProxy = import.meta.env.VITE_STAYS_NO_DEV_PROXY === '1'
+  if (import.meta.env.DEV && !noProxy) {
+    const p =
+      (import.meta.env.VITE_STAYS_DEV_PREFIX as string | undefined)?.trim() ||
+      STAYS_DEV_PREFIX_DEFAULT
+    return p.startsWith('/') ? p : `/${p}`
+  }
+  return trimmed
+}
+
 export function getStaysEnv(): StaysCredentials | null {
   const rawBase = import.meta.env.VITE_STAYS_BASE_URL
   const login = import.meta.env.VITE_STAYS_LOGIN
@@ -14,11 +35,12 @@ export function getStaysEnv(): StaysCredentials | null {
 
   if (!rawBase || !login || !password) return null
 
-  const baseUrl = String(rawBase).replace(/\/+$/, '')
+  // trim: espaços no .env (ex. após o =) quebram o Basic Auth e dão 401
+  const baseUrl = resolveStaysBaseUrl(String(rawBase).trim().replace(/\/+$/, ''))
   return {
     baseUrl,
-    login: String(login),
-    password: String(password),
+    login: String(login).trim(),
+    password: String(password).trim(),
   }
 }
 

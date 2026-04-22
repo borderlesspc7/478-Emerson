@@ -3,7 +3,8 @@
     "loadingSession": "Loading session…",
     "verifyingSession": "Verifying session…",
     "guest": "guest",
-    "account": "Account"
+    "account": "Account",
+    "descriptionBlockTitle": "Content {{n}}"
   },
   "nav": {
     "mainAria": "Main navigation",
@@ -40,23 +41,22 @@
     "titleGuest": "Guest access",
     "subtitleCorp": "Access the dashboard with your work email.",
     "subtitleSignUp": "Create your account with email and password to access the dashboard.",
-    "subtitleGuest": "Use your Stays reservation code and the default password provided by the team.",
+    "subtitleGuest": "Paste the booking URL (the “reserve” query) or the short code (e.g. IU08J). The app’s API is not the /i/account-overview/ web page.",
     "modeAria": "Authentication mode",
     "modeGuest": "Guest",
     "modeAdmin": "Admin",
-    "reservationCode": "Reservation code",
-    "reservationPlaceholder": "Ex: ZEN-2026-9001",
+    "reservationCode": "Access code (Stays)",
+    "reservationPlaceholder": "e.g. IZ07J",
+    "reservationStaysHint": "You can paste the URL: we read ?reserve= (e.g. IU08J). The API base is VITE_STAYS_BASE_URL (…/external/v1), not the site’s /i/… page.",
     "email": "Email",
     "password": "Password",
     "emailPlaceholder": "you@company.com",
     "passwordPlaceholder": "••••••••",
-    "guestPasswordPlaceholder": "Guest default password",
-    "guestPasswordHint": "Use the default password shared by the team (the same one used for automatic sign-up).",
     "forgotPassword": "Forgot password?",
     "submitGuest": "Sign in with reservation",
     "submitSignIn": "Sign in",
     "submitSignUp": "Create account and sign in",
-    "errorReservationRequired": "Please enter the reservation number.",
+    "errorReservationRequired": "Please enter the Stays reservation access code.",
     "errorEmailRequired": "Please enter your email.",
     "errorPasswordRequired": "Please enter your password.",
     "errorPasswordLength": "Password must be at least 6 characters.",
@@ -72,6 +72,10 @@
     "ctaService": "Request a service",
     "cardCheckin": "Check-in",
     "cardCheckinMeta": "Check-in time: {{time}}",
+    "cardCheckout": "Check-out",
+    "cardCheckoutMeta": "Check-out time: {{time}}",
+    "cardParty": "Guests",
+    "cardPropertyAddress": "Address",
     "cardWifi": "Wi‑Fi",
     "cardWifiMeta": "Password: {{password}}",
     "cardAccess": "Access",
@@ -88,8 +92,8 @@
     "title": "Your reservation",
     "lead": "Address, unit, dates, Wi‑Fi and access instructions — everything you need for your stay.",
     "sectionStay": "Stay",
-    "cardCode": "Reservation code",
-    "cardCodeMeta": "Have it ready if you contact support",
+    "cardCode": "Access code (Stays)",
+    "cardCodeMeta": "Same id/access code you used to sign in to the app (Stays back office).",
     "cardProperty": "Property",
     "cardAddress": "Address",
     "cardCheckIn": "Check-in",
@@ -103,7 +107,20 @@
     "sectionSummary": "Quick summary",
     "summaryPeriod": "Period",
     "summaryProperty": "Property",
-    "summaryUnit": "Unit"
+    "summaryUnit": "Unit",
+    "summaryPrice": "Booking value",
+    "summaryParty": "Guests",
+    "sectionPropertyDesc": "About the property",
+    "cardDescription": "Description",
+    "sectionBooking": "Booking & group",
+    "cardParty": "Guests",
+    "cardTotal": "Total amount",
+    "cardSubtype": "Type",
+    "cardDoor": "Door / lock code",
+    "cardGarage": "Parking spot",
+    "partyAdults": "{{count}} adult(s)",
+    "partyChildren": "{{count}} child(ren)",
+    "partyInfants": "{{count}} infant(s)"
   },
   "aboutProperty": {
     "title": "About the Apartment",
@@ -245,14 +262,14 @@
       "completed": "Completed"
     },
     "guests": {
-      "colReservation": "Reservation Number",
+      "colReservation": "Code (Stays)",
       "colCheckIn": "Check-in",
       "colCheckOut": "Check-out",
       "colStatus": "Status"
     },
     "create": {
-      "reservationCode": "Reservation Number",
-      "reservationPlaceholder": "Ex: ZEN-2026-9001",
+      "reservationCode": "Access code (Stays)",
+      "reservationPlaceholder": "e.g. IZ07J",
       "startDate": "Start Date",
       "endDate": "End Date",
       "submit": "Generate Access",
@@ -274,9 +291,12 @@
   "servicesPage": {
     "title": "Services",
     "lead": "Request services during your stay. Your history is saved to your account.",
+    "leadAdmin": "Create, edit, and remove catalog items. Guests see this list in the guest app and place requests there.",
     "sectionCatalog": "Request a service",
     "sectionHistory": "Your service requests",
     "sectionHistoryLead": "Each request and its current status.",
+    "sectionHistoryLeadAdmin": "All requests from all guests (updates in real time).",
+    "unknownService": "Service (catalog changed or removed)",
     "listAria": "Available services",
     "historyAria": "Requests table: service, status and date",
     "colService": "Service",
@@ -302,29 +322,34 @@
     "completedBadge": "Completed",
     "deleteRequest": "Delete request",
     "errorListen": "Could not load history. Check your connection and Firestore rules.",
+    "errorCatalogListen": "Could not load the catalog. Check your connection and Firestore rules.",
     "errorCreate": "Could not submit the request. Please try again.",
     "errorUpdate": "Could not mark as complete. Please try again.",
     "errorDelete": "Could not delete the request. Please try again.",
     "notInformed": "not informed",
     "whatsappMessage": "Hello, I am at {{property}} and would like to request {{service}} for {{price}}. My name is {{name}} and my reservation code is {{reservationCode}}.",
     "hint": "Requests are stored in the serviceRequests collection, linked to your account.",
-    "items": {
-      "cleaning": {
-        "title": "Extra Cleaning",
-        "description": "Additional cleaning service to keep the property tidy during your stay."
-      },
-      "linen": {
-        "title": "Linen Change",
-        "description": "Fresh bed and bath linens for extra comfort."
-      },
-      "maintenance": {
-        "title": "Item Restocking",
-        "description": "Restock essential items such as paper goods, soap, water and amenities."
-      },
-      "concierge": {
-        "title": "Laundry Form",
-        "description": "Laundry service request with a dedicated laundry form."
-      }
+    "admin": {
+      "sectionManage": "Service catalog (guests use this list to place requests)",
+      "hint": "To add: fill in name, description, and price. To edit or remove: use the buttons on each item.",
+      "fieldName": "Name",
+      "fieldDescription": "Description",
+      "fieldPrice": "Price (BRL)",
+      "pricePlaceholder": "e.g. 150.00",
+      "add": "Add service",
+      "save": "Save changes",
+      "edit": "Edit",
+      "remove": "Remove",
+      "cancelEdit": "Cancel edit",
+      "editing": "Editing: {{name}}",
+      "listAria": "Current catalog items",
+      "catalogLoading": "Loading catalog…",
+      "catalogEmpty": "The catalog is empty. Add the first service above.",
+      "errorNameRequired": "Enter a service name.",
+      "errorSave": "Could not save. Check your connection and try again.",
+      "errorPermission": "No admin permission in Firestore. Sign out, sign in again, and ensure users/{uid} has role \"admin\".",
+      "errorDelete": "Could not remove the item.",
+      "confirmDeleteOffer": "Remove this service from the catalog? (Existing requests in history keep the name stored on the request.)"
     }
   },
   "placeholders": {

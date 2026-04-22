@@ -8,11 +8,16 @@ import {
   type User,
 } from 'firebase/auth'
 import { isStayAccessActive } from '../lib/auth'
+import { parseStaysReservationUserInput } from '../lib/staysReservationInput'
 import type { AppUser } from '../types/user'
 import type { FirestoreUserDocument } from '../types/firestoreUser'
 import { getFirebaseAuth, isFirebaseConfigured } from '../lib/firebase'
 import { StaysApiError } from './staysClient'
-import { fetchGuestProfileFromStays, fetchReservation } from './staysService'
+import {
+  fetchGuestProfileFromStays,
+  fetchReservation,
+  normalizeStaysReservationId,
+} from './staysService'
 import {
   ensureGuestProfileDocument,
   fetchUserProfileFromFirestore,
@@ -152,8 +157,8 @@ async function buildAppUser(u: User, profile: FirestoreUserDocument | null): Pro
 }
 
 export function reservationCodeToGuestEmail(reservationCode: string): string {
-  const normalized = reservationCode.trim().toUpperCase()
-  const local = normalized.replace(/[^A-Z0-9]/g, '')
+  const normalized = normalizeStaysReservationId(reservationCode)
+  const local = normalized.replace(/[^A-Za-z0-9]/g, '')
   if (!local) {
     throw new Error('auth/invalid-reservation-format')
   }
@@ -233,7 +238,11 @@ export async function loginWithStaysReservation(
     throw new Error('guest/wrong-default-password')
   }
 
-  const normalized = reservationCode.trim().toUpperCase()
+  const parsed = parseStaysReservationUserInput(reservationCode)
+  const normalized = normalizeStaysReservationId(parsed)
+  if (!normalized) {
+    throw new Error('auth/invalid-reservation-format')
+  }
 
   let booking: StaysBooking
   try {
@@ -243,7 +252,7 @@ export async function loginWithStaysReservation(
       throw e
     }
     if (e instanceof StaysApiError) {
-      throw new Error('reservation/not-found')
+      throw e
     }
     throw e
   }
@@ -359,6 +368,12 @@ export function firebaseErrorToMessage(code: string): string {
     'auth/invalid-reservation-format': 'Código da reserva inválido.',
     'reservation/not-found':
       'Reserva não encontrada na Stays. Confira o código e tente novamente.',
+    'stays/unauthorized':
+      'Não autorizado (401) na Stays. Verifique VITE_STAYS_LOGIN (client id), VITE_STAYS_PASSWORD (client secret) e a URL …/external/v1, sem espaços no .env; reinicie o npm run dev após alterar.',
+    'stays/forbidden': 'Acesso negado à API Stays para esta operação.',
+    'stays/network': 'Falha de rede ao contatar a Stays. Tente de novo.',
+    'stays/server-error': 'Serviço Stays indisponível. Tente mais tarde.',
+    'stays/invalid-id': 'Código de reserva em branco.',
     'stays/not-configured':
       'Integração Stays não configurada. Defina VITE_STAYS_* no ambiente.',
     'stays/reservation-canceled': 'Esta reserva está cancelada e não pode ser acessada.',
