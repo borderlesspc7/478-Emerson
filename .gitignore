@@ -14,3 +14,4 @@ dist
 .env.production.local
 .cursor
 .vercel
+.respostaStays.txt

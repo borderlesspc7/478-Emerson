@@ -132,6 +132,14 @@
       "faq": "FAQ"
     },
     "listingDescription": "Property description",
+    "guestDesc": {
+      "propertyIntro": "The property",
+      "legalNotice": "Legal information",
+      "reservationAndParking": "Booking, times & parking",
+      "documents": "Registration & documents",
+      "apartmentDetails": "Apartment details",
+      "generalGuidelines": "General guidelines"
+    },
     "howToArrive": "How to arrive",
     "openMaps": "Open in Maps",
     "howToAccess": "How to access",

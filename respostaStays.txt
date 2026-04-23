@@ -1,0 +1,873 @@
+{
+    "oQueE": "booking = reserva; listing = ficha do imóvel (content/listings); houseRules = regras do imóvel; extraServices = extras da reserva. Valores null = não pedido, erro ou inexistente.",
+    "codigoReserva": "IZ07J",
+    "listingIdNaReserva": "684053411a95007d4c339bed",
+    "rotas": {
+        "reserva": "GET …/external/v1/booking/reservations/IZ07J",
+        "imovel": "GET …/external/v1/content/listings/684053411a95007d4c339bed",
+        "regrasCasa": "GET …/external/v1/settings/listing/WS01I/house-rules",
+        "extrasReserva": "GET …/external/v1/booking/reservations/IZ07J/extra-services"
+    },
+    "booking": {
+        "_id": "69e2e400013f79875137a205",
+        "id": "IZ07J",
+        "creationDate": "2026-04-18",
+        "creationTime": "01:53",
+        "creationDateTime": "2026-04-18T01:53:04.347Z",
+        "checkInDate": "2026-04-19",
+        "checkInTime": "15:00",
+        "checkOutDate": "2026-05-04",
+        "checkOutTime": "11:00",
+        "_idlisting": "684053411a95007d4c339bed",
+        "_idclient": "69e2e400013f79875137a170",
+        "type": "booked",
+        "operator": {
+            "_id": "6209fcc2bb5757405c727b94",
+            "name": "StaysBot"
+        },
+        "agent": {
+            "_id": "59f9cc3b85309100109faee3",
+            "name": "Emerson Fontanella"
+        },
+        "price": {
+            "currency": "BRL",
+            "_f_expected": 3246.56,
+            "_f_total": 3441.56,
+            "hostingDetails": {
+                "fees": [
+                    {
+                        "name": "Additional Guests Fee",
+                        "_f_val": 750
+                    }
+                ],
+                "discounts": [],
+                "_f_nightPrice": 2496.56,
+                "_f_total": 3246.56
+            },
+            "extrasDetails": {
+                "fees": [
+                    {
+                        "name": "Taxa de Limpeza",
+                        "_f_val": 195,
+                        "_idfee": "57a31968b9b1fb291f3bcc1b"
+                    }
+                ],
+                "extraServices": [],
+                "discounts": [],
+                "_f_total": 195
+            }
+        },
+        "stats": {
+            "_f_totalPaid": 3441.56
+        },
+        "guests": 3,
+        "guestsDetails": {
+            "adults": 3,
+            "children": 0,
+            "infants": 0,
+            "list": [
+                {
+                    "type": "adult",
+                    "name": "Sandro Araujo",
+                    "_idcontact": "69e2e400013f79875137a170",
+                    "phones": [
+                        {
+                            "iso": "+5519998801429",
+                            "hint": "external"
+                        }
+                    ],
+                    "primary": true
+                },
+                {
+                    "type": "adult",
+                    "name": "adult_1"
+                },
+                {
+                    "type": "adult",
+                    "name": "adult_2"
+                }
+            ]
+        },
+        "partner": {
+            "_id": "5d1b5c5ec62b271c78796473",
+            "name": "API airbnb",
+            "commission": {
+                "type": "fixed",
+                "_mcval": {
+                    "BRL": 626.81
+                }
+            }
+        },
+        "partnerCode": "HMJ2ZTXSCJ",
+        "reservationUrl": "https://bsc.stays.com.br/i/account-overview/69e2e400013f79875137a170?reserve=IZ07J",
+        "_idthread": "69e2d53ce8ca65c32ff3d55e"
+    },
+    "listing": {
+        "_id": "684053411a95007d4c339bed",
+        "id": "WS01I",
+        "_idpropertyType": "5ae04e1022261d03ab814d61",
+        "_t_propertyTypeMeta": {
+            "_mstitle": {
+                "pt_BR": "Apartamento",
+                "en_US": "Apartment",
+                "es_ES": "Departamento",
+                "de_DE": "Ferienwohnung",
+                "ru_RU": "",
+                "sv_SE": "",
+                "it_IT": "",
+                "fr_FR": "",
+                "pt_PT": "Apartamento",
+                "el_GR": ""
+            }
+        },
+        "_idtype": "5ab8f8a2f6b2dc2e97f97050",
+        "_t_typeMeta": {
+            "_mstitle": {
+                "pt_BR": "Apartamento",
+                "en_US": "Apartment",
+                "de_DE": "Ferienwohnung",
+                "es_ES": "Departamento",
+                "ru_RU": "",
+                "sv_SE": "",
+                "it_IT": "",
+                "fr_FR": "",
+                "pt_PT": "Apartamento",
+                "el_GR": ""
+            }
+        },
+        "subtype": "entire_home",
+        "internalName": "dn-11 - GRG 01",
+        "_mstitle": {
+            "pt_BR": "dn11 - Aconchego e silêncio, a 11km do aeroporto"
+        },
+        "_msdesc": {
+            "pt_BR": "<p>Apto 45m - Bairro calmo e arborizado, em pequeno condomínio Residencial e familiar</p><p>11km do Aeroporto de Curitiba</p><p> </p><p>- 1 vaga de garagem<br>- Sofá-cama<br>- Quarto com varanda e vista do bairro<br>- Airfryer<br>- SmarTV 52\"<br>- Máquina de lavar<br>- Wi-fi<br>- Bairro residencial, arborizado e tranquilo<br>- Ventilador no apartamento</p><p>ATENÇÃO: O acesso ao apartamento possui escadas, 20 degraus.</p><p> </p><p> </p><p> </p><p> </p><br><p>IMÓVEL PARA FINS DE LOCAÇÃO RESIDENCIAL POR TEMPORADA, DE 01 A 90 DIAS, EM ACORDO COM A LEI 8.245/91, ART 48, E DEMAIS ARTIGOS. NÃO OFERECEMOS SERVIÇOS DE FLATS E HOTELARIA. </p><p> </p><p>A locação de curta temporada é uma experiência inesquecível. Você loca nosso apartamento em um condomínio residencial, onde disponibilizamos nossa casa para que você possa se sentir à vontade em Curitiba.</p><p>Para que sua experiência seja maravilhosa e sem contratempos, algumas regras da casa e do condomínio precisam ser seguidas, assim como é para todos os moradores.</p><p>Por esse motivo é importante a leitura do anuncio com carinho e atenção. Nos dedicamos para sermos o mais transparentes e detalhistas nas informações, pois assim prevenimos qualquer desconforto e garantimos a segurança dos nossos hóspedes durante sua experiência em nosso apartamento.</p><p>Pedimos zelo e carinho com nossa casa. Toda ajuda será sempre bem vinda, deixar a louça limpa, economizar energia e manter o ambiente organizado, nos ajuda bastante e agradecemos profundamente.</p><p>Seja bem vindo, será uma honra ter você como nosso hóspede.</p><p>DETALHES DA RESERVA:</p><p>1 - CHECK-IN: a partir das 15:00 - (24h)<br>Antecipação de entrada somente se previamente combinado, e mediante disponibilidade do apartamento.</p><p>CHECK-OUT: até as 11:00<br>Não será permitido alteração no horário de check-out. Se necessário, para seu conforto, altere a data de saída para o dia seguinte..</p><p>2 - VAGA DE GARAGEM</p><p>Somente para carro de pequeno e médio porte. Em frente ao prédio é permitido estacionar com carros maiores.</p><p>Observe, nas fotos do anuncio, as medidas da VAGA DE GARAGEM. Caso seu carro ultrapasse as medidas, e prejudique o trânsito dos demais veículos, será necessário a retirada do seu veículo das garagens do condomínio. A vaga de garagem é para veículo de pequeno e médio porte. </p><p>Obs.: É expressamente proibido o uso das vaga de garagem de outros moradores. Aplicação de multa imediata. Seu veículo deve ficar dentro da demarcação da faixa amarela da sua vaga.</p><p>3 - CADASTRO E ENVIO DOS DOCUMENTO - OBRIGATÓRIO PARA TODOS OS HÓSPEDES</p><p>É obrigatório o envio da foto de um documentos com foto (RG ou CNH), de todos os hóspede que ficarão no apartamento. Para estrangeiros obrigatório envio da foto do passaporte. </p><p>Não será permitida a estadia de menores de idade desacompanhados dos pais, ou responsável legalmente constituído.</p><p>Ao fazer a reserva coloque corretamente o número de pessoas que ficarão no apartamento.</p><p>Obs.: Somente será feito o cadastro dos inquilinos temporários constantes na reserva e com envio prévio da foto do documento.</p><p>DETALHES DO APARTAMENTO</p><p>COZINHA:<br>Tipo americana, bancada com 4 banquetas para refeições, fogão Cooktop elétrico com 2 bocas, geladeira, Airfryer, micro-ondas, forno elétrico, cafeteira elétrica tradicional, liquidificador, chaleira elétrica, sanduicheira, panela de pressão, panelas, copos, taças, xícaras, utensílios de cozinha, louças e talheres.</p><p>OBS.: Não disponibilizamos consumíveis de cozinha (Sal, óleo, pimenta, café, filtro, etc). Caso encontre no apartamento, deixado pelo hóspede anterior, pode usar normalmente.</p><p>SUÍTE/BANHEIRO/VARANDA:<br>Cama de casal, guarda roupas, cabides, cobertores e travesseiros, blackout na porta balcão, e uma varanda com vista do bairro. Tudo meticulosamente decorado, com muito conforto. BANHEIRO: Chuveiro elétrico, secador de cabelos, espelho e Amenities de hotelaria (sabonete, shampoo, etc). VARANDA: Com uma maravilhosa vista do bairro e da frente do condomínio. <br><br>SALA:<br>Sofá-cama, Smart Tv 48\", Wi-fi 150mb fibra ótica da vivo, lindamente decorada, proporcionando uma ambiente relaxante e confortável.</p><p>ORIENTAÇÕES GERAIS: </p><p>- O apartamento é entregue com rouparia de cama e banho, preparado de acordo com o numero de hóspedes, inclusive mantas e cobertores, e também Amenities de hotelaria (shampoo, sabonete, condicionado, papel higiênico, etc). </p><p>- ROUPARIA DE CAMA/BANHO e AMENITIES: Durante a estadia, não fazemos troca de rouparia ou substituição de Amenities. Pode ser solicitado rouparia extra ou limpeza no apartamento, durante a estadia, mas haverá cobrança de taxa adicional. </p><p>- MAQUIAGEM: Não limpe maquiagem, ou sangue e nem utilize a rouparia de cama e banho como pano de chão, é extremamente deselegante e nos causa muito prejuízo. Agradecemos todo carinho e atenção que tiver com nosso apartamento. </p><p>- MENORES DE IDADE E TERCEIROS: NÃO aceitamos reservas para terceiros. Antes de fazer uma reserva para outra pessoa, entre em contato conosco para verificarmos a possibilidade e autorizar. Menores de idade somente se acompanhado dos pais ou responsável legal com comprovação. </p><p>- Pet's: Não aceitamos pet no apartamento. </p><p>- A Best Stay não administra as áreas do condomínio e também não tem autonomia sobre as mesmas. Apenas seguimos todas as regras da administração, que valem também para todos os moradores. Não nos responsabilizamos pelo funcionamento e manutenção das áreas sociais, que estão sujeitas a paradas e fechamentos para manutenção, sem aviso prévio. </p><p>- Não locamos o apartamento para Festas e Eventos.</p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p>"
+        },
+        "_mshouserules": {
+            "pt_BR": "<p>IMÓVEL PARA FINS DE LOCAÇÃO RESIDENCIAL POR TEMPORADA, EM ACORDO COM A LEI 8.245/91, ART 48, E DEMAIS ARTIGOS, NÃO OFERECEMOS SERVIÇOS DE FLATS E HOTELARIA </p><p>- CHECK-IN: a partir das 15:00 (portaria 24 horas) - CHECK-OUT: até as 11:00<br>Alteração nos horários de entrada e saída, somente se previamente combinado e mediante disponibilidade do apartamento.</p><p>REGRAS DO CONDOMÍNIO:<br>- Condomínio Residencial: Silêncio após as 22:00<br>- Proibido fumar em qualquer dependência do condomínio e no apartamento.<br>- Ao fazer sua reserva coloque corretamente o numero de hóspedes, inclusive crianças de 2 a 12 anos, e bebês de 0 a 2 anos.</p><p>Numero de hóspedes pode alterar os valores das diárias. Crianças acima de 2 anos são consideradas hóspedes. Hóspede não cadastrados não terão a entrada liberada no condomínio. </p><p>- É obrigatório o envio da foto dos documentos de todos que ficarão hospedados no apartamento, para cadastro prévio na administração e liberação de entrada.<br>- Não é permitido hospedar MENORES de idade desacompanhados dos pais, ou responsável legal devidamente comprovado.</p><p>VISITANTES:<br>Limitadas a no máximo 2 pessoas por dia, até as 22:00, não podendo ultrapassar o número de ocupação máxima do apartamento (contando com os hóspedes). Não é permitido receber visitantes para festa e eventos no apartamento.<br>- Todo visitante deve ser devidamente cadastrado com envio prévio da documentação para o anfitrião, sob pena de não ser liberada a entrada na portaria.<br>- Não é permitido visitante pernoitar no apartamento.<br>- Não é permitido visitante fazer uso ou circular pela área social do condomínio.</p><p>REGRAS DA CASA:<br>- O apartamento é entregue com rouparia de cama e banho, mas não fazemos substituições durante período da estadia. Você pode solicitar faxina e rouparia extra, com custo adicional. Entre em contato com o anfitrião.<br>- Problemas com o apartamento e sua estadia, o ANFITRIÃO deve ser comunicado imediatamente para a devida solução.<br>- Não é permitido festas ou eventos. O apartamento é locado exclusivamente para uso residencial.<br>- Não é permitido FUMAR no apartamento.<br>- Manter silêncio após ás 22:00, até as 8h.<br>- Cuide com carinho de nossa casa, e informe qualquer dano para que possamos reparar e não prejudicar o próximo hóspede.<br>- Ao sair ou passear pela cidade, cuide para fechar as janelas, para evitar entrada de chuva e insetos.<br>- PROIBIDO acender velas, ou qualquer tipo de chama viva no apartamento. é Proibido e pode causar acidentes.<br>- PET - Não é permitido animais no apartamento.</p><p>- CHECK-OUT:<br>Por gentileza, recolha seu lixo e deixe sua louça lavada na pia. Isso nos ajuda a manter um custo baixo com a faxina e preparar o apartamento mais rapidamente para o próximo hóspede. Depósitos de lixo fica na rua, em frente ao prédio.</p><p>REGRAS GERAIS: </p><p>- Devido a grande rotatividade do imóvel, não nos responsabilizamos por pertences pessoais deixados no apartamento. Todos objetos, se encontrados, deverão ser retirados em nosso escritório e permanecerão guardados por 90 dias. </p><p>- Durante sua estadia, oferecemos suporte 24h para emergências. </p><p>- Todo dano causado ao imóvel, utensílios, móveis, objetos e rouparia de cama e banho, deverá ser ressarcido. No caso de constatação de danos no Check-out informaremos imediatamente o hóspede. No caso de não ressarcimento a Best Stay emitirá boleto com os custos de mercado, para o responsável pela locação. </p><p>TERMOS E POLÍTICA DE CANCELAMENTO Leia atentamente os termos de política de cancelamento do anúncio com carinho, pois será com base nesses termos que trataremos um possível cancelamento.</p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p>"
+        },
+        "_mssummary": {
+            "pt_BR": "<p>Apto 45m - Bairro calmo e arborizado, em pequeno condomínio Residencial e familiar</p><p>11km do Aeroporto de Curitiba</p><p> </p><p>- 1 vaga de garagem<br>- Sofá-cama<br>- Quarto com varanda e vista do bairro<br>- Airfryer<br>- SmarTV 52\"<br>- Máquina de lavar<br>- Wi-fi<br>- Bairro residencial, arborizado e tranquilo<br>- Ventilador no apartamento</p><p>ATENÇÃO: O acesso ao apartamento possui escadas, 20 degraus.</p><p> </p><p> </p><p> </p><p> </p>"
+        },
+        "_msnotes": {
+            "pt_BR": "<p>IMÓVEL PARA FINS DE LOCAÇÃO RESIDENCIAL POR TEMPORADA, DE 01 A 90 DIAS, EM ACORDO COM A LEI 8.245/91, ART 48, E DEMAIS ARTIGOS. NÃO OFERECEMOS SERVIÇOS DE FLATS E HOTELARIA. </p><p> </p><p>A locação de curta temporada é uma experiência inesquecível. Você loca nosso apartamento em um condomínio residencial, onde disponibilizamos nossa casa para que você possa se sentir à vontade em Curitiba.</p><p>Para que sua experiência seja maravilhosa e sem contratempos, algumas regras da casa e do condomínio precisam ser seguidas, assim como é para todos os moradores.</p><p>Por esse motivo é importante a leitura do anuncio com carinho e atenção. Nos dedicamos para sermos o mais transparentes e detalhistas nas informações, pois assim prevenimos qualquer desconforto e garantimos a segurança dos nossos hóspedes durante sua experiência em nosso apartamento.</p><p>Pedimos zelo e carinho com nossa casa. Toda ajuda será sempre bem vinda, deixar a louça limpa, economizar energia e manter o ambiente organizado, nos ajuda bastante e agradecemos profundamente.</p><p>Seja bem vindo, será uma honra ter você como nosso hóspede.</p><p>DETALHES DA RESERVA:</p><p>1 - CHECK-IN: a partir das 15:00 - (24h)<br>Antecipação de entrada somente se previamente combinado, e mediante disponibilidade do apartamento.</p><p>CHECK-OUT: até as 11:00<br>Não será permitido alteração no horário de check-out. Se necessário, para seu conforto, altere a data de saída para o dia seguinte..</p><p>2 - VAGA DE GARAGEM</p><p>Somente para carro de pequeno e médio porte. Em frente ao prédio é permitido estacionar com carros maiores.</p><p>Observe, nas fotos do anuncio, as medidas da VAGA DE GARAGEM. Caso seu carro ultrapasse as medidas, e prejudique o trânsito dos demais veículos, será necessário a retirada do seu veículo das garagens do condomínio. A vaga de garagem é para veículo de pequeno e médio porte. </p><p>Obs.: É expressamente proibido o uso das vaga de garagem de outros moradores. Aplicação de multa imediata. Seu veículo deve ficar dentro da demarcação da faixa amarela da sua vaga.</p><p>3 - CADASTRO E ENVIO DOS DOCUMENTO - OBRIGATÓRIO PARA TODOS OS HÓSPEDES</p><p>É obrigatório o envio da foto de um documentos com foto (RG ou CNH), de todos os hóspede que ficarão no apartamento. Para estrangeiros obrigatório envio da foto do passaporte. </p><p>Não será permitida a estadia de menores de idade desacompanhados dos pais, ou responsável legalmente constituído.</p><p>Ao fazer a reserva coloque corretamente o número de pessoas que ficarão no apartamento.</p><p>Obs.: Somente será feito o cadastro dos inquilinos temporários constantes na reserva e com envio prévio da foto do documento.</p><p>DETALHES DO APARTAMENTO</p><p>COZINHA:<br>Tipo americana, bancada com 4 banquetas para refeições, fogão Cooktop elétrico com 2 bocas, geladeira, Airfryer, micro-ondas, forno elétrico, cafeteira elétrica tradicional, liquidificador, chaleira elétrica, sanduicheira, panela de pressão, panelas, copos, taças, xícaras, utensílios de cozinha, louças e talheres.</p><p>OBS.: Não disponibilizamos consumíveis de cozinha (Sal, óleo, pimenta, café, filtro, etc). Caso encontre no apartamento, deixado pelo hóspede anterior, pode usar normalmente.</p><p>SUÍTE/BANHEIRO/VARANDA:<br>Cama de casal, guarda roupas, cabides, cobertores e travesseiros, blackout na porta balcão, e uma varanda com vista do bairro. Tudo meticulosamente decorado, com muito conforto. BANHEIRO: Chuveiro elétrico, secador de cabelos, espelho e Amenities de hotelaria (sabonete, shampoo, etc). VARANDA: Com uma maravilhosa vista do bairro e da frente do condomínio. <br><br>SALA:<br>Sofá-cama, Smart Tv 48\", Wi-fi 150mb fibra ótica da vivo, lindamente decorada, proporcionando uma ambiente relaxante e confortável.</p><p>ORIENTAÇÕES GERAIS: </p><p>- O apartamento é entregue com rouparia de cama e banho, preparado de acordo com o numero de hóspedes, inclusive mantas e cobertores, e também Amenities de hotelaria (shampoo, sabonete, condicionado, papel higiênico, etc). </p><p>- ROUPARIA DE CAMA/BANHO e AMENITIES: Durante a estadia, não fazemos troca de rouparia ou substituição de Amenities. Pode ser solicitado rouparia extra ou limpeza no apartamento, durante a estadia, mas haverá cobrança de taxa adicional. </p><p>- MAQUIAGEM: Não limpe maquiagem, ou sangue e nem utilize a rouparia de cama e banho como pano de chão, é extremamente deselegante e nos causa muito prejuízo. Agradecemos todo carinho e atenção que tiver com nosso apartamento. </p><p>- MENORES DE IDADE E TERCEIROS: NÃO aceitamos reservas para terceiros. Antes de fazer uma reserva para outra pessoa, entre em contato conosco para verificarmos a possibilidade e autorizar. Menores de idade somente se acompanhado dos pais ou responsável legal com comprovação. </p><p>- Pet's: Não aceitamos pet no apartamento. </p><p>- A Best Stay não administra as áreas do condomínio e também não tem autonomia sobre as mesmas. Apenas seguimos todas as regras da administração, que valem também para todos os moradores. Não nos responsabilizamos pelo funcionamento e manutenção das áreas sociais, que estão sujeitas a paradas e fechamentos para manutenção, sem aviso prévio. </p><p>- Não locamos o apartamento para Festas e Eventos.</p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p>"
+        },
+        "status": "hidden",
+        "_i_maxGuests": 4,
+        "_i_rooms": 1,
+        "_i_beds": 2,
+        "_f_bathrooms": 2,
+        "address": {
+            "countryCode": "BR",
+            "stateCode": "PR",
+            "city": "Curitiba",
+            "region": "Boqueirão",
+            "street": "Rua Professora Maria Assunção",
+            "streetNumber": "3756",
+            "zip": "81670-040"
+        },
+        "latLng": {
+            "_f_lat": -25.5031676,
+            "_f_lng": -49.24103059999999
+        },
+        "amenities": [
+            {
+                "_id": "667085c9289db083b0c3177b"
+            },
+            {
+                "_id": "5dd2b0c318f1235ba2e4166b"
+            },
+            {
+                "_id": "667085c7289db083b0c3166e"
+            },
+            {
+                "_id": "667085c7289db083b0c31658"
+            },
+            {
+                "_id": "667085c8289db083b0c316db"
+            },
+            {
+                "_id": "667085c8289db083b0c316de"
+            },
+            {
+                "_id": "5dd3f06b18f1235ba2e4562a"
+            },
+            {
+                "_id": "667085c8289db083b0c316bf"
+            },
+            {
+                "_id": "58931d64e1875b6163592c8e"
+            },
+            {
+                "_id": "5c670ee90041e93d24aed7de"
+            },
+            {
+                "_id": "58931d13e1875b6163592c86"
+            },
+            {
+                "_id": "5c670f2f0041e93d24aed7f9"
+            },
+            {
+                "_id": "68ffaf2ef459892bb18f035f"
+            },
+            {
+                "_id": "58931d1be1875b6163592c87"
+            },
+            {
+                "_id": "6851a9f45beb3e55da45c0b7"
+            },
+            {
+                "_id": "5b56626ae930685fbb5c999c"
+            },
+            {
+                "_id": "667085c9289db083b0c31763"
+            },
+            {
+                "_id": "667085c8289db083b0c316b0"
+            },
+            {
+                "_id": "68ffb085f459892bb18f044a"
+            },
+            {
+                "_id": "5b5660cbe930685fbb5c994c"
+            },
+            {
+                "_id": "5fca7475343d583511171fa3"
+            },
+            {
+                "_id": "5c670f680041e93d24aed808"
+            },
+            {
+                "_id": "5b5a24c22ea4e54ba6c98aaf"
+            },
+            {
+                "_id": "5fe0a3d70a533c0b28424329"
+            },
+            {
+                "_id": "667085c9289db083b0c3175a"
+            },
+            {
+                "_id": "5dd2952233c44e4a1ac41ac6"
+            },
+            {
+                "_id": "5c670ff40041e93d24aed82c"
+            },
+            {
+                "_id": "667085c7289db083b0c31671"
+            },
+            {
+                "_id": "5b5a24742ea4e54ba6c98aa0"
+            },
+            {
+                "_id": "667085c9289db083b0c31766"
+            },
+            {
+                "_id": "667085c8289db083b0c316f0"
+            },
+            {
+                "_id": "68ffaf60bd921827923ceaba"
+            },
+            {
+                "_id": "667085c7289db083b0c3160d"
+            },
+            {
+                "_id": "667085c7289db083b0c31628"
+            },
+            {
+                "_id": "667085c7289db083b0c31680"
+            },
+            {
+                "_id": "667085c7289db083b0c31686"
+            },
+            {
+                "_id": "58931b3fe1875b6163592c6f"
+            },
+            {
+                "_id": "667085c9289db083b0c31799"
+            },
+            {
+                "_id": "58931d48e1875b6163592c8b"
+            },
+            {
+                "_id": "68ffac71bd921827923ce915"
+            },
+            {
+                "_id": "667085c7289db083b0c31625"
+            },
+            {
+                "_id": "67c9af870759eec02bbb310c"
+            },
+            {
+                "_id": "58931b86e1875b6163592c74"
+            },
+            {
+                "_id": "58931c96e1875b6163592c7a"
+            },
+            {
+                "_id": "667085c7289db083b0c315ce"
+            },
+            {
+                "_id": "68ffaaccbd921827923ce891"
+            },
+            {
+                "_id": "667085c8289db083b0c316cb"
+            },
+            {
+                "_id": "58931cd4e1875b6163592c7f"
+            },
+            {
+                "_id": "5c67106c0041e93d24aed846"
+            },
+            {
+                "_id": "5c67113f0041e93d24aed879"
+            },
+            {
+                "_id": "68ffaa29bd921827923ce851"
+            },
+            {
+                "_id": "667085c7289db083b0c315e9"
+            },
+            {
+                "_id": "5dd3fe2433c44e4a1ac4730a"
+            },
+            {
+                "_id": "58931d21e1875b6163592c88"
+            },
+            {
+                "_id": "5dd3f23533c44e4a1ac470ca"
+            },
+            {
+                "_id": "58931d0be1875b6163592c85"
+            },
+            {
+                "_id": "5ef2472479f27f154439157a"
+            },
+            {
+                "_id": "58931d4fe1875b6163592c8c"
+            },
+            {
+                "_id": "667085c7289db083b0c31619"
+            },
+            {
+                "_id": "5b5a0aaa2ea4e54ba6c9849e"
+            },
+            {
+                "_id": "5ef23edc4af79610ab2a60e4"
+            },
+            {
+                "_id": "5ef23ddb79f27f154439132a"
+            },
+            {
+                "_id": "5dd831f2df0ef970305c034d"
+            },
+            {
+                "_id": "5dd8341616ebfe321496c025"
+            },
+            {
+                "_id": "667085c9289db083b0c317a2"
+            },
+            {
+                "_id": "5af17a33c62b27316d3b5579"
+            },
+            {
+                "_id": "5aded91022261d4730423b2a"
+            }
+        ],
+        "propertyAmenities": [
+            {
+                "_id": "5dd2b13f18f1235ba2e4167e"
+            },
+            {
+                "_id": "5dd29e0333c44e4a1ac41c20"
+            },
+            {
+                "_id": "5ae18b0122261d76530cc189"
+            },
+            {
+                "_id": "5dd2afc733c44e4a1ac42103"
+            },
+            {
+                "_id": "5dd3ee7233c44e4a1ac46ff8"
+            },
+            {
+                "_id": "5ae18b0122261d76530cc1a3"
+            },
+            {
+                "_id": "5dd3f7c333c44e4a1ac4720f"
+            },
+            {
+                "_id": "5ae18b0122261d76530cc183"
+            },
+            {
+                "_id": "5e84c8609076621391fad0b6"
+            },
+            {
+                "_id": "5e822d444028a8c5f197b3c2"
+            },
+            {
+                "_id": "5ae18b0122261d76530cc177"
+            }
+        ],
+        "deff_curr": "BRL",
+        "_f_square": 45,
+        "_idmainImage": "69ac2cd24a5b786c350e9edf",
+        "_t_mainImageMeta": {
+            "url": "https://bsc.stays.com.br/image/69ac2cd24a5b786c350e9edf"
+        },
+        "images": [
+            {
+                "_id": "684059b0e1eac9f1f568b66c"
+            },
+            {
+                "_id": "684059afb8f7ede66f5f206e"
+            },
+            {
+                "_id": "684059258d0ca7b9815bdc1c"
+            },
+            {
+                "_id": "684059a95f9265936bbbbf0d"
+            },
+            {
+                "_id": "68405925a8ad2fb039b65e31"
+            },
+            {
+                "_id": "684059a9e2c9ae0670821670"
+            },
+            {
+                "_id": "684059a9a709fcf9f00b5d38"
+            },
+            {
+                "_id": "684060e37526ff83a46378dd"
+            },
+            {
+                "_id": "684060e57fd5364e8e110cc0"
+            },
+            {
+                "_id": "684060e4bb0f4b734bb2b00a"
+            },
+            {
+                "_id": "684060e56ba526bac5564993"
+            },
+            {
+                "_id": "684060e655199c6168d01e4f"
+            },
+            {
+                "_id": "684060eaa709fcf9f00c410f"
+            },
+            {
+                "_id": "684060e9f198ef5a687c8c1d"
+            },
+            {
+                "_id": "684060ea0607df90911ccf30"
+            }
+        ],
+        "_t_imagesMeta": [
+            {
+                "_id": "69ac2cd24a5b786c350e9edf",
+                "url": "https://bsc.stays.com.br/image/69ac2cd24a5b786c350e9edf",
+                "area": "main"
+            },
+            {
+                "_id": "69ac2cd299c8df349e4b857d",
+                "url": "https://bsc.stays.com.br/image/69ac2cd299c8df349e4b857d",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2cd29d1eafcf4f599cb8",
+                "url": "https://bsc.stays.com.br/image/69ac2cd29d1eafcf4f599cb8",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2cd2266a5473f11b8bc6",
+                "url": "https://bsc.stays.com.br/image/69ac2cd2266a5473f11b8bc6",
+                "area": "room"
+            },
+            {
+                "_id": "69ac29914a5b786c350de58c",
+                "url": "https://bsc.stays.com.br/image/69ac29914a5b786c350de58c",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2991136e0d20f387d26f",
+                "url": "https://bsc.stays.com.br/image/69ac2991136e0d20f387d26f",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2991f2c15f54ce40af70",
+                "url": "https://bsc.stays.com.br/image/69ac2991f2c15f54ce40af70",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c35d6143363d75c3ce8",
+                "url": "https://bsc.stays.com.br/image/69ac2c35d6143363d75c3ce8",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c354638629ae939ed9c",
+                "url": "https://bsc.stays.com.br/image/69ac2c354638629ae939ed9c",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c36266a5473f11b873d",
+                "url": "https://bsc.stays.com.br/image/69ac2c36266a5473f11b873d",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c36a60caa36f0516ed5",
+                "url": "https://bsc.stays.com.br/image/69ac2c36a60caa36f0516ed5",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c369d1eafcf4f5993c7",
+                "url": "https://bsc.stays.com.br/image/69ac2c369d1eafcf4f5993c7",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c36d0c48fa245155852",
+                "url": "https://bsc.stays.com.br/image/69ac2c36d0c48fa245155852",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c3617188c641e3e5f30",
+                "url": "https://bsc.stays.com.br/image/69ac2c3617188c641e3e5f30",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c36a60caa36f0516ed9",
+                "url": "https://bsc.stays.com.br/image/69ac2c36a60caa36f0516ed9",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c3699c8df349e4b7e05",
+                "url": "https://bsc.stays.com.br/image/69ac2c3699c8df349e4b7e05",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c36bc3b0c1fc991619a",
+                "url": "https://bsc.stays.com.br/image/69ac2c36bc3b0c1fc991619a",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c36f2c15f54ce410e61",
+                "url": "https://bsc.stays.com.br/image/69ac2c36f2c15f54ce410e61",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c3713ba9175a7af2615",
+                "url": "https://bsc.stays.com.br/image/69ac2c3713ba9175a7af2615",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c364638629ae939edac",
+                "url": "https://bsc.stays.com.br/image/69ac2c364638629ae939edac",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c364638629ae939eda8",
+                "url": "https://bsc.stays.com.br/image/69ac2c364638629ae939eda8",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c36d0c48fa24515585c",
+                "url": "https://bsc.stays.com.br/image/69ac2c36d0c48fa24515585c",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c37de86185581e78e31",
+                "url": "https://bsc.stays.com.br/image/69ac2c37de86185581e78e31",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c384959b275ec7fb5e9",
+                "url": "https://bsc.stays.com.br/image/69ac2c384959b275ec7fb5e9",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c3757223fbdb00c13be",
+                "url": "https://bsc.stays.com.br/image/69ac2c3757223fbdb00c13be",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2c37a23a8c08f9a3a5c8",
+                "url": "https://bsc.stays.com.br/image/69ac2c37a23a8c08f9a3a5c8",
+                "area": "room"
+            },
+            {
+                "_id": "68405eae7526ff83a463547a",
+                "url": "https://bsc.stays.com.br/image/68405eae7526ff83a463547a",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2ad2d0bb9226350348f8",
+                "url": "https://bsc.stays.com.br/image/69ac2ad2d0bb9226350348f8",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2ad22eb0a7d6f40a1116",
+                "url": "https://bsc.stays.com.br/image/69ac2ad22eb0a7d6f40a1116",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2ad2bc3b0c1fc99155e8",
+                "url": "https://bsc.stays.com.br/image/69ac2ad2bc3b0c1fc99155e8",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2ad2f7ea624bc65fc37e",
+                "url": "https://bsc.stays.com.br/image/69ac2ad2f7ea624bc65fc37e",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2ad3b928aae8446208b0",
+                "url": "https://bsc.stays.com.br/image/69ac2ad3b928aae8446208b0",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2ad34638629ae939cd77",
+                "url": "https://bsc.stays.com.br/image/69ac2ad34638629ae939cd77",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2ad2136e0d20f387fd9d",
+                "url": "https://bsc.stays.com.br/image/69ac2ad2136e0d20f387fd9d",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2ad305313e2f7e1c4c93",
+                "url": "https://bsc.stays.com.br/image/69ac2ad305313e2f7e1c4c93",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2ad299c8df349e4b795f",
+                "url": "https://bsc.stays.com.br/image/69ac2ad299c8df349e4b795f",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2ad2602f5cb74db3bc2d",
+                "url": "https://bsc.stays.com.br/image/69ac2ad2602f5cb74db3bc2d",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2ad34638629ae939cd78",
+                "url": "https://bsc.stays.com.br/image/69ac2ad34638629ae939cd78",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2ad3bc3b0c1fc99155ef",
+                "url": "https://bsc.stays.com.br/image/69ac2ad3bc3b0c1fc99155ef",
+                "area": "room"
+            },
+            {
+                "_id": "68405d8b5f9265936bbc28b5",
+                "url": "https://bsc.stays.com.br/image/68405d8b5f9265936bbc28b5",
+                "area": "room"
+            },
+            {
+                "_id": "68405ff4a709fcf9f00c32e1",
+                "url": "https://bsc.stays.com.br/image/68405ff4a709fcf9f00c32e1",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2b6fbc3b0c1fc9915bab",
+                "url": "https://bsc.stays.com.br/image/69ac2b6fbc3b0c1fc9915bab",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2b6fd6143363d75c33ba",
+                "url": "https://bsc.stays.com.br/image/69ac2b6fd6143363d75c33ba",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2b6f20a8899e70aa601e",
+                "url": "https://bsc.stays.com.br/image/69ac2b6f20a8899e70aa601e",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2b6fbc3b0c1fc9915baf",
+                "url": "https://bsc.stays.com.br/image/69ac2b6fbc3b0c1fc9915baf",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2b6fefb522e9a6e08f59",
+                "url": "https://bsc.stays.com.br/image/69ac2b6fefb522e9a6e08f59",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2b6f602f5cb74db3bed8",
+                "url": "https://bsc.stays.com.br/image/69ac2b6f602f5cb74db3bed8",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2b6fb928aae844621243",
+                "url": "https://bsc.stays.com.br/image/69ac2b6fb928aae844621243",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2eb3fbbdfcad20d8c19f",
+                "url": "https://bsc.stays.com.br/image/69ac2eb3fbbdfcad20d8c19f",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2eb3de86185581e7dbde",
+                "url": "https://bsc.stays.com.br/image/69ac2eb3de86185581e7dbde",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2eb505313e2f7e1c73e9",
+                "url": "https://bsc.stays.com.br/image/69ac2eb505313e2f7e1c73e9",
+                "area": "room"
+            },
+            {
+                "_id": "69ac2eb4ae58cec60345af0b",
+                "url": "https://bsc.stays.com.br/image/69ac2eb4ae58cec60345af0b",
+                "area": "room"
+            },
+            {
+                "_id": "684059b0e1eac9f1f568b66c",
+                "url": "https://bsc.stays.com.br/image/684059b0e1eac9f1f568b66c",
+                "area": "surrounding"
+            },
+            {
+                "_id": "684059afb8f7ede66f5f206e",
+                "url": "https://bsc.stays.com.br/image/684059afb8f7ede66f5f206e",
+                "area": "surrounding"
+            },
+            {
+                "_id": "684059258d0ca7b9815bdc1c",
+                "url": "https://bsc.stays.com.br/image/684059258d0ca7b9815bdc1c",
+                "area": "surrounding"
+            },
+            {
+                "_id": "684059a95f9265936bbbbf0d",
+                "url": "https://bsc.stays.com.br/image/684059a95f9265936bbbbf0d",
+                "area": "surrounding"
+            },
+            {
+                "_id": "68405925a8ad2fb039b65e31",
+                "url": "https://bsc.stays.com.br/image/68405925a8ad2fb039b65e31",
+                "area": "surrounding"
+            },
+            {
+                "_id": "684059a9e2c9ae0670821670",
+                "url": "https://bsc.stays.com.br/image/684059a9e2c9ae0670821670",
+                "area": "surrounding"
+            },
+            {
+                "_id": "684059a9a709fcf9f00b5d38",
+                "url": "https://bsc.stays.com.br/image/684059a9a709fcf9f00b5d38",
+                "area": "surrounding"
+            },
+            {
+                "_id": "684060e37526ff83a46378dd",
+                "url": "https://bsc.stays.com.br/image/684060e37526ff83a46378dd",
+                "area": "surrounding"
+            },
+            {
+                "_id": "684060e57fd5364e8e110cc0",
+                "url": "https://bsc.stays.com.br/image/684060e57fd5364e8e110cc0",
+                "area": "surrounding"
+            },
+            {
+                "_id": "684060e4bb0f4b734bb2b00a",
+                "url": "https://bsc.stays.com.br/image/684060e4bb0f4b734bb2b00a",
+                "area": "surrounding"
+            },
+            {
+                "_id": "684060e56ba526bac5564993",
+                "url": "https://bsc.stays.com.br/image/684060e56ba526bac5564993",
+                "area": "surrounding"
+            },
+            {
+                "_id": "684060e655199c6168d01e4f",
+                "url": "https://bsc.stays.com.br/image/684060e655199c6168d01e4f",
+                "area": "surrounding"
+            },
+            {
+                "_id": "684060eaa709fcf9f00c410f",
+                "url": "https://bsc.stays.com.br/image/684060eaa709fcf9f00c410f",
+                "area": "surrounding"
+            },
+            {
+                "_id": "684060e9f198ef5a687c8c1d",
+                "url": "https://bsc.stays.com.br/image/684060e9f198ef5a687c8c1d",
+                "area": "surrounding"
+            },
+            {
+                "_id": "684060ea0607df90911ccf30",
+                "url": "https://bsc.stays.com.br/image/684060ea0607df90911ccf30",
+                "area": "surrounding"
+            }
+        ],
+        "instantBooking": true,
+        "customFields": [
+            {
+                "id": 1098831365794,
+                "val": "AP07-5G"
+            },
+            {
+                "id": 602022226293,
+                "val": "Rns2023AP07"
+            },
+            {
+                "id": 1120820166166,
+                "val": "Administrador : 12 82 33 - Usuário ap 7 : 07 14 11 ✓ - SENHA PORTÃO EXTERNO: Senha + 1 79 97"
+            },
+            {
+                "id": 1138109115081,
+                "val": "Dona Neusa"
+            },
+            {
+                "id": 553810550667,
+                "val": ""
+            },
+            {
+                "id": 767649454813,
+                "val": ""
+            },
+            {
+                "id": 1331246504760,
+                "val": ""
+            },
+            {
+                "id": 379489922697,
+                "val": "07 14 11 ✓"
+            }
+        ],
+        "owner": {
+            "name": "Edson Luiz Queiroz"
+        },
+        "groupIds": [
+            "669e2ee262799db9b335c675"
+        ],
+        "otaChannels": [
+            {
+                "name": "Airbnb"
+            },
+            {
+                "name": "Bookingcom"
+            }
+        ],
+        "listingCategories": [
+            "vacationRental"
+        ]
+    },
+    "houseRules": {
+        "smokingAllowed": false,
+        "eventsAllowed": false,
+        "quietHours": true,
+        "kidsAllowed": true,
+        "babiesAllowed": true,
+        "quietHoursDetails": {
+            "_i_from": 22,
+            "_i_to": 8
+        },
+        "petsAllowed": "no",
+        "_i_kids": 0,
+        "_i_babies": 0,
+        "_i_babyCribs": 0,
+        "_mshouserules": {
+            "pt_BR": "<p>IMÓVEL PARA FINS DE LOCAÇÃO RESIDENCIAL POR TEMPORADA, EM ACORDO COM A LEI 8.245/91, ART 48, E DEMAIS ARTIGOS, NÃO OFERECEMOS SERVIÇOS DE FLATS E HOTELARIA </p><p>- CHECK-IN: a partir das 15:00 (portaria 24 horas) - CHECK-OUT: até as 11:00<br>Alteração nos horários de entrada e saída, somente se previamente combinado e mediante disponibilidade do apartamento.</p><p>REGRAS DO CONDOMÍNIO:<br>- Condomínio Residencial: Silêncio após as 22:00<br>- Proibido fumar em qualquer dependência do condomínio e no apartamento.<br>- Ao fazer sua reserva coloque corretamente o numero de hóspedes, inclusive crianças de 2 a 12 anos, e bebês de 0 a 2 anos.</p><p>Numero de hóspedes pode alterar os valores das diárias. Crianças acima de 2 anos são consideradas hóspedes. Hóspede não cadastrados não terão a entrada liberada no condomínio. </p><p>- É obrigatório o envio da foto dos documentos de todos que ficarão hospedados no apartamento, para cadastro prévio na administração e liberação de entrada.<br>- Não é permitido hospedar MENORES de idade desacompanhados dos pais, ou responsável legal devidamente comprovado.</p><p>VISITANTES:<br>Limitadas a no máximo 2 pessoas por dia, até as 22:00, não podendo ultrapassar o número de ocupação máxima do apartamento (contando com os hóspedes). Não é permitido receber visitantes para festa e eventos no apartamento.<br>- Todo visitante deve ser devidamente cadastrado com envio prévio da documentação para o anfitrião, sob pena de não ser liberada a entrada na portaria.<br>- Não é permitido visitante pernoitar no apartamento.<br>- Não é permitido visitante fazer uso ou circular pela área social do condomínio.</p><p>REGRAS DA CASA:<br>- O apartamento é entregue com rouparia de cama e banho, mas não fazemos substituições durante período da estadia. Você pode solicitar faxina e rouparia extra, com custo adicional. Entre em contato com o anfitrião.<br>- Problemas com o apartamento e sua estadia, o ANFITRIÃO deve ser comunicado imediatamente para a devida solução.<br>- Não é permitido festas ou eventos. O apartamento é locado exclusivamente para uso residencial.<br>- Não é permitido FUMAR no apartamento.<br>- Manter silêncio após ás 22:00, até as 8h.<br>- Cuide com carinho de nossa casa, e informe qualquer dano para que possamos reparar e não prejudicar o próximo hóspede.<br>- Ao sair ou passear pela cidade, cuide para fechar as janelas, para evitar entrada de chuva e insetos.<br>- PROIBIDO acender velas, ou qualquer tipo de chama viva no apartamento. é Proibido e pode causar acidentes.<br>- PET - Não é permitido animais no apartamento.</p><p>- CHECK-OUT:<br>Por gentileza, recolha seu lixo e deixe sua louça lavada na pia. Isso nos ajuda a manter um custo baixo com a faxina e preparar o apartamento mais rapidamente para o próximo hóspede. Depósitos de lixo fica na rua, em frente ao prédio.</p><p>REGRAS GERAIS: </p><p>- Devido a grande rotatividade do imóvel, não nos responsabilizamos por pertences pessoais deixados no apartamento. Todos objetos, se encontrados, deverão ser retirados em nosso escritório e permanecerão guardados por 90 dias. </p><p>- Durante sua estadia, oferecemos suporte 24h para emergências. </p><p>- Todo dano causado ao imóvel, utensílios, móveis, objetos e rouparia de cama e banho, deverá ser ressarcido. No caso de constatação de danos no Check-out informaremos imediatamente o hóspede. No caso de não ressarcimento a Best Stay emitirá boleto com os custos de mercado, para o responsável pela locação. </p><p>TERMOS E POLÍTICA DE CANCELAMENTO Leia atentamente os termos de política de cancelamento do anúncio com carinho, pois será com base nesses termos que trataremos um possível cancelamento.</p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p><p> </p>"
+        }
+    },
+    "extraServices": []
+}

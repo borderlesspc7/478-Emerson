@@ -122,6 +122,7 @@ export function AboutPropertyPage() {
                   description={property.description}
                   fallbackTitleKey="common.descriptionBlockTitle"
                   cardClassName="guest-content__card page-about-property__span-2"
+                  structuredGuestDescription
                 />
               </>
             ) : null}
