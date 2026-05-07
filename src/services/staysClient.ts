@@ -1,6 +1,5 @@
 import axios, { AxiosError, type AxiosInstance } from 'axios'
 import {
-  buildBasicAuthorizationHeader,
   getStaysEnv,
   type StaysCredentials,
 } from './staysEnv'
@@ -104,7 +103,7 @@ let singleton: AxiosInstance | null = null
 let lastCredsKey: string | null = null
 
 function credsKey(c: StaysCredentials): string {
-  return JSON.stringify([c.baseUrl, c.login, c.password])
+  return JSON.stringify([c.baseUrl, c.authHeader ?? null])
 }
 
 export function getStaysAxios(): AxiosInstance | null {
@@ -128,14 +127,18 @@ export function resetStaysAxiosForTests(): void {
 }
 
 function createStaysAxiosInstance(creds: StaysCredentials): AxiosInstance {
-  const authHeader = buildBasicAuthorizationHeader(creds.login, creds.password)
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    Accept: 'application/json',
+  }
+  if (creds.authHeader) {
+    headers.Authorization = creds.authHeader
+  }
 
   const instance = axios.create({
     baseURL: `${creds.baseUrl}/`,
     headers: {
-      Authorization: authHeader,
-      'Content-Type': 'application/json',
-      Accept: 'application/json',
+      ...headers,
     },
     timeout: 25_000,
   })

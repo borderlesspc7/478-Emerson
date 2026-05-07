@@ -1,13 +1,13 @@
 export type StaysCredentials = {
   baseUrl: string
-  login: string
-  password: string
+  authHeader?: string
 }
 
 /**
  * Lê credenciais da API Stays via variáveis Vite (nunca fixas no código-fonte).
  */
 const STAYS_DEV_PREFIX_DEFAULT = '/__stays'
+const STAYS_PROD_PREFIX_DEFAULT = '/api/stays'
 
 /**
  * No browser, chamadas directas a `https://...stays.com.br/external/...` falham
@@ -15,6 +15,9 @@ const STAYS_DEV_PREFIX_DEFAULT = '/__stays'
  * o proxy do Vite: mesma origem com prefixo `VITE_STAYS_DEV_PREFIX` (defeito
  * /__stays) → o servidor encaminha para a URL real. Em `build` o proxy não existe
  * (usar função/Cloud proxy ou o que a Stays permitir). Desligar: VITE_STAYS_NO_DEV_PROXY=1
+ *
+ * Em produção, por padrão usamos um proxy na mesma origem (`/api/stays`) para
+ * evitar CORS e não expor credenciais no bundle. Desligar: VITE_STAYS_NO_PROD_PROXY=1
  */
 function resolveStaysBaseUrl(raw: string): string {
   const trimmed = String(raw).trim().replace(/\/+$/, '')
@@ -25,6 +28,13 @@ function resolveStaysBaseUrl(raw: string): string {
       STAYS_DEV_PREFIX_DEFAULT
     return p.startsWith('/') ? p : `/${p}`
   }
+  const noProdProxy = import.meta.env.VITE_STAYS_NO_PROD_PROXY === '1'
+  if (import.meta.env.PROD && !noProdProxy) {
+    const p =
+      (import.meta.env.VITE_STAYS_PROD_PREFIX as string | undefined)?.trim() ||
+      STAYS_PROD_PREFIX_DEFAULT
+    return p.startsWith('/') ? p : `/${p}`
+  }
   return trimmed
 }
 
@@ -33,14 +43,22 @@ export function getStaysEnv(): StaysCredentials | null {
   const login = import.meta.env.VITE_STAYS_LOGIN
   const password = import.meta.env.VITE_STAYS_PASSWORD
 
-  if (!rawBase || !login || !password) return null
+  if (!rawBase) return null
 
   // trim: espaços no .env (ex. após o =) quebram o Basic Auth e dão 401
   const baseUrl = resolveStaysBaseUrl(String(rawBase).trim().replace(/\/+$/, ''))
+  const usingProxy =
+    baseUrl.startsWith('/') || baseUrl.startsWith('http://localhost') || baseUrl.startsWith('https://localhost')
+
+  // Em proxy (dev/prod), a auth fica no servidor — não exigir credenciais no cliente.
+  if (usingProxy) {
+    return { baseUrl }
+  }
+
+  if (!login || !password) return null
   return {
     baseUrl,
-    login: String(login).trim(),
-    password: String(password).trim(),
+    authHeader: buildBasicAuthorizationHeader(String(login).trim(), String(password).trim()),
   }
 }
 
