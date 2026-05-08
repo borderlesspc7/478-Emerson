@@ -50,8 +50,19 @@ export function getStaysEnv(): StaysCredentials | null {
   const usingProxy =
     baseUrl.startsWith('/') || baseUrl.startsWith('http://localhost') || baseUrl.startsWith('https://localhost')
 
-  // Em proxy (dev/prod), a auth fica no servidor — não exigir credenciais no cliente.
+  /**
+   * Em proxy:
+   * - DEV (/__stays): o Vite só reencaminha e não acrescenta headers → precisamos enviar Basic Auth.
+   * - PROD (/api/stays): a Netlify Function injeta a auth no servidor → não exigir credenciais no cliente.
+   */
   if (usingProxy) {
+    if (import.meta.env.DEV) {
+      if (!login || !password) return null
+      return {
+        baseUrl,
+        authHeader: buildBasicAuthorizationHeader(String(login).trim(), String(password).trim()),
+      }
+    }
     return { baseUrl }
   }
 

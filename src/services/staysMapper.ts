@@ -164,18 +164,59 @@ function harvestWifiFromCustomFields(
   if (!Array.isArray(fields)) return null
   let ssid = ''
   let password = ''
+
+  const customValues: string[] = []
+  const byId = new Map<string, string>()
+
   for (const raw of fields) {
     if (!raw || typeof raw !== 'object') continue
     const o = raw as Record<string, unknown>
-    const key = String(
-      o.internalName ?? o.label ?? o.name ?? o._mslabel ?? o.fieldName ?? ''
-    ).toLowerCase()
-    const val = o.value ?? o._f_value ?? o.text ?? o.stringValue
-    const str = typeof val === 'string' ? val : val != null ? String(val) : ''
+    const key = String(o.internalName ?? o.label ?? o.name ?? o._mslabel ?? o.fieldName ?? '').toLowerCase()
+
+    // A Stays pode devolver `customFields` como [{ id, val }] (sem labels).
+    const rawId = o.id
+    const rawVal = o.val ?? o.value ?? o._f_value ?? o.text ?? o.stringValue
+    const id = rawId != null ? String(rawId) : ''
+    const str = typeof rawVal === 'string' ? rawVal : rawVal != null ? String(rawVal) : ''
     if (!str.trim()) continue
+
+    customValues.push(str.trim())
+    if (id) byId.set(id, str.trim())
+
     if (/(wifi|wi-?fi|ssid|rede)/i.test(key)) ssid = str.trim()
     if (/(senha|password|pwd|pass)/i.test(key)) password = str.trim()
   }
+
+  // Fallback para ambientes sem labels: IDs conhecidos (SSID / senha).
+  // Ex.: respostaStays.txt mostra estes ids a serem usados para Wi‑Fi.
+  if (!ssid) {
+    ssid = byId.get('1098831365794') || ''
+  }
+  if (!password) {
+    password = byId.get('602022226293') || ''
+  }
+
+  // Fallback heurístico: tenta inferir SSID/senha a partir dos valores.
+  if (!ssid || !password) {
+    const candidates = customValues
+      .map((v) => v.trim())
+      .filter(Boolean)
+      .filter((v) => v.length <= 64)
+      .filter((v) => !/\s{2,}/.test(v))
+
+    const looksLikeSsid = (v: string) =>
+      /(?:wifi|wi-?fi|5g|2\.4)/i.test(v) || (/-/.test(v) && /^[A-Za-z0-9._-]+$/.test(v))
+    const looksLikePassword = (v: string) =>
+      /^[A-Za-z0-9!@#$%^&*()_+\-=[\]{};':",.<>/?\\|]{6,64}$/.test(v) && !looksLikeSsid(v)
+
+    if (!ssid) {
+      ssid = candidates.find(looksLikeSsid) || ''
+    }
+    if (!password) {
+      password = candidates.find(looksLikePassword) || ''
+    }
+  }
+
   if (ssid || password) {
     return { ssid: ssid || '—', password: password || '—' }
   }
@@ -271,6 +312,18 @@ export function mapStaysToGuestStayBundle(
     descCommercial,
     pickLocalized(listing?._msdesc),
     instructionsJoined,
+    // Ajuda a extrair Wi‑Fi/códigos quando `customFields` vêm como { id, val }.
+    ...(Array.isArray(listing?.customFields)
+      ? listing!.customFields
+          .map((raw) => {
+            if (!raw || typeof raw !== 'object') return ''
+            const o = raw as Record<string, unknown>
+            const val = o.val ?? o.value ?? o.text ?? o.stringValue
+            const str = typeof val === 'string' ? val : val != null ? String(val) : ''
+            return str.trim()
+          })
+          .filter(Boolean)
+      : []),
   ].join('\n')
 
   const doorFromBlob = extractDoorPasswordFromBlob(blobForExtras)
