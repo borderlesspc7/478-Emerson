@@ -29,16 +29,35 @@ export function AppLayout() {
     }
   }, [isDesktop])
 
+  const { pathname } = location
   const title = useMemo(() => {
+    const adminBase = PATHS.admin
+    if (pathname === adminBase || pathname.startsWith(`${adminBase}/`)) {
+      if (pathname === PATHS.adminOrders) {
+        return t('adminOrders.title')
+      }
+      if (pathname === PATHS.adminProperties) {
+        return t('adminProperties.title')
+      }
+      if (pathname.startsWith(`${PATHS.adminProperties}/`)) {
+        return t('adminPropertyEdit.pageTitle')
+      }
+      if (pathname === PATHS.adminAccess) {
+        return t('adminAccess.title')
+      }
+      return t('nav.admin')
+    }
     const map: Record<string, string> = {
       [PATHS.dashboard]: t('nav.overview'),
-      [PATHS.admin]: t('nav.admin'),
       [PATHS.reservation]: t('nav.reservation'),
+      [PATHS.aboutProperty]: t('nav.aboutProperty'),
+      [PATHS.interests]: t('nav.interests'),
+      [PATHS.extras]: t('nav.extras'),
       [PATHS.services]: t('nav.services'),
       [PATHS.settings]: t('nav.settings'),
     }
-    return map[location.pathname] ?? t('layout.panel')
-  }, [location.pathname, t])
+    return map[pathname] ?? t('layout.panel')
+  }, [pathname, t])
 
   const userLabel =
     user?.displayName?.trim() ||

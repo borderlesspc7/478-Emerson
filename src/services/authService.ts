@@ -23,10 +23,14 @@ import {
   fetchUserProfileFromFirestore,
   syncUserProfileToFirestore,
 } from './userProfileFirestore'
+import { getGuestAccessLink } from './guestAccessLinkFirestore'
+import { getPropertyCuration } from './propertyCurationFirestore'
 import {
   mapStaysToGuestStayBundle,
+  mergeGuestStayWithZenCuration,
   pickPrimaryStaysGuest,
   serviceOffersForGuest,
+  toStayCheckOutIso,
   toStayIso,
 } from './staysMapper'
 import type { StaysBooking } from '../types/staysApi'
@@ -79,6 +83,22 @@ async function fetchUserProfileWithGuestRetry(
   return profile
 }
 
+async function applyZenGuestCuration(
+  stay: import('../types/guestStay').GuestStay,
+  reservationCode: string
+): Promise<import('../types/guestStay').GuestStay> {
+  try {
+    const link = await getGuestAccessLink(reservationCode)
+    if (!link?.accessActive) return stay
+    const curation = await getPropertyCuration(link.propertyId)
+    return mergeGuestStayWithZenCuration(stay, curation, {
+      accessActive: link.accessActive,
+    })
+  } catch {
+    return stay
+  }
+}
+
 /**
  * Monta `AppUser` completo para hóspede (Stays + extras).
  */
@@ -90,6 +110,7 @@ async function enrichGuestAppUser(
   const base = mapUser(u, profile)
   try {
     const bundle = await fetchGuestProfileFromStays(reservationCode)
+    const guestStay = await applyZenGuestCuration(bundle.guestStay, reservationCode)
     const displayName =
       bundle.primaryGuest?.name?.trim() ||
       profile?.displayName ||
@@ -102,18 +123,19 @@ async function enrichGuestAppUser(
       email: u.email,
       reservationCode,
       stay: {
-        checkInAt: bundle.guestStay.checkInAt,
-        checkOutAt: bundle.guestStay.checkOutAt,
-        propertyName: bundle.guestStay.property.name,
-        unit: bundle.guestStay.property.unit,
+        checkInAt: guestStay.checkInAt,
+        checkOutAt: guestStay.checkOutAt,
+        propertyName: guestStay.property.name,
+        unit: guestStay.property.unit,
       },
-      guestStay: bundle.guestStay,
+      guestStay,
       serviceOffers: bundle.serviceOffers,
     }
   } catch {
     try {
       const booking = await fetchReservation(reservationCode)
       const mini = mapStaysToGuestStayBundle(reservationCode, booking, null, null)
+      const guestStay = await applyZenGuestCuration(mini.guestStay, reservationCode)
       const primary = pickPrimaryStaysGuest(booking)
       return {
         ...base,
@@ -121,27 +143,28 @@ async function enrichGuestAppUser(
         displayName: primary?.name ?? profile?.displayName ?? `Hóspede ${reservationCode}`,
         reservationCode,
         stay: {
-          checkInAt: mini.guestStay.checkInAt,
-          checkOutAt: mini.guestStay.checkOutAt,
-          propertyName: mini.guestStay.property.name,
-          unit: mini.guestStay.property.unit,
+          checkInAt: guestStay.checkInAt,
+          checkOutAt: guestStay.checkOutAt,
+          propertyName: guestStay.property.name,
+          unit: guestStay.property.unit,
         },
-        guestStay: mini.guestStay,
+        guestStay,
         serviceOffers: serviceOffersForGuest([]),
       }
     } catch {
       const mini = mapStaysToGuestStayBundle(reservationCode, { id: reservationCode }, null, null)
+      const guestStay = await applyZenGuestCuration(mini.guestStay, reservationCode)
       return {
         ...base,
         role: 'guest',
         reservationCode,
         stay: {
-          checkInAt: mini.guestStay.checkInAt,
-          checkOutAt: mini.guestStay.checkOutAt,
-          propertyName: mini.guestStay.property.name,
-          unit: mini.guestStay.property.unit,
+          checkInAt: guestStay.checkInAt,
+          checkOutAt: guestStay.checkOutAt,
+          propertyName: guestStay.property.name,
+          unit: guestStay.property.unit,
         },
-        guestStay: mini.guestStay,
+        guestStay,
         serviceOffers: serviceOffersForGuest([]),
       }
     }
@@ -262,7 +285,7 @@ export async function loginWithStaysReservation(
   }
 
   const checkInAt = toStayIso(booking.checkInDate, booking.checkInTime, false)
-  const checkOutAt = toStayIso(booking.checkOutDate, booking.checkOutTime, true)
+  const checkOutAt = toStayCheckOutIso(booking.checkOutDate, booking.checkOutTime)
 
   if (!isStayAccessActive({ checkInAt, checkOutAt })) {
     throw new Error('stay/access-expired')

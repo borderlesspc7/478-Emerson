@@ -20,6 +20,18 @@ service cloud.firestore {
       allow create, update, delete: if isAdmin();
     }
 
+    // Curadoria de imóveis (fotos / textos manuais), chave = propertyId Stays
+    match /propertyCurations/{propertyId} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // Vínculo manual reserva → imóvel (prioridade no Guia Zen)
+    match /guestAccessLinks/{reservationCode} {
+      allow read: if request.auth != null;
+      allow create, update, delete: if isAdmin();
+    }
+
     // Pedidos de serviço: o dono vê o seu; admin vê e gere todos
     match /serviceRequests/{requestId} {
       allow read: if request.auth != null

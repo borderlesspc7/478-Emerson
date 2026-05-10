@@ -3,15 +3,21 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { AppLayout } from '../components/Layout/Layout'
 import { LocaleSwitcher } from '../components/LocaleSwitcher/LocaleSwitcher'
 import { ThemeSwitcher } from '../components/ThemeSwitcher/ThemeSwitcher'
-import { AccessExpiredPage } from '../pages/AccessExpired/AccessExpiredPage'
 import { LoginPage } from '../pages/Login/Login'
 import { DashboardPage } from '../pages/Dashboard/DashboardPage'
-import { AdminDashboardPage } from '../pages/Admin/AdminDashboardPage'
+import { AdminLayout } from '../components/AdminLayout/AdminLayout'
+import { AdminOrdersPage } from '../pages/Admin/AdminOrdersPage'
+import { AdminPropertiesPage } from '../pages/Admin/AdminPropertiesPage'
+import { AdminPropertyEditPage } from '../pages/Admin/AdminPropertyEditPage'
+import { AdminAccessPage } from '../pages/Admin/AdminAccessPage'
 import { ReservationPage } from '../pages/Reservation/ReservationPage'
 import { AboutPropertyPage } from '../pages/AboutProperty/AboutPropertyPage'
 import { ServicesPage } from '../pages/Services/ServicesPage'
+import { InterestsPage } from '../pages/Interests/InterestsPage'
+import { ExtrasPage } from '../pages/Extras/ExtrasPage'
 import { PlaceholderPage } from '../pages/PlaceholderPage'
 import { PATHS } from './path'
+import { AccessExpiredGate } from './AccessExpiredGate'
 import { ProtectedRoute } from './ProtectedRoute'
 
 export function AppRoutes() {
@@ -20,13 +26,21 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path={PATHS.login} element={<LoginPage />} />
+      <Route path={PATHS.accessExpired} element={<AccessExpiredGate />} />
       <Route element={<ProtectedRoute />}>
-        <Route path={PATHS.accessExpired} element={<AccessExpiredPage />} />
         <Route element={<AppLayout />}>
           <Route path={PATHS.dashboard} element={<DashboardPage />} />
-          <Route path={PATHS.admin} element={<AdminDashboardPage />} />
+          <Route path={PATHS.admin} element={<AdminLayout />}>
+            <Route index element={<Navigate to={PATHS.adminOrders} replace />} />
+            <Route path="pedidos" element={<AdminOrdersPage />} />
+            <Route path="imoveis" element={<AdminPropertiesPage />} />
+            <Route path="imoveis/:propertyId" element={<AdminPropertyEditPage />} />
+            <Route path="acessos" element={<AdminAccessPage />} />
+          </Route>
           <Route path={PATHS.reservation} element={<ReservationPage />} />
           <Route path={PATHS.aboutProperty} element={<AboutPropertyPage />} />
+          <Route path={PATHS.interests} element={<InterestsPage />} />
+          <Route path={PATHS.extras} element={<ExtrasPage />} />
           <Route path={PATHS.services} element={<ServicesPage />} />
           <Route
             path={PATHS.settings}

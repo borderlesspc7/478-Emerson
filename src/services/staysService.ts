@@ -12,6 +12,11 @@ import {
   serviceOffersForGuest,
   type StaysGuestStayBundle,
 } from "./staysMapper";
+
+/**
+ * Campos adicionais (Wi‑Fi, andar, vaga) vêm do `mapStaysToGuestStayBundle` em `staysMapper.ts`
+ * (heurísticas sobre texto Stays). A validação de check-out em tempo real usa `user.stay` no cliente.
+ */
 const CACHE_TTL_MS = 60_000;
 
 const cache = new Map<string, { expiresAt: number; value: unknown }>();
@@ -19,7 +24,6 @@ const cache = new Map<string, { expiresAt: number; value: unknown }>();
 /** Apenas em dev — ajuda a mapear respostas da API Stays; evitar em produção (dados sensíveis). */
 function devLogStays(label: string, ...args: unknown[]) {
   if (import.meta.env.DEV) {
-    // eslint-disable-next-line no-console -- depuração intencional só em DEV
     console.log(`[Stays] ${label}`, ...args);
   }
 }
@@ -108,6 +112,34 @@ export async function fetchListingById(
       client.get<StaysPropertyListing>(path).then((r) => r.data),
     ),
   );
+}
+
+function coerceListingsPayload(data: unknown): StaysPropertyListing[] {
+  if (Array.isArray(data)) return data as StaysPropertyListing[];
+  if (data && typeof data === "object") {
+    const o = data as Record<string, unknown>;
+    for (const key of ["listings", "data", "items", "results"] as const) {
+      const v = o[key];
+      if (Array.isArray(v)) return v as StaysPropertyListing[];
+    }
+  }
+  return [];
+}
+
+/**
+ * Lista imóveis (quando a External API expõe GET …/content/listings).
+ * Se o endpoint não existir ou falhar, devolve [] — o admin pode registar por ID.
+ */
+export async function fetchListings(): Promise<StaysPropertyListing[]> {
+  const client = requireStaysAxios();
+  try {
+    const res = await withStaysRetry(() =>
+      client.get<unknown>("content/listings").then((r) => r.data),
+    );
+    return coerceListingsPayload(res);
+  } catch {
+    return [];
+  }
 }
 
 /**

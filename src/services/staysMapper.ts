@@ -1,5 +1,6 @@
 import { htmlToDescriptionPlainText } from '../lib/propertyDescriptionCards'
-import type { GuestStay, ServiceOffer } from '../types/guestStay'
+import type { GuestStay, GuestZenCurated, ServiceOffer } from '../types/guestStay'
+import type { PropertyCurationRecord } from '../types/propertyCuration'
 import type {
   StaysBooking,
   StaysExtraService,
@@ -46,6 +47,17 @@ export function toStayIso(date?: string, time?: string, endOfDay = false): strin
   const [hh, mm] = t.split(':').map((x) => parseInt(x, 10))
   const safeH = Number.isFinite(hh) ? hh : endOfDay ? 23 : 15
   const safeM = Number.isFinite(mm) ? mm : endOfDay ? 59 : 0
+  return `${d}T${String(safeH).padStart(2, '0')}:${String(safeM).padStart(2, '0')}:00${DEFAULT_TZ}`
+}
+
+/** Check-out: hora real da reserva; se ausente, assume 11:00 (padrão comum em hospedagem). */
+export function toStayCheckOutIso(date?: string, time?: string): string {
+  const d = date ?? new Date().toISOString().slice(0, 10)
+  let t = time?.trim()
+  if (!t) t = '11:00'
+  const [hh, mm] = t.split(':').map((x) => parseInt(x, 10))
+  const safeH = Number.isFinite(hh) ? hh : 11
+  const safeM = Number.isFinite(mm) ? mm : 0
   return `${d}T${String(safeH).padStart(2, '0')}:${String(safeM).padStart(2, '0')}:00${DEFAULT_TZ}`
 }
 
@@ -152,10 +164,105 @@ function extractDoorPasswordFromBlob(plain: string): string | null {
 }
 
 function extractGarageSpotFromBlob(plain: string): string | null {
-  const m = plain.match(
-    /(?:vaga|garagem|estacionamento|parking)\s*(?:n[ºo°.]?|de)?\s*[:：]?\s*([^\n.]+?)(?:\.|,|$)/i
-  )
-  return m?.[1]?.trim() ?? null
+  const patterns = [
+    /(?:vaga|garagem|box|estacionamento|parking)\s*(?:n[ºo°.]?|de)?\s*[:：]?\s*([^\n.]+?)(?:\.|,|$)/i,
+    /(?:vaga|garagem|box)\s+([0-9A-Za-z][^\n,.]{0,80})/i,
+  ]
+  for (const p of patterns) {
+    const m = plain.match(p)
+    if (m?.[1]) return m[1].trim().replace(/\s+/g, ' ')
+  }
+  return null
+}
+
+function extractFloorFromBlob(plain: string): string | null {
+  const m = plain.match(/(?:andar|pavimento)\s*[:：]?\s*([^\n,.;]+)/i)
+  return m?.[1]?.trim().replace(/\s+/g, ' ') ?? null
+}
+
+function isInfoPlaceholder(value: string | null | undefined): boolean {
+  if (value == null) return true
+  const t = value.trim()
+  return t === '' || t === '—' || t === '-'
+}
+
+/**
+ * Wi‑Fi a partir de texto corrido (descrição, regras, notas): "Rede:", "Senha:", "Wi-Fi:".
+ */
+function extractWifiFromLongText(plain: string): { ssid?: string; password?: string } {
+  const t = plain.replace(/\s+/g, ' ')
+  const out: { ssid?: string; password?: string } = {}
+
+  const ssidPatterns = [
+    /(?:wi-?fi|rede|ssid|nome\s+da\s+rede)\s*[:：]\s*([^|;\n]+?)(?=\s+(?:senha|password|pwd|pass)\s*[:：]|$)/i,
+    /(?:wi-?fi|rede)\s*[:：]\s*([^\s,;|]+)/i,
+  ]
+  for (const p of ssidPatterns) {
+    const m = t.match(p)
+    if (m?.[1]) {
+      const v = m[1].trim().replace(/[.,;:)]+$/, '')
+      if (v.length > 0) {
+        out.ssid = v
+        break
+      }
+    }
+  }
+
+  const passPatterns = [
+    /(?:senha|password|pwd|pass)\s*(?:do\s+wi-?fi|da\s+rede|wi-?fi)?\s*[:：]\s*([^|;\n]+?)(?=\s+(?:rede|ssid|wi-?fi)\s*[:：]|$)/i,
+    /(?:senha|password)\s*[:：]\s*([^\s,;|]+)/i,
+  ]
+  for (const p of passPatterns) {
+    const m = t.match(p)
+    if (m?.[1]) {
+      const v = m[1].trim().replace(/[.,;:)]+$/, '')
+      if (v.length > 0) {
+        out.password = v
+        break
+      }
+    }
+  }
+
+  return out
+}
+
+function applyStaysHeuristicFallbacks(stay: GuestStay, megaPlain: string): GuestStay {
+  const blob = megaPlain.replace(/\s+/g, ' ')
+  let { wifi, access, property } = stay
+
+  if (isInfoPlaceholder(wifi.ssid) || isInfoPlaceholder(wifi.password)) {
+    const fromLong = extractWifiFromLongText(blob)
+    const fromLegacy = tryParseWifiFromBlob(blob)
+    const nextSsid =
+      !isInfoPlaceholder(fromLong.ssid) ? fromLong.ssid : fromLegacy?.ssid
+    const nextPass =
+      !isInfoPlaceholder(fromLong.password) ? fromLong.password : fromLegacy?.password
+    wifi = {
+      ssid: !isInfoPlaceholder(nextSsid) ? nextSsid! : wifi.ssid,
+      password: !isInfoPlaceholder(nextPass) ? nextPass! : wifi.password,
+    }
+  }
+
+  if (!access.garageSpot?.trim()) {
+    const g = extractGarageSpotFromBlob(blob)
+    if (g) access = { ...access, garageSpot: g }
+  }
+
+  const floorMissing = isInfoPlaceholder(property.floor) && isInfoPlaceholder(access.floor)
+  if (floorMissing) {
+    const f = extractFloorFromBlob(blob)
+    if (f) {
+      property = { ...property, floor: f }
+      access = { ...access, floor: f }
+    }
+  }
+
+  if (!access.doorPassword?.trim()) {
+    const door = extractDoorPasswordFromBlob(blob)
+    if (door) access = { ...access, doorPassword: door }
+  }
+
+  return { ...stay, wifi, access, property }
 }
 
 function harvestWifiFromCustomFields(
@@ -310,7 +417,7 @@ export function mapStaysToGuestStayBundle(
     lmsAccess,
     lmsNotes,
     descCommercial,
-    pickLocalized(listing?._msdesc),
+    stripHtml(pickLocalized(listing?._msdesc)),
     instructionsJoined,
     // Ajuda a extrair Wi‑Fi/códigos quando `customFields` vêm como { id, val }.
     ...(Array.isArray(listing?.customFields)
@@ -325,6 +432,8 @@ export function mapStaysToGuestStayBundle(
           .filter(Boolean)
       : []),
   ].join('\n')
+
+  const megaPlain = [blobForExtras, houseRulesPlain, mssummary].filter(Boolean).join('\n')
 
   const doorFromBlob = extractDoorPasswordFromBlob(blobForExtras)
   const garageFromBlob = extractGarageSpotFromBlob(blobForExtras)
@@ -352,7 +461,7 @@ export function mapStaysToGuestStayBundle(
       description: descCommercial || null,
     },
     checkInAt: toStayIso(booking.checkInDate, booking.checkInTime, false),
-    checkOutAt: toStayIso(booking.checkOutDate, booking.checkOutTime, true),
+    checkOutAt: toStayCheckOutIso(booking.checkOutDate, booking.checkOutTime),
     wifi,
     access: {
       summary: summaryText,
@@ -366,9 +475,64 @@ export function mapStaysToGuestStayBundle(
     totalPrice: priceFromBooking(booking),
   }
 
-  return { guestStay, primaryGuest }
+  return {
+    guestStay: applyStaysHeuristicFallbacks(guestStay, megaPlain),
+    primaryGuest,
+  }
 }
 
 export function serviceOffersForGuest(extraServices: StaysExtraService[]): ServiceOffer[] {
   return mapExtraServicesToServiceOffers(extraServices)
+}
+
+/**
+ * Prioriza conteúdo curado no Guia Zen (fotos + notas) sobre heurísticas da Stays.
+ */
+export function mergeGuestStayWithZenCuration(
+  stay: GuestStay,
+  curation: PropertyCurationRecord | null,
+  options?: { accessActive?: boolean }
+): GuestStay {
+  if (options?.accessActive === false || !curation) {
+    return { ...stay, zenCurated: stay.zenCurated ?? null }
+  }
+
+  const zenCurated: GuestZenCurated = {
+    garageImageUrls: [...curation.garagePhotoUrls].filter(Boolean),
+    elevatorImageUrls: [...curation.elevatorPhotoUrls].filter(Boolean),
+    manualAccessNotes: curation.manualAccessTips?.trim() || null,
+    manualPropertyNotes: curation.manualPropertyTips?.trim() || null,
+  }
+
+  const hasExtras =
+    zenCurated.garageImageUrls.length > 0 ||
+    zenCurated.elevatorImageUrls.length > 0 ||
+    zenCurated.manualAccessNotes ||
+    zenCurated.manualPropertyNotes
+
+  if (!hasExtras) {
+    return { ...stay, zenCurated: null }
+  }
+
+  const block = [
+    zenCurated.manualAccessNotes
+      ? `Guia Zen — Acesso\n${zenCurated.manualAccessNotes}`
+      : null,
+    zenCurated.manualPropertyNotes
+      ? `Guia Zen — Imóvel\n${zenCurated.manualPropertyNotes}`
+      : null,
+  ]
+    .filter(Boolean)
+    .join('\n\n')
+
+  return {
+    ...stay,
+    zenCurated,
+    access: {
+      ...stay.access,
+      instructions: block
+        ? `${block}\n\n---\n\n${stay.access.instructions}`
+        : stay.access.instructions,
+    },
+  }
 }

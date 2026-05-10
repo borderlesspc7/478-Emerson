@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
+import { GuestStayExpiryMonitor } from '../components/GuestStayExpiryMonitor/GuestStayExpiryMonitor'
 import { isStayAccessActive } from '../lib/auth'
 import { useAuth } from '../hooks/useAuth'
 import { PATHS } from './path'
@@ -33,20 +34,17 @@ export function ProtectedRoute() {
   const stayBlocked =
     Boolean(stay) && hasStayWindow && !isStayAccessActive(stay!)
 
-  if (location.pathname === PATHS.accessExpired) {
-    if (!stayBlocked) {
-      return <Navigate to={PATHS.dashboard} replace />
-    }
-    return <Outlet />
-  }
-
-  if (stayBlocked) {
-    return <Navigate to={PATHS.accessExpired} replace />
-  }
-
-  if (user.role === 'guest' && location.pathname === PATHS.admin) {
+  const isAdminArea =
+    location.pathname === PATHS.admin || location.pathname.startsWith(`${PATHS.admin}/`)
+  if (user.role === 'guest' && isAdminArea) {
     return <Navigate to={PATHS.dashboard} replace />
   }
 
-  return <Outlet />
+  return (
+    <>
+      <GuestStayExpiryMonitor />
+      {stayBlocked ? <Navigate to={PATHS.accessExpired} replace /> : null}
+      {!stayBlocked ? <Outlet /> : null}
+    </>
+  )
 }

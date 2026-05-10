@@ -17,6 +17,8 @@
     "admin": "Admin Area",
     "reservation": "Reservation",
     "aboutProperty": "About the Apartment",
+    "interests": "Interests",
+    "extras": "Extras",
     "services": "Services",
     "settings": "Settings"
   },
@@ -33,7 +35,81 @@
   "accessExpired": {
     "title": "Access outside stay period",
     "lead": "Your dashboard access is only valid during your stay (between check-in and check-out). Contact the team if you need help.",
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "backToLogin": "Back to login"
+  },
+  "interests": {
+    "title": "Interests & sightseeing",
+    "lead": "Curated spots near Curitiba: essentials and leisure. Distances are estimates.",
+    "sectionEssential": "Essential services",
+    "sectionLeisure": "Leisure & tourism",
+    "ctaMaps": "Get directions",
+    "kinds": {
+      "pharmacy": "Pharmacy",
+      "grocery": "Supermarket",
+      "park": "Park",
+      "museum": "Museum"
+    },
+    "items": {
+      "raiaBatel": {
+        "name": "Droga Raia — Batel",
+        "description": "Convenient pharmacy for health and hygiene essentials.",
+        "distance": "~1.2 km (est.)"
+      },
+      "panvelCentro": {
+        "name": "Panvel — Downtown",
+        "description": "Pharmacy chain with extended hours near the city centre.",
+        "distance": "~2.8 km (est.)"
+      },
+      "carrefourBatel": {
+        "name": "Carrefour — Batel",
+        "description": "Hypermarket for larger grocery runs and daily needs.",
+        "distance": "~1.4 km (est.)"
+      },
+      "muffatoCentro": {
+        "name": "Super Muffato — Downtown",
+        "description": "Supermarket near Praça Osório, handy for quick shopping.",
+        "distance": "~2.5 km (est.)"
+      },
+      "jardimBotanico": {
+        "name": "Botanical Garden",
+        "description": "City landmark: greenhouse, paths, and green space to relax.",
+        "distance": "~8 km (est.)"
+      },
+      "parqueBarigui": {
+        "name": "Barigui Park",
+        "description": "Large park with trails and nature in Curitiba.",
+        "distance": "~12 km (est.)"
+      },
+      "monCuritiba": {
+        "name": "Oscar Niemeyer Museum (MON)",
+        "description": "Art, architecture, and exhibitions in an iconic building.",
+        "distance": "~5 km (est.)"
+      },
+      "museuHistoria": {
+        "name": "Curitiba Historical Museum",
+        "description": "Historic house downtown with exhibits on the city’s origins.",
+        "distance": "~2.6 km (est.)"
+      }
+    }
+  },
+  "extras": {
+    "title": "Extras — SOS & support",
+    "lead": "National emergency numbers and a direct line to the Zen team.",
+    "sos": {
+      "title": "Emergency (SOS)",
+      "lead": "If you are in immediate danger, call the public services.",
+      "police": "Police (190)",
+      "fire": "Fire department (193)",
+      "samu": "SAMU ambulance (192)"
+    },
+    "zen": {
+      "title": "Zen support",
+      "lead": "Message us on WhatsApp for questions about the property or your stay.",
+      "ctaWhatsapp": "Open WhatsApp",
+      "missingNumber": "Set VITE_ZEN_SUPPORT_WHATSAPP in your environment (digits only, e.g. 5541999999999)."
+    },
+    "zenWhatsappMessage": "Hello, I am the guest on reservation {{code}} and I need help with the property {{property}}"
   },
   "login": {
     "titleSignIn": "Sign in",
@@ -148,6 +224,15 @@
       "floor": "Floor",
       "doorPassword": "Door password",
       "garageSpot": "Garage spot number"
+    },
+    "zenCurated": {
+      "sectionTitle": "Zen Guide",
+      "lead": "Tips and visual references prepared by the team for this unit.",
+      "manualAccess": "Access & arrival",
+      "manualProperty": "About the apartment",
+      "garagePhotos": "Parking & garage",
+      "elevatorPhotos": "Elevators & route",
+      "garagePhotosHint": "Visual reference for the parking spot and garage access."
     },
     "cards": {
       "garageVideo": {
@@ -359,6 +444,87 @@
       "errorDelete": "Could not remove the item.",
       "confirmDeleteOffer": "Remove this service from the catalog? (Existing requests in history keep the name stored on the request.)"
     }
+  },
+  "adminNav": {
+    "aria": "Admin area sections",
+    "orders": "Orders",
+    "properties": "Properties",
+    "access": "Access links"
+  },
+  "adminOrders": {
+    "title": "Service requests",
+    "lead": "All extra service requests from guests. Mark as completed when the work is done.",
+    "colGuest": "Guest",
+    "colReservation": "Reservation",
+    "colService": "Service",
+    "colPrice": "Price",
+    "colStatus": "Status",
+    "colActions": "Actions",
+    "markComplete": "Mark completed",
+    "toastCompleted": "Request marked as completed.",
+    "toastError": "Could not update the request.",
+    "loading": "Loading requests…",
+    "error": "Could not load the list. Check your connection and Firestore rules.",
+    "empty": "No service requests yet."
+  },
+  "adminProperties": {
+    "title": "Stays catalog & curation",
+    "lead": "Properties from the Stays API. Open a card to add photos and notes for the Zen Guide (Firestore).",
+    "importLabel": "Import property by ID",
+    "importPlaceholder": "Listing ID (Stays)",
+    "importCta": "Import",
+    "importOk": "Property imported.",
+    "importFail": "Could not import this ID.",
+    "loading": "Loading properties…",
+    "empty": "No properties listed. Check the Stays API or import by ID.",
+    "badgeCurated": "Zen curated",
+    "badgeStaysOnly": "Stays only"
+  },
+  "adminPropertyEdit": {
+    "pageTitle": "Edit property",
+    "back": "Back to grid",
+    "loading": "Loading…",
+    "missingId": "Missing property ID.",
+    "loadError": "Could not load curation data.",
+    "displayName": "Display name",
+    "garagePhotos": "Photos — parking / garage",
+    "elevatorPhotos": "Photos — elevator / route",
+    "dropHint": "Drop images here or click to choose files.",
+    "uploading": "Uploading…",
+    "uploadOk": "Upload finished.",
+    "uploadFail": "Upload failed. Check permissions and connection.",
+    "clearGarage": "Clear garage photos",
+    "clearElevator": "Clear elevator photos",
+    "manualAccess": "Access instructions (text)",
+    "manualProperty": "Property tips (text)",
+    "save": "Save curation",
+    "saveOk": "Curation saved.",
+    "saveFail": "Could not save."
+  },
+  "adminAccess": {
+    "title": "Reservation ↔ property links",
+    "pageLead": "Associate the Stays reservation code with the correct property ID and keep this list up to date.",
+    "listTitle": "Manual access links",
+    "listLead": "Stays reservation codes linked to a property so the guest app loads Zen curation for that unit.",
+    "colReservation": "Reservation code",
+    "colProperty": "Property ID",
+    "colActive": "Active",
+    "colUpdated": "Updated",
+    "yes": "Yes",
+    "no": "No",
+    "empty": "No links yet. Create one above."
+  },
+  "adminCreateAccess": {
+    "title": "Create manual access",
+    "lead": "Connect the Stays reservation code to the correct property. The guest will see that unit’s curated photos and notes after sign-in.",
+    "fieldReservation": "Reservation code",
+    "placeholderReservation": "e.g. IZ07J",
+    "fieldProperty": "Property",
+    "selectProperty": "Select…",
+    "submit": "Save link",
+    "validation": "Enter the code and choose a property.",
+    "success": "Access created successfully.",
+    "error": "Could not save the link."
   },
   "placeholders": {
     "settingsTitle": "Settings",

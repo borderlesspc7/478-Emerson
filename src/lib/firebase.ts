@@ -1,6 +1,7 @@
 import { initializeApp, type FirebaseApp } from 'firebase/app'
 import { getAuth, type Auth } from 'firebase/auth'
 import { getFirestore, type Firestore } from 'firebase/firestore'
+import { getStorage, type FirebaseStorage } from 'firebase/storage'
 
 /** Configuração do app web Firebase (projeto emerson-1e6d2) — Console → Definições do projeto. */
 const firebaseConfig = {
@@ -26,6 +27,7 @@ function isConfigValid(): boolean {
 let app: FirebaseApp | null = null
 let auth: Auth | null = null
 let firestore: Firestore | null = null
+let storage: FirebaseStorage | null = null
 
 export function getFirebaseApp(): FirebaseApp | null {
   if (!isConfigValid()) return null
@@ -51,6 +53,15 @@ export function getFirebaseFirestore(): Firestore | null {
     firestore = getFirestore(a)
   }
   return firestore
+}
+
+export function getFirebaseStorage(): FirebaseStorage | null {
+  const a = getFirebaseApp()
+  if (!a) return null
+  if (!storage) {
+    storage = getStorage(a)
+  }
+  return storage
 }
 
 export { isConfigValid as isFirebaseConfigured }

@@ -26,6 +26,14 @@ export type GuestAccess = {
   garageSpot?: string | null
 }
 
+/** Conteúdo curado no Guia da Zen (Firestore), prioridade sobre heurísticas da Stays. */
+export type GuestZenCurated = {
+  garageImageUrls: string[]
+  elevatorImageUrls: string[]
+  manualAccessNotes: string | null
+  manualPropertyNotes: string | null
+}
+
 export type GuestStay = {
   reservationCode: string
   property: GuestProperty
@@ -40,6 +48,8 @@ export type GuestStay = {
   party?: { adults: number; children: number; infants: number } | null
   /** Valor total da reserva na Stays, para exibição. */
   totalPrice?: { amount: number; currency: string } | null
+  /** Fotos e notas definidas pelo admin (quando existe vínculo manual). */
+  zenCurated?: GuestZenCurated | null
 }
 
 /** Oferta exibida ao hóspede: catálogo Firestore, extras Stays ou mock de desenvolvimento. */

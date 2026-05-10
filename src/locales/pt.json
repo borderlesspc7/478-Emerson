@@ -17,6 +17,8 @@
     "admin": "Área Admin",
     "reservation": "Reserva",
     "aboutProperty": "Sobre o Apartamento",
+    "interests": "Interesses",
+    "extras": "Extras",
     "services": "Serviços",
     "settings": "Configurações"
   },
@@ -33,7 +35,81 @@
   "accessExpired": {
     "title": "Acesso fora do período",
     "lead": "O seu acesso ao painel só é válido durante a estadia (entre o check-in e o check-out). Contacte a equipa se precisar de ajuda.",
-    "logout": "Terminar sessão"
+    "logout": "Terminar sessão",
+    "backToLogin": "Voltar ao login"
+  },
+  "interests": {
+    "title": "Interesses e pontos turísticos",
+    "lead": "Sugestões próximas em Curitiba: serviços úteis e passeios. Distâncias são estimativas.",
+    "sectionEssential": "Serviços essenciais",
+    "sectionLeisure": "Lazer e turismo",
+    "ctaMaps": "Como chegar",
+    "kinds": {
+      "pharmacy": "Farmácia",
+      "grocery": "Supermercado",
+      "park": "Parque",
+      "museum": "Museu"
+    },
+    "items": {
+      "raiaBatel": {
+        "name": "Droga Raia — Batel",
+        "description": "Farmácia de conveniência para itens de saúde e higiene.",
+        "distance": "~1,2 km (estimado)"
+      },
+      "panvelCentro": {
+        "name": "Panvel — Centro",
+        "description": "Rede de farmácias com bom horário estendido na região central.",
+        "distance": "~2,8 km (estimado)"
+      },
+      "carrefourBatel": {
+        "name": "Carrefour — Batel",
+        "description": "Hipermercado para compras maiores e itens do dia a dia.",
+        "distance": "~1,4 km (estimado)"
+      },
+      "muffatoCentro": {
+        "name": "Super Muffato — Centro",
+        "description": "Supermercado próximo à Praça Osório, prático para abastecimento rápido.",
+        "distance": "~2,5 km (estimado)"
+      },
+      "jardimBotanico": {
+        "name": "Jardim Botânico",
+        "description": "Ícone da cidade: estufa, trilhas e espaço para fotos e descanso.",
+        "distance": "~8 km (estimado)"
+      },
+      "parqueBarigui": {
+        "name": "Parque Barigui",
+        "description": "Área verde ampla, trilhas e contato com a natureza em Curitiba.",
+        "distance": "~12 km (estimado)"
+      },
+      "monCuritiba": {
+        "name": "Museu Oscar Niemeyer (MON)",
+        "description": "Arte, arquitetura e exposições em um dos cartões-postais da cidade.",
+        "distance": "~5 km (estimado)"
+      },
+      "museuHistoria": {
+        "name": "Museu Histórico de Curitiba",
+        "description": "Casa histórica no centro com acervo sobre a formação da capital.",
+        "distance": "~2,6 km (estimado)"
+      }
+    }
+  },
+  "extras": {
+    "title": "Extras — SOS e suporte",
+    "lead": "Emergências nacionais e canal direto com a equipe Zen.",
+    "sos": {
+      "title": "Emergência (SOS)",
+      "lead": "Em risco imediato, ligue para os serviços públicos.",
+      "police": "Polícia (190)",
+      "fire": "Bombeiros (193)",
+      "samu": "SAMU (192)"
+    },
+    "zen": {
+      "title": "Suporte Zen",
+      "lead": "Fale connosco pelo WhatsApp para dúvidas sobre o imóvel ou a estadia.",
+      "ctaWhatsapp": "Abrir WhatsApp",
+      "missingNumber": "Configure VITE_ZEN_SUPPORT_WHATSAPP no ambiente (apenas dígitos, ex.: 5541999999999)."
+    },
+    "zenWhatsappMessage": "Olá, sou o hóspede da reserva {{code}} e preciso de ajuda com o imóvel {{property}}"
   },
   "login": {
     "titleSignIn": "Entrar",
@@ -148,6 +224,15 @@
       "floor": "Andar",
       "doorPassword": "Senha de acesso",
       "garageSpot": "Número da vaga de garagem"
+    },
+    "zenCurated": {
+      "sectionTitle": "Guia da Zen",
+      "lead": "Dicas e referências visuais preparadas pela equipa para esta unidade.",
+      "manualAccess": "Acesso e chegada",
+      "manualProperty": "Sobre o imóvel",
+      "garagePhotos": "Vaga e garagem",
+      "elevatorPhotos": "Elevadores e caminho",
+      "garagePhotosHint": "Referência visual da vaga e do acesso à garagem."
     },
     "cards": {
       "garageVideo": {
@@ -359,6 +444,87 @@
       "errorDelete": "Não foi possível remover o item.",
       "confirmDeleteOffer": "Remover este serviço do catálogo? (Pedidos antigos no histórico mantêm o nome gravado no pedido.)"
     }
+  },
+  "adminNav": {
+    "aria": "Secções da área administrativa",
+    "orders": "Pedidos",
+    "properties": "Imóveis",
+    "access": "Acessos"
+  },
+  "adminOrders": {
+    "title": "Pedidos de serviços",
+    "lead": "Todos os pedidos extra registados pelos hóspedes. Marque como concluído quando a operação estiver finalizada.",
+    "colGuest": "Hóspede",
+    "colReservation": "Reserva",
+    "colService": "Serviço",
+    "colPrice": "Valor",
+    "colStatus": "Estado",
+    "colActions": "Ações",
+    "markComplete": "Marcar como concluído",
+    "toastCompleted": "Serviço marcado como concluído.",
+    "toastError": "Não foi possível atualizar o pedido.",
+    "loading": "A carregar pedidos…",
+    "error": "Não foi possível carregar a lista. Verifique a ligação e as regras do Firestore.",
+    "empty": "Ainda não há pedidos de serviços."
+  },
+  "adminProperties": {
+    "title": "Catálogo Stays e curadoria",
+    "lead": "Imóveis listados pela API Stays. Clique num cartão para acrescentar fotos e instruções no Guia da Zen (Firestore).",
+    "importLabel": "Importar imóvel por ID",
+    "importPlaceholder": "ID do listing (Stays)",
+    "importCta": "Importar",
+    "importOk": "Imóvel importado.",
+    "importFail": "Não foi possível importar este ID.",
+    "loading": "A carregar imóveis…",
+    "empty": "Nenhum imóvel listado. Confirme a API Stays ou importe por ID.",
+    "badgeCurated": "Com curadoria Zen",
+    "badgeStaysOnly": "Só Stays"
+  },
+  "adminPropertyEdit": {
+    "pageTitle": "Editar imóvel",
+    "back": "Voltar à grelha",
+    "loading": "A carregar dados…",
+    "missingId": "ID do imóvel em falta.",
+    "loadError": "Não foi possível carregar a curadoria.",
+    "displayName": "Nome de exibição",
+    "garagePhotos": "Fotos — vaga / garagem",
+    "elevatorPhotos": "Fotos — elevador / caminho",
+    "dropHint": "Arraste imagens ou clique para escolher ficheiros.",
+    "uploading": "A enviar…",
+    "uploadOk": "Upload concluído.",
+    "uploadFail": "Falha no upload. Verifique permissões e ligação.",
+    "clearGarage": "Limpar fotos da garagem",
+    "clearElevator": "Limpar fotos do elevador",
+    "manualAccess": "Instruções de acesso (texto)",
+    "manualProperty": "Dicas sobre o imóvel (texto)",
+    "save": "Guardar curadoria",
+    "saveOk": "Curadoria guardada.",
+    "saveFail": "Não foi possível guardar."
+  },
+  "adminAccess": {
+    "title": "Vínculos reserva ↔ imóvel",
+    "pageLead": "Associe o código da reserva Stays ao property ID correto e mantenha a lista de vínculos atualizada.",
+    "listTitle": "Acessos manuais",
+    "listLead": "Códigos de reserva (Stays) associados a um imóvel para carregar curadoria Zen no app do hóspede.",
+    "colReservation": "Código da reserva",
+    "colProperty": "Property ID",
+    "colActive": "Ativo",
+    "colUpdated": "Atualizado",
+    "yes": "Sim",
+    "no": "Não",
+    "empty": "Ainda não há vínculos. Crie o primeiro acima."
+  },
+  "adminCreateAccess": {
+    "title": "Criar acesso manual",
+    "lead": "Ligue o código da reserva (Stays) ao imóvel correto. O hóspede verá as fotos e notas curadas desse imóvel ao iniciar sessão.",
+    "fieldReservation": "Código da reserva",
+    "placeholderReservation": "Ex.: IZ07J",
+    "fieldProperty": "Imóvel",
+    "selectProperty": "Selecione…",
+    "submit": "Guardar vínculo",
+    "validation": "Preencha o código e escolha um imóvel.",
+    "success": "Acesso criado com sucesso.",
+    "error": "Não foi possível guardar o vínculo."
   },
   "placeholders": {
     "settingsTitle": "Configurações",

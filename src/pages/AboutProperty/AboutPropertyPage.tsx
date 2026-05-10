@@ -35,7 +35,7 @@ const ruleCardIcons: Record<AboutPropertyRuleCardKey, ReactElement> = {
 export function AboutPropertyPage() {
   const { t } = useTranslation()
   const { stay } = useGuestStay()
-  const { property, access, wifi } = stay
+  const { property, access, wifi, zenCurated: zen } = stay
   const hasListingDescription = Boolean(property.description?.trim())
   const [activeTab, setActiveTab] = useState<(typeof tabKeys)[number]>('local')
   const [expandedRules, setExpandedRules] = useState<Record<AboutPropertyRuleCardKey, boolean>>({
@@ -58,6 +58,10 @@ export function AboutPropertyPage() {
   const openGarageVideo = () => {
     window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank', 'noopener,noreferrer')
   }
+
+  const hasZenNotes = Boolean(zen && (zen.manualAccessNotes || zen.manualPropertyNotes))
+  const showCuratedGaragePhotos = Boolean(zen?.garageImageUrls.length)
+  const showCuratedElevatorPhotos = Boolean(zen?.elevatorImageUrls.length)
 
   function toggleFaq(faqKey: string) {
     setExpandedFaq((current) => (current === faqKey ? null : faqKey))
@@ -172,26 +176,73 @@ export function AboutPropertyPage() {
               </dl>
             </article>
 
+            {hasZenNotes && zen ? (
+              <article className="guest-content__card page-about-property__span-2 page-about-property__zen-card">
+                <h3 className="guest-content__card-title">{t('aboutProperty.zenCurated.sectionTitle')}</h3>
+                <p className="guest-content__lead">{t('aboutProperty.zenCurated.lead')}</p>
+                {zen.manualAccessNotes ? (
+                  <div>
+                    <h4 className="guest-content__section" style={{ fontSize: '0.95rem', margin: '0.75rem 0 0.35rem' }}>
+                      {t('aboutProperty.zenCurated.manualAccess')}
+                    </h4>
+                    <p className="guest-content__prose" style={{ whiteSpace: 'pre-wrap' }}>
+                      {zen.manualAccessNotes}
+                    </p>
+                  </div>
+                ) : null}
+                {zen.manualPropertyNotes ? (
+                  <div>
+                    <h4 className="guest-content__section" style={{ fontSize: '0.95rem', margin: '0.75rem 0 0.35rem' }}>
+                      {t('aboutProperty.zenCurated.manualProperty')}
+                    </h4>
+                    <p className="guest-content__prose" style={{ whiteSpace: 'pre-wrap' }}>
+                      {zen.manualPropertyNotes}
+                    </p>
+                  </div>
+                ) : null}
+              </article>
+            ) : null}
+
             <article className="guest-content__card page-about-property__info-card">
               <h3 className="guest-content__card-title">{t('aboutProperty.cards.garageVideo.title')}</h3>
-              <p className="guest-content__card-meta">
-                {t('aboutProperty.cards.garageVideo.description')}
-              </p>
-              <div className="page-about-property__actions">
-                <Button
-                  type="button"
-                  variant="secondary"
-                  size="md"
-                  leftIcon={<FiPlayCircle aria-hidden />}
-                  onClick={openGarageVideo}
-                >
-                  {t('aboutProperty.cards.garageVideo.cta')}
-                </Button>
-              </div>
+              {showCuratedGaragePhotos && zen ? (
+                <>
+                  <p className="guest-content__card-meta">{t('aboutProperty.zenCurated.garagePhotosHint')}</p>
+                  <div className="page-about-property__zen-gallery page-about-property__zen-gallery--compact">
+                    {zen.garageImageUrls.map((url) => (
+                      <img key={url} src={url} alt="" loading="lazy" />
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="guest-content__card-meta">
+                    {t('aboutProperty.cards.garageVideo.description')}
+                  </p>
+                  <div className="page-about-property__actions">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="md"
+                      leftIcon={<FiPlayCircle aria-hidden />}
+                      onClick={openGarageVideo}
+                    >
+                      {t('aboutProperty.cards.garageVideo.cta')}
+                    </Button>
+                  </div>
+                </>
+              )}
             </article>
 
             <article className="guest-content__card page-about-property__info-card">
               <h3 className="guest-content__card-title">{t('aboutProperty.cards.elevators.title')}</h3>
+              {showCuratedElevatorPhotos && zen ? (
+                <div className="page-about-property__zen-gallery page-about-property__zen-gallery--compact">
+                  {zen.elevatorImageUrls.map((url) => (
+                    <img key={url} src={url} alt="" loading="lazy" />
+                  ))}
+                </div>
+              ) : null}
               <p className="guest-content__prose">{t('aboutProperty.cards.elevators.description')}</p>
             </article>
 

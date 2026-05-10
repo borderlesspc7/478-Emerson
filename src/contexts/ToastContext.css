@@ -1,0 +1,54 @@
+.zen-toast-stack {
+  position: fixed;
+  bottom: 1.25rem;
+  right: 1.25rem;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  max-width: min(420px, calc(100vw - 2rem));
+  pointer-events: none;
+}
+
+.zen-toast {
+  pointer-events: none;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border-default);
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  animation: zen-toast-in 0.22s ease both;
+}
+
+.zen-toast--success {
+  border-color: color-mix(in srgb, var(--color-success) 40%, var(--border-default));
+  background: color-mix(in srgb, var(--color-success) 12%, var(--surface-elevated));
+}
+
+.zen-toast--error {
+  border-color: color-mix(in srgb, var(--color-danger) 40%, var(--border-default));
+  background: color-mix(in srgb, var(--color-danger) 12%, var(--surface-elevated));
+}
+
+@keyframes zen-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .zen-toast-stack {
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    max-width: none;
+  }
+}

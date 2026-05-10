@@ -200,6 +200,18 @@ export async function createServiceRequest(
   })
 }
 
+/** Admin / operador: concluir pedido só pelo id do documento (Firestore). */
+export async function markServiceRequestCompletedById(requestId: string): Promise<void> {
+  const db = getFirebaseFirestore()
+  if (!db) throw new Error('AUTH_NOT_CONFIGURED')
+  const ref = doc(db, SERVICE_REQUESTS_COLLECTION, requestId)
+  await updateDoc(ref, {
+    status: 'completed',
+    completedAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  })
+}
+
 export async function markServiceRequestCompleted(
   uid: string,
   requestId: string
