@@ -36,6 +36,9 @@ export function AppLayout() {
       if (pathname === PATHS.adminOrders) {
         return t('adminOrders.title')
       }
+      if (pathname === PATHS.adminServices) {
+        return t('adminServices.title')
+      }
       if (pathname === PATHS.adminProperties) {
         return t('adminProperties.title')
       }

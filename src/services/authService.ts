@@ -23,6 +23,7 @@ import {
   fetchUserProfileFromFirestore,
   syncUserProfileToFirestore,
 } from './userProfileFirestore'
+import { filterGuestStayStaysCustomFields } from '../lib/staysCustomFields'
 import { getGuestAccessLink } from './guestAccessLinkFirestore'
 import { getPropertyCuration } from './propertyCurationFirestore'
 import {
@@ -90,8 +91,12 @@ async function applyZenGuestCuration(
   try {
     const link = await getGuestAccessLink(reservationCode)
     if (!link?.accessActive) return stay
+    let next = stay
+    if (link.customFieldVisibility && Object.keys(link.customFieldVisibility).length > 0) {
+      next = filterGuestStayStaysCustomFields(next, link.customFieldVisibility)
+    }
     const curation = await getPropertyCuration(link.propertyId)
-    return mergeGuestStayWithZenCuration(stay, curation, {
+    return mergeGuestStayWithZenCuration(next, curation, {
       accessActive: link.accessActive,
     })
   } catch {

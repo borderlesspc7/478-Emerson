@@ -9,7 +9,7 @@ export function ReservationPage() {
   const { t, i18n } = useTranslation()
   const { stay } = useGuestStay()
   const loc = i18n.language === 'en' ? 'en' : 'pt-BR'
-  const { property, wifi, party, totalPrice } = stay
+  const { property, wifi, party, totalPrice, staysCustomFields } = stay
 
   const addressFull = [property.addressLine, property.city, property.postalCode]
     .filter(Boolean)
@@ -129,6 +129,27 @@ export function ReservationPage() {
           </p>
         </article>
       </div>
+
+      {staysCustomFields && staysCustomFields.length > 0 ? (
+        <>
+          <h3 className="guest-content__section">{t('aboutProperty.staysCustomFieldsTitle')}</h3>
+          <p className="guest-content__lead" style={{ marginTop: 0 }}>
+            {t('aboutProperty.staysCustomFieldsLead')}
+          </p>
+          <article className="guest-content__card page-reservation__span-2">
+            <dl className="guest-content__dl">
+              {staysCustomFields.map((f) => (
+                <div key={f.key}>
+                  <dt className="guest-content__dt">{f.label}</dt>
+                  <dd className="guest-content__dd guest-content__prose" style={{ whiteSpace: 'pre-wrap' }}>
+                    {f.value.trim() ? f.value : '—'}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </article>
+        </>
+      ) : null}
     </div>
   )
 }

@@ -20,7 +20,8 @@
     "interests": "Interesses",
     "extras": "Extras",
     "services": "Serviços",
-    "settings": "Configurações"
+    "settings": "Configurações",
+    "pendingOrdersAria": "{{count}} pedido(s) de serviço extra por tratar"
   },
   "layout": {
     "panel": "Painel",
@@ -218,6 +219,8 @@
     },
     "howToArrive": "Como chegar",
     "openMaps": "Abrir no Maps",
+    "staysCustomFieldsTitle": "Detalhes do imóvel (Stays)",
+    "staysCustomFieldsLead": "Informações configuradas na Stays para esta unidade.",
     "howToAccess": "Como acessar",
     "access": {
       "unitNumber": "Número do imóvel",
@@ -424,9 +427,13 @@
     "hint": "Os pedidos são guardados na coleção serviceRequests, associados ao seu utilizador.",
     "admin": {
       "sectionManage": "Catálogo de serviços (hóspedes veem esta lista para solicitar)",
-      "hint": "Novo serviço: preencha nome, descrição e valor. Editar ou apagar: use os botões em cada item.",
+      "hint": "Crie ou edite serviços com título, descrição, valor e WhatsApp. O número (DDI + DDD + número) abre o chat certo quando o hóspede solicita o serviço. Se ficar vazio, o WhatsApp abre só com a mensagem.",
       "fieldName": "Nome",
       "fieldDescription": "Descrição",
+      "fieldWhatsapp": "WhatsApp",
+      "whatsappPlaceholder": "Ex: 5511999998888 ou +55 11 99999-8888",
+      "whatsappHint": "Apenas dígitos são guardados (até 15). Com pelo menos 10 dígitos, o pedido do hóspede abre direto para este número.",
+      "colWhatsapp": "WhatsApp",
       "fieldPrice": "Valor (R$)",
       "pricePlaceholder": "Ex: 150,00",
       "add": "Adicionar serviço",
@@ -448,8 +455,13 @@
   "adminNav": {
     "aria": "Secções da área administrativa",
     "orders": "Pedidos",
+    "services": "Serviços",
     "properties": "Imóveis",
     "access": "Acessos"
+  },
+  "adminServices": {
+    "title": "Área de serviços",
+    "lead": "Gerir o catálogo que os hóspedes veem em «Serviços»: criar, editar valores, textos e o WhatsApp de destino de cada oferta."
   },
   "adminOrders": {
     "title": "Pedidos de serviços",
@@ -516,7 +528,7 @@
   },
   "adminCreateAccess": {
     "title": "Criar acesso manual",
-    "lead": "Ligue o código da reserva (Stays) ao imóvel correto. O hóspede verá as fotos e notas curadas desse imóvel ao iniciar sessão.",
+    "lead": "Ligue o código da reserva (Stays) ao imóvel correto. O hóspede verá as fotos e notas curadas desse imóvel ao iniciar sessão. Marque quais campos personalizados da Stays aparecem no painel do hóspede.",
     "fieldReservation": "Código da reserva",
     "placeholderReservation": "Ex.: IZ07J",
     "fieldProperty": "Imóvel",
@@ -524,7 +536,27 @@
     "submit": "Guardar vínculo",
     "validation": "Preencha o código e escolha um imóvel.",
     "success": "Acesso criado com sucesso.",
-    "error": "Não foi possível guardar o vínculo."
+    "error": "Não foi possível guardar o vínculo.",
+    "visibilityTitle": "Campos personalizados visíveis para o hóspede",
+    "visibilityLead": "Cada interruptor corresponde a um campo da API Stays deste imóvel. Desligue o que não deve aparecer no Guia (Wi‑Fi, senhas, instruções, etc.).",
+    "loadingCustomFields": "A carregar campos do imóvel…",
+    "noCustomFields": "Este imóvel não devolveu campos personalizados na API. O vínculo será guardado sem filtro de visibilidade.",
+    "emptyFieldValue": "(vazio na Stays)",
+    "switchAria": "Mostrar ao hóspede: {{label}}",
+    "chooseProperty": "Escolher imóvel…",
+    "changeProperty": "Alterar imóvel…",
+    "propertyHint": "Abra o catálogo para escolher o imóvel vinculado a esta reserva.",
+    "modalTitle": "Escolher imóvel",
+    "modalClose": "Fechar",
+    "loadingProperties": "A carregar imóveis da Stays…",
+    "noProperties": "Nenhum imóvel encontrado. Confirme a API ou importe imóveis na área «Imóveis».",
+    "propertySearchLabel": "Pesquisar",
+    "propertySearchPlaceholder": "Código do imóvel (ex.: WS01I) ou ID…",
+    "propertyNoSearchResults": "Nenhum imóvel corresponde à pesquisa.",
+    "paginationPrev": "Anterior",
+    "paginationNext": "Seguinte",
+    "paginationSummary": "Página {{page}} de {{totalPages}} · {{from}}–{{to}} de {{total}}",
+    "paginationCountOnly": "{{from}}–{{to}} de {{total}} imóveis"
   },
   "placeholders": {
     "settingsTitle": "Configurações",

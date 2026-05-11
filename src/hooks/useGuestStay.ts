@@ -21,6 +21,7 @@ function catalogToOffers(items: ServiceCatalogItem[]): ServiceOffer[] {
     name: c.name,
     description: c.description,
     priceInCents: c.priceInCents,
+    whatsappPhone: c.whatsappPhone || null,
   }))
 }
 

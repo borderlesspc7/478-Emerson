@@ -447,3 +447,29 @@
     justify-content: flex-start;
   }
 }
+
+.page-services__admin-wa {
+  margin: 0.35rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.page-services__admin-wa-label {
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.page-services__admin-wa-value {
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.page-services__admin-wa-empty {
+  color: var(--text-muted);
+}
+
+.page-services__admin-hint--field {
+  margin-top: 0.35rem;
+  margin-bottom: 0;
+  font-size: 0.75rem;
+}

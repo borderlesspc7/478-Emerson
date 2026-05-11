@@ -35,7 +35,7 @@ const ruleCardIcons: Record<AboutPropertyRuleCardKey, ReactElement> = {
 export function AboutPropertyPage() {
   const { t } = useTranslation()
   const { stay } = useGuestStay()
-  const { property, access, wifi, zenCurated: zen } = stay
+  const { property, access, wifi, zenCurated: zen, staysCustomFields } = stay
   const hasListingDescription = Boolean(property.description?.trim())
   const [activeTab, setActiveTab] = useState<(typeof tabKeys)[number]>('local')
   const [expandedRules, setExpandedRules] = useState<Record<AboutPropertyRuleCardKey, boolean>>({
@@ -261,6 +261,26 @@ export function AboutPropertyPage() {
                 </div>
               </dl>
             </article>
+
+            {staysCustomFields && staysCustomFields.length > 0 ? (
+              <article className="guest-content__card page-about-property__span-2 page-about-property__info-card">
+                <h3 className="guest-content__card-title">{t('aboutProperty.staysCustomFieldsTitle')}</h3>
+                <p className="guest-content__card-meta">{t('aboutProperty.staysCustomFieldsLead')}</p>
+                <dl className="guest-content__dl">
+                  {staysCustomFields.map((f) => (
+                    <div key={f.key}>
+                      <dt className="guest-content__dt">{f.label}</dt>
+                      <dd
+                        className="guest-content__dd guest-content__prose"
+                        style={{ whiteSpace: 'pre-wrap' }}
+                      >
+                        {f.value.trim() ? f.value : '—'}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </article>
+            ) : null}
 
             <article className="guest-content__card page-about-property__info-card">
               <h3 className="guest-content__card-title">{t('aboutProperty.cards.appliances.title')}</h3>

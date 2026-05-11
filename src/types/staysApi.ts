@@ -62,6 +62,13 @@ export interface StaysListingAddress {
 export interface StaysPropertyListing {
   _id?: string
   id?: string
+  /** Imagem principal (metadados da Stays). */
+  _idmainImage?: string
+  _t_mainImageMeta?: { url?: string }
+  /** Lista curta de ids de imagem. */
+  images?: { _id?: string }[]
+  /** Metadados com URL completa por imagem. */
+  _t_imagesMeta?: Array<{ _id?: string; url?: string; area?: string }>
   internalName?: string
   _mstitle?: StaysLocalizedString
   /** Descrição comercial (HTML). */

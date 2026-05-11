@@ -1,12 +1,22 @@
 import { useMemo } from 'react'
-import { FiInfo, FiMapPin, FiShield, FiStar } from 'react-icons/fi'
+import { useServiceRequests } from '../../hooks/useServiceRequests'
+import {
+  FiClipboard,
+  FiHome,
+  FiInfo,
+  FiKey,
+  FiMapPin,
+  FiPhone,
+  FiShield,
+  FiStar,
+} from 'react-icons/fi'
 import { GiLotusFlower } from 'react-icons/gi'
 import {
   MdKeyboardDoubleArrowLeft,
   MdKeyboardDoubleArrowRight,
 } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { PATHS } from '../../routes/path'
 import './Sidebar.css'
@@ -31,52 +41,89 @@ export function Sidebar({
   onToggleSidebar,
 }: SidebarProps) {
   const { t } = useTranslation()
+  const { pathname } = useLocation()
   const { user } = useAuth()
   const backdrop = showBackdrop ?? false
   const isAdmin = user?.role === 'admin'
+  const isAdminRoute =
+    pathname === PATHS.admin || pathname.startsWith(`${PATHS.admin}/`)
 
-  const nav = useMemo(
-    () =>
-      [
-        { to: PATHS.dashboard, labelKey: 'nav.overview' as const, icon: IconHome },
-        ...(isAdmin
-          ? [
-              {
-                to: PATHS.admin,
-                labelKey: 'nav.admin' as const,
-                icon: FiShield,
-              },
-            ]
-          : []),
-        {
-          to: PATHS.reservation,
-          labelKey: 'nav.reservation' as const,
-          icon: IconChart,
-        },
-        {
-          to: PATHS.aboutProperty,
-          labelKey: 'nav.aboutProperty' as const,
-          icon: FiInfo,
-        },
-        {
-          to: PATHS.interests,
-          labelKey: 'nav.interests' as const,
-          icon: FiMapPin,
-        },
-        {
-          to: PATHS.extras,
-          labelKey: 'nav.extras' as const,
-          icon: FiStar,
-        },
-        { to: PATHS.services, labelKey: 'nav.services' as const, icon: IconUsers },
-        {
-          to: PATHS.settings,
-          labelKey: 'nav.settings' as const,
-          icon: IconSettings,
-        },
-      ] as const,
-    [isAdmin]
+  const { requests: adminServiceRequests } = useServiceRequests(
+    isAdmin ? user?.uid : undefined,
+    { adminView: true }
   )
+  const pendingOrdersCount = useMemo(
+    () => adminServiceRequests.filter((r) => r.status === 'pending').length,
+    [adminServiceRequests]
+  )
+  const pendingOrdersBadge =
+    pendingOrdersCount > 99 ? '99+' : pendingOrdersCount > 0 ? String(pendingOrdersCount) : null
+
+  const nav = useMemo(() => {
+    if (isAdmin && isAdminRoute) {
+      return [
+        {
+          to: PATHS.adminOrders,
+          labelKey: 'adminNav.orders' as const,
+          icon: FiClipboard,
+        },
+        {
+          to: PATHS.adminServices,
+          labelKey: 'adminNav.services' as const,
+          icon: FiPhone,
+        },
+        {
+          to: PATHS.adminProperties,
+          labelKey: 'adminNav.properties' as const,
+          icon: FiHome,
+        },
+        {
+          to: PATHS.adminAccess,
+          labelKey: 'adminNav.access' as const,
+          icon: FiKey,
+        },
+      ] as const
+    }
+
+    return [
+      { to: PATHS.dashboard, labelKey: 'nav.overview' as const, icon: IconHome },
+      ...(isAdmin
+        ? [
+            {
+              to: PATHS.admin,
+              labelKey: 'nav.admin' as const,
+              icon: FiShield,
+            },
+          ]
+        : []),
+      {
+        to: PATHS.reservation,
+        labelKey: 'nav.reservation' as const,
+        icon: IconChart,
+      },
+      {
+        to: PATHS.aboutProperty,
+        labelKey: 'nav.aboutProperty' as const,
+        icon: FiInfo,
+      },
+      {
+        to: PATHS.interests,
+        labelKey: 'nav.interests' as const,
+        icon: FiMapPin,
+      },
+      {
+        to: PATHS.extras,
+        labelKey: 'nav.extras' as const,
+        icon: FiStar,
+      },
+      { to: PATHS.services, labelKey: 'nav.services' as const, icon: IconUsers },
+      {
+        to: PATHS.settings,
+        labelKey: 'nav.settings' as const,
+        icon: IconSettings,
+      },
+    ] as const
+  }, [isAdmin, isAdminRoute])
 
   return (
     <>
@@ -107,19 +154,41 @@ export function Sidebar({
           <ul className="app-sidebar__list">
             {nav.map(({ to, labelKey, icon: Icon }) => {
               const label = t(labelKey)
+              const showOrdersBadge =
+                to === PATHS.adminOrders && pendingOrdersBadge !== null
+              const ordersAria = showOrdersBadge
+                ? `${label}. ${t('nav.pendingOrdersAria', { count: pendingOrdersCount })}`
+                : undefined
               return (
               <li key={to}>
                 <NavLink
                   to={to}
-                  end={to === PATHS.dashboard}
+                  end={
+                    to === PATHS.dashboard ||
+                    to === PATHS.adminOrders ||
+                    to === PATHS.adminServices ||
+                    to === PATHS.adminAccess
+                  }
                   className={({ isActive }) =>
-                    `app-sidebar__link ${isActive ? 'is-active' : ''}`
+                    [
+                      'app-sidebar__link',
+                      isActive ? 'is-active' : '',
+                      showOrdersBadge ? 'app-sidebar__link--with-badge' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')
                   }
                   title={label}
+                  {...(ordersAria ? { 'aria-label': ordersAria } : {})}
                   onClick={onNavigate}
                 >
                   <Icon className="app-sidebar__icon" />
                   <span className="app-sidebar__label">{label}</span>
+                  {showOrdersBadge ? (
+                    <span className="app-sidebar__badge" aria-hidden>
+                      {pendingOrdersBadge}
+                    </span>
+                  ) : null}
                 </NavLink>
               </li>
               )

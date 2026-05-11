@@ -1,3 +1,5 @@
+import type { StaysCustomFieldGuest } from './staysCustomField'
+
 /** Modelo alinhado ao que virá da API Stays; hoje preenchido por mock. */
 export type GuestProperty = {
   name: string
@@ -50,6 +52,8 @@ export type GuestStay = {
   totalPrice?: { amount: number; currency: string } | null
   /** Fotos e notas definidas pelo admin (quando existe vínculo manual). */
   zenCurated?: GuestZenCurated | null
+  /** Campos personalizados Stays (após filtro de visibilidade em `guestAccessLinks`, quando configurado). */
+  staysCustomFields?: StaysCustomFieldGuest[] | null
 }
 
 /** Oferta exibida ao hóspede: catálogo Firestore, extras Stays ou mock de desenvolvimento. */
@@ -58,4 +62,6 @@ export type ServiceOffer = {
   name: string
   description: string
   priceInCents: number
+  /** Catálogo Firestore: número para `wa.me`; Stays/mock podem omitir. */
+  whatsappPhone?: string | null
 }

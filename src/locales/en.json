@@ -20,7 +20,8 @@
     "interests": "Interests",
     "extras": "Extras",
     "services": "Services",
-    "settings": "Settings"
+    "settings": "Settings",
+    "pendingOrdersAria": "{{count}} pending extra service request(s)"
   },
   "layout": {
     "panel": "Dashboard",
@@ -218,6 +219,8 @@
     },
     "howToArrive": "How to arrive",
     "openMaps": "Open in Maps",
+    "staysCustomFieldsTitle": "Property details (Stays)",
+    "staysCustomFieldsLead": "Information configured in Stays for this unit.",
     "howToAccess": "How to access",
     "access": {
       "unitNumber": "Property number",
@@ -424,9 +427,13 @@
     "hint": "Requests are stored in the serviceRequests collection, linked to your account.",
     "admin": {
       "sectionManage": "Service catalog (guests use this list to place requests)",
-      "hint": "To add: fill in name, description, and price. To edit or remove: use the buttons on each item.",
+      "hint": "Create or edit services with title, description, price, and WhatsApp. The number (country + area + number) opens the right chat when a guest requests the service. If left empty, WhatsApp opens with only the prefilled message.",
       "fieldName": "Name",
       "fieldDescription": "Description",
+      "fieldWhatsapp": "WhatsApp",
+      "whatsappPlaceholder": "e.g. 5511999998888 or +55 11 99999-8888",
+      "whatsappHint": "Only digits are stored (up to 15). With at least 10 digits, the guest’s request opens directly to this number.",
+      "colWhatsapp": "WhatsApp",
       "fieldPrice": "Price (BRL)",
       "pricePlaceholder": "e.g. 150.00",
       "add": "Add service",
@@ -448,8 +455,13 @@
   "adminNav": {
     "aria": "Admin area sections",
     "orders": "Orders",
+    "services": "Services",
     "properties": "Properties",
     "access": "Access links"
+  },
+  "adminServices": {
+    "title": "Services area",
+    "lead": "Manage the catalog guests see under “Services”: create and edit prices, copy, and the WhatsApp destination for each offer."
   },
   "adminOrders": {
     "title": "Service requests",
@@ -516,7 +528,7 @@
   },
   "adminCreateAccess": {
     "title": "Create manual access",
-    "lead": "Connect the Stays reservation code to the correct property. The guest will see that unit’s curated photos and notes after sign-in.",
+    "lead": "Connect the Stays reservation code to the correct property. The guest will see that unit’s curated photos and notes after sign-in. Choose which Stays custom fields appear in the guest app.",
     "fieldReservation": "Reservation code",
     "placeholderReservation": "e.g. IZ07J",
     "fieldProperty": "Property",
@@ -524,7 +536,27 @@
     "submit": "Save link",
     "validation": "Enter the code and choose a property.",
     "success": "Access created successfully.",
-    "error": "Could not save the link."
+    "error": "Could not save the link.",
+    "visibilityTitle": "Custom fields visible to the guest",
+    "visibilityLead": "Each switch maps to a Stays API custom field for this listing. Turn off anything that should not appear in the guide (Wi‑Fi, passwords, instructions, etc.).",
+    "loadingCustomFields": "Loading listing custom fields…",
+    "noCustomFields": "This listing returned no custom fields from the API. The link will be saved without a visibility map.",
+    "emptyFieldValue": "(empty in Stays)",
+    "switchAria": "Show to guest: {{label}}",
+    "chooseProperty": "Choose property…",
+    "changeProperty": "Change property…",
+    "propertyHint": "Open the catalog to pick the property linked to this reservation.",
+    "modalTitle": "Choose property",
+    "modalClose": "Close",
+    "loadingProperties": "Loading Stays properties…",
+    "noProperties": "No properties found. Check the API or import listings under “Properties”.",
+    "propertySearchLabel": "Search",
+    "propertySearchPlaceholder": "Property code (e.g. WS01I) or ID…",
+    "propertyNoSearchResults": "No properties match your search.",
+    "paginationPrev": "Previous",
+    "paginationNext": "Next",
+    "paginationSummary": "Page {{page}} of {{totalPages}} · {{from}}–{{to}} of {{total}}",
+    "paginationCountOnly": "{{from}}–{{to}} of {{total}} properties"
   },
   "placeholders": {
     "settingsTitle": "Settings",

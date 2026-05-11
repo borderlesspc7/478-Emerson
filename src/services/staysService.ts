@@ -8,6 +8,14 @@ import type {
 import type { AxiosInstance } from "axios";
 import { getStaysAxios, StaysApiError, withStaysRetry } from "./staysClient";
 import {
+  extractListingsFromPayload,
+  extractListingsTotalCount,
+} from "../lib/staysListingsPayload";
+import {
+  buildListingCustomFieldLabelMap,
+  extractListingCustomFieldDefinitionsFromPayload,
+} from "../lib/staysCustomFields";
+import {
   mapStaysToGuestStayBundle,
   serviceOffersForGuest,
   type StaysGuestStayBundle,
@@ -114,29 +122,140 @@ export async function fetchListingById(
   );
 }
 
-function coerceListingsPayload(data: unknown): StaysPropertyListing[] {
-  if (Array.isArray(data)) return data as StaysPropertyListing[];
-  if (data && typeof data === "object") {
-    const o = data as Record<string, unknown>;
-    for (const key of ["listings", "data", "items", "results"] as const) {
-      const v = o[key];
-      if (Array.isArray(v)) return v as StaysPropertyListing[];
-    }
+/**
+ * GET /external/v1/settings/app/listing-custom-fields
+ * Catálogo global: `_idfield` ↔ título (`_msname`) para enriquecer `listing.customFields` ({ id, val }).
+ */
+export async function fetchListingCustomFieldLabelMap(): Promise<
+  Map<string, string>
+> {
+  const client = requireStaysAxios();
+  const path = "settings/app/listing-custom-fields";
+  return cached(`GET:${path}`, () =>
+    withStaysRetry(async () => {
+      const data = await client.get<unknown>(path).then((r) => r.data);
+      const defs = extractListingCustomFieldDefinitionsFromPayload(data);
+      return buildListingCustomFieldLabelMap(defs);
+    }),
+  );
+}
+
+function mergeListingsInto(
+  map: Map<string, StaysPropertyListing>,
+  items: StaysPropertyListing[],
+) {
+  for (const it of items) {
+    const k = String(it._id || it.id || "").trim();
+    if (k) map.set(k, it);
   }
-  return [];
 }
 
 /**
- * Lista imóveis (quando a External API expõe GET …/content/listings).
- * Se o endpoint não existir ou falhar, devolve [] — o admin pode registar por ID.
+ * Lista imóveis (GET …/content/listings).
+ * Pagina com `skip`+`limit` sempre que o último lote vier “cheio” (antes só paginávamos se a 1.ª
+ * página tivesse ≥100 itens, o que omitia contas com limite por defeito menor que 100).
+ * Se `skip` repetir os mesmos dados, faz varredura alternativa com `page`.
+ * Lê `total` / `totalCount` no envelope quando existir.
  */
 export async function fetchListings(): Promise<StaysPropertyListing[]> {
   const client = requireStaysAxios();
-  try {
-    const res = await withStaysRetry(() =>
-      client.get<unknown>("content/listings").then((r) => r.data),
+  const byId = new Map<string, StaysPropertyListing>();
+  const pageSize = 100;
+  const maxBatches = 500;
+
+  async function ingestPath(path: string): Promise<{
+    batchLen: number;
+    newMerged: number;
+    total?: number;
+  }> {
+    const data = await withStaysRetry(() =>
+      client.get<unknown>(path).then((r) => r.data),
     );
-    return coerceListingsPayload(res);
+    const items = extractListingsFromPayload(data);
+    const before = byId.size;
+    mergeListingsInto(byId, items);
+    return {
+      batchLen: items.length,
+      newMerged: byId.size - before,
+      total: extractListingsTotalCount(data),
+    };
+  }
+
+  try {
+    let reportedTotal: number | undefined;
+    let skipBroken = false;
+
+    const runSkipChain = async (fromZero: boolean) => {
+      for (let skip = fromZero ? 0 : pageSize, i = 0; i < maxBatches; i++, skip += pageSize) {
+        let batchLen = 0;
+        let newMerged = 0;
+        let total: number | undefined;
+        try {
+          ({ batchLen, newMerged, total } = await ingestPath(
+            `content/listings?skip=${skip}&limit=${pageSize}`,
+          ));
+        } catch {
+          if (skip === 0) throw new Error("skip-0-failed");
+          break;
+        }
+        if (total != null) reportedTotal = reportedTotal ?? total;
+        if (batchLen === 0) break;
+        if (reportedTotal != null && byId.size >= reportedTotal) break;
+        if (batchLen < pageSize) break;
+        if (skip > 0 && newMerged === 0 && batchLen === pageSize) {
+          skipBroken = true;
+          break;
+        }
+      }
+    };
+
+    try {
+      await runSkipChain(true);
+    } catch {
+      await ingestPath("content/listings");
+      try {
+        await runSkipChain(false);
+      } catch {
+        /* bare + incremental skip optional */
+      }
+    }
+
+    const incompleteByTotal =
+      reportedTotal != null && byId.size < reportedTotal;
+
+    if (skipBroken || incompleteByTotal) {
+      const startPage = skipBroken ? 2 : 1;
+      let stagnantPages = 0;
+      for (let page = startPage; page <= maxBatches; page++) {
+        let batchLen = 0;
+        let newMerged = 0;
+        try {
+          const r = await ingestPath(
+            `content/listings?page=${page}&limit=${pageSize}`,
+          );
+          batchLen = r.batchLen;
+          newMerged = r.newMerged;
+          if (r.total != null) reportedTotal = reportedTotal ?? r.total;
+        } catch {
+          break;
+        }
+        if (batchLen === 0) break;
+        if (reportedTotal != null && byId.size >= reportedTotal) break;
+        if (batchLen < pageSize) break;
+        if (
+          !(incompleteByTotal && reportedTotal != null) &&
+          newMerged === 0 &&
+          batchLen === pageSize
+        ) {
+          stagnantPages += 1;
+          if (stagnantPages >= 2) break;
+        } else {
+          stagnantPages = 0;
+        }
+      }
+    }
+
+    return Array.from(byId.values());
   } catch {
     return [];
   }
@@ -195,19 +314,30 @@ export async function fetchGuestProfileFromStays(
   const listingRef = booking._idlisting;
   let listing: StaysPropertyListing | null = null;
   let houseRules: StaysHouseRules | null = null;
+  let customFieldLabelById: ReadonlyMap<string, string> = new Map<
+    string,
+    string
+  >();
 
   if (listingRef) {
-    try {
-      listing = await fetchListingById(listingRef);
+    const [listingResult, labelsResult] = await Promise.allSettled([
+      fetchListingById(listingRef),
+      fetchListingCustomFieldLabelMap(),
+    ]);
+    listing =
+      listingResult.status === "fulfilled" ? listingResult.value : null;
+    customFieldLabelById =
+      labelsResult.status === "fulfilled"
+        ? labelsResult.value
+        : new Map<string, string>();
 
+    if (listing) {
       const listingRouteId = listing.id?.trim() || listingRef;
       try {
         houseRules = await fetchListingHouseRules(listingRouteId);
       } catch {
         houseRules = null;
       }
-    } catch {
-      listing = null;
     }
   }
 
@@ -248,6 +378,7 @@ export async function fetchGuestProfileFromStays(
     booking,
     listing,
     houseRules,
+    customFieldLabelById,
   );
 
   const serviceOffers = serviceOffersForGuest(extras);

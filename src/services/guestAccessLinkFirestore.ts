@@ -25,6 +25,16 @@ function toDate(v: unknown): Date | null {
   return null
 }
 
+function parseCustomFieldVisibility(data: unknown): Record<string, boolean> | null {
+  if (!data || typeof data !== 'object' || Array.isArray(data)) return null
+  const o = data as Record<string, unknown>
+  const out: Record<string, boolean> = {}
+  for (const [k, v] of Object.entries(o)) {
+    if (typeof v === 'boolean') out[k] = v
+  }
+  return Object.keys(out).length > 0 ? out : null
+}
+
 export function mapGuestAccessLinkDoc(
   reservationCode: string,
   data: Record<string, unknown>
@@ -36,6 +46,7 @@ export function mapGuestAccessLinkDoc(
     reservationCode,
     propertyId: propertyId.trim(),
     accessActive,
+    customFieldVisibility: parseCustomFieldVisibility(data.customFieldVisibility),
     createdAt: toDate(data.createdAt),
     updatedAt: toDate(data.updatedAt),
   }
@@ -57,6 +68,7 @@ export async function upsertGuestAccessLink(input: {
   reservationCode: string
   propertyId: string
   accessActive?: boolean
+  customFieldVisibility?: Record<string, boolean> | null
 }): Promise<void> {
   const db = getFirebaseFirestore()
   if (!db) throw new Error('AUTH_NOT_CONFIGURED')
@@ -71,6 +83,9 @@ export async function upsertGuestAccessLink(input: {
       accessActive: input.accessActive !== false,
       updatedAt: serverTimestamp(),
       ...(existing.exists() ? {} : { createdAt: serverTimestamp() }),
+      ...(input.customFieldVisibility !== undefined
+        ? { customFieldVisibility: input.customFieldVisibility }
+        : {}),
     },
     { merge: true }
   )

@@ -28,7 +28,10 @@ function toItem(id: string, data: Record<string, unknown>): ServiceCatalogItem |
   const priceInCents =
     typeof raw === 'number' && Number.isFinite(raw) ? Math.max(0, Math.round(raw)) : 0
   const order = typeof data.order === 'number' && Number.isFinite(data.order) ? data.order : 0
-  return { id, name, description, priceInCents, order }
+  const rawWa = data.whatsappPhone
+  const whatsappPhone =
+    typeof rawWa === 'string' ? rawWa.replace(/\D/g, '').slice(0, 15) : ''
+  return { id, name, description, priceInCents, whatsappPhone, order }
 }
 
 /**
@@ -65,16 +68,19 @@ export async function addServiceCatalogItem(input: {
   name: string
   description: string
   priceInCents: number
+  whatsappPhone: string
 }): Promise<string> {
   if (!isFirebaseConfigured()) throw new Error('FIREBASE_NOT_CONFIGURED')
   const col = catalogRef()
   if (!col) throw new Error('FIREBASE_NOT_CONFIGURED')
 
+  const wa = input.whatsappPhone.replace(/\D/g, '').slice(0, 15)
   const now = await getMaxOrder()
   const ref = await addDoc(col, {
     name: input.name.trim(),
     description: (input.description || '').trim(),
     priceInCents: Math.max(0, Math.round(input.priceInCents)),
+    whatsappPhone: wa,
     order: now + 1,
     createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
@@ -96,16 +102,18 @@ async function getMaxOrder(): Promise<number> {
 
 export async function updateServiceCatalogItem(
   id: string,
-  input: { name: string; description: string; priceInCents: number }
+  input: { name: string; description: string; priceInCents: number; whatsappPhone: string }
 ): Promise<void> {
   if (!isFirebaseConfigured()) throw new Error('FIREBASE_NOT_CONFIGURED')
   const db = getFirebaseFirestore()
   if (!db) throw new Error('FIREBASE_NOT_CONFIGURED')
+  const wa = input.whatsappPhone.replace(/\D/g, '').slice(0, 15)
   const ref = doc(db, SERVICE_CATALOG_COLLECTION, id)
   await updateDoc(ref, {
     name: input.name.trim(),
     description: (input.description || '').trim(),
     priceInCents: Math.max(0, Math.round(input.priceInCents)),
+    whatsappPhone: wa,
     updatedAt: serverTimestamp(),
   })
 }

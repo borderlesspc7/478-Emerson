@@ -4,6 +4,7 @@ export const PATHS = {
   dashboard: '/',
   admin: '/admin',
   adminOrders: '/admin/pedidos',
+  adminServices: '/admin/servicos',
   adminProperties: '/admin/imoveis',
   adminAccess: '/admin/acessos',
   reservation: '/reserva',

@@ -1,3 +1,4 @@
+import { normalizeStaysCustomFields } from '../lib/staysCustomFields'
 import { htmlToDescriptionPlainText } from '../lib/propertyDescriptionCards'
 import type { GuestStay, GuestZenCurated, ServiceOffer } from '../types/guestStay'
 import type { PropertyCurationRecord } from '../types/propertyCuration'
@@ -361,7 +362,8 @@ export function mapStaysToGuestStayBundle(
   reservationCode: string,
   booking: StaysBooking,
   listing: StaysPropertyListing | null,
-  houseRules: StaysHouseRules | null
+  houseRules: StaysHouseRules | null,
+  customFieldLabelById?: ReadonlyMap<string, string> | null,
 ): StaysGuestStayBundle {
   const title = listing?._mstitle ? pickLocalized(listing._mstitle) : ''
   const propertyName =
@@ -473,6 +475,10 @@ export function mapStaysToGuestStayBundle(
     notes: internalNote || null,
     party: partyFromBooking(booking),
     totalPrice: priceFromBooking(booking),
+    staysCustomFields: normalizeStaysCustomFields(
+      listing?.customFields,
+      customFieldLabelById ?? undefined,
+    ),
   }
 
   return {

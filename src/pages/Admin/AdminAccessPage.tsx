@@ -6,13 +6,14 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useTranslation } from 'react-i18next'
+import { pickListingCardImageUrl } from '../../lib/staysListingMedia'
 import { subscribeGuestAccessLinks } from '../../services/guestAccessLinkFirestore'
 import { fetchListings } from '../../services/staysService'
 import { subscribePropertyCurations } from '../../services/propertyCurationFirestore'
 import type { GuestAccessLinkRecord } from '../../types/guestAccessLink'
 import type { PropertyCurationRecord } from '../../types/propertyCuration'
 import type { StaysPropertyListing } from '../../types/staysApi'
-import { AdminCreateAccess } from './AdminCreateAccess'
+import { AdminCreateAccess, type AdminPropertyPickerItem } from './AdminCreateAccess'
 import '../../components/AdminLayout/AdminLayout.css'
 import '../shared/guestContent.css'
 
@@ -64,7 +65,7 @@ export function AdminAccessPage() {
     return () => unsub()
   }, [])
 
-  const propertyOptions = useMemo(() => {
+  const propertyPickerItems = useMemo((): AdminPropertyPickerItem[] => {
     const byId = new Map<string, { listing?: StaysPropertyListing; curation?: PropertyCurationRecord }>()
     for (const l of listings) {
       const id = propertyKey(l)
@@ -80,10 +81,18 @@ export function AdminAccessPage() {
     }
     return Array.from(byId.entries())
       .map(([id, v]) => {
-        const label = v.listing ? listingTitle(v.listing) : v.curation?.displayName || id
-        return { id, label: `${label} (${id})` }
+        const listing = v.listing ?? null
+        const title = listing ? listingTitle(listing) : v.curation?.displayName || id
+        const partnerId = listing?.id?.trim()
+        const shortCode = partnerId && partnerId !== id ? partnerId : null
+        return {
+          propertyId: id,
+          title,
+          shortCode,
+          imageUrl: pickListingCardImageUrl(listing),
+        }
       })
-      .sort((a, b) => a.label.localeCompare(b.label, locale))
+      .sort((a, b) => a.title.localeCompare(b.title, locale))
   }, [listings, curations, locale])
 
   const columns = useMemo(
@@ -122,7 +131,10 @@ export function AdminAccessPage() {
       <h3 className="guest-content__section">{t('adminAccess.title')}</h3>
       <p className="guest-content__lead">{t('adminAccess.pageLead')}</p>
 
-      <AdminCreateAccess propertyOptions={propertyOptions} loadingOptions={loadingListings} />
+      <AdminCreateAccess
+        propertyPickerItems={propertyPickerItems}
+        loadingProperties={loadingListings}
+      />
 
       <h4 className="guest-content__section" style={{ marginBottom: '0.35rem' }}>
         {t('adminAccess.listTitle')}

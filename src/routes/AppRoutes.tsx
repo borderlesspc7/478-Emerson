@@ -10,6 +10,7 @@ import { AdminOrdersPage } from '../pages/Admin/AdminOrdersPage'
 import { AdminPropertiesPage } from '../pages/Admin/AdminPropertiesPage'
 import { AdminPropertyEditPage } from '../pages/Admin/AdminPropertyEditPage'
 import { AdminAccessPage } from '../pages/Admin/AdminAccessPage'
+import { AdminServicesPage } from '../pages/Admin/AdminServicesPage'
 import { ReservationPage } from '../pages/Reservation/ReservationPage'
 import { AboutPropertyPage } from '../pages/AboutProperty/AboutPropertyPage'
 import { ServicesPage } from '../pages/Services/ServicesPage'
@@ -30,12 +31,16 @@ export function AppRoutes() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route path={PATHS.dashboard} element={<DashboardPage />} />
-          <Route path={PATHS.admin} element={<AdminLayout />}>
-            <Route index element={<Navigate to={PATHS.adminOrders} replace />} />
-            <Route path="pedidos" element={<AdminOrdersPage />} />
-            <Route path="imoveis" element={<AdminPropertiesPage />} />
-            <Route path="imoveis/:propertyId" element={<AdminPropertyEditPage />} />
-            <Route path="acessos" element={<AdminAccessPage />} />
+          <Route path={PATHS.admin} element={<Navigate to={PATHS.adminOrders} replace />} />
+          <Route element={<AdminLayout />}>
+            <Route path={PATHS.adminOrders} element={<AdminOrdersPage />} />
+            <Route path={PATHS.adminServices} element={<AdminServicesPage />} />
+            <Route path={PATHS.adminProperties} element={<AdminPropertiesPage />} />
+            <Route
+              path={`${PATHS.adminProperties}/:propertyId`}
+              element={<AdminPropertyEditPage />}
+            />
+            <Route path={PATHS.adminAccess} element={<AdminAccessPage />} />
           </Route>
           <Route path={PATHS.reservation} element={<ReservationPage />} />
           <Route path={PATHS.aboutProperty} element={<AboutPropertyPage />} />
