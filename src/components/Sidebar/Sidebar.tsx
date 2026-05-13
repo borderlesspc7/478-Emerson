@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 import { useServiceRequests } from '../../hooks/useServiceRequests'
 import {
+  FiBarChart2,
   FiClipboard,
   FiHome,
   FiInfo,
@@ -53,7 +54,7 @@ export function Sidebar({
     { adminView: true }
   )
   const pendingOrdersCount = useMemo(
-    () => adminServiceRequests.filter((r) => r.status === 'pending').length,
+    () => adminServiceRequests.filter((r) => r.status !== 'completed').length,
     [adminServiceRequests]
   )
   const pendingOrdersBadge =
@@ -62,6 +63,11 @@ export function Sidebar({
   const nav = useMemo(() => {
     if (isAdmin && isAdminRoute) {
       return [
+        {
+          to: PATHS.admin,
+          labelKey: 'adminNav.dashboard' as const,
+          icon: FiBarChart2,
+        },
         {
           to: PATHS.adminOrders,
           labelKey: 'adminNav.orders' as const,
@@ -165,6 +171,7 @@ export function Sidebar({
                   to={to}
                   end={
                     to === PATHS.dashboard ||
+                    to === PATHS.admin ||
                     to === PATHS.adminOrders ||
                     to === PATHS.adminServices ||
                     to === PATHS.adminAccess

@@ -34,6 +34,9 @@ export function AppLayout() {
   const title = useMemo(() => {
     const adminBase = PATHS.admin
     if (pathname === adminBase || pathname.startsWith(`${adminBase}/`)) {
+      if (pathname === PATHS.admin || pathname === `${PATHS.admin}/`) {
+        return t('adminDashboard.title')
+      }
       if (pathname === PATHS.adminOrders) {
         return t('adminOrders.title')
       }

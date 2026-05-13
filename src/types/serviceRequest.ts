@@ -1,4 +1,4 @@
-export type ServiceRequestStatus = 'pending' | 'completed'
+export type ServiceRequestStatus = 'pending' | 'in_progress' | 'completed'
 
 /** Pedido na coleção `serviceRequests` (campo `userId` separa por utilizador). */
 export type ServiceRequestRecord = {

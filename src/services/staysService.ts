@@ -29,6 +29,11 @@ const CACHE_TTL_MS = 60_000;
 
 const cache = new Map<string, { expiresAt: number; value: unknown }>();
 
+/** Limpa o cache em memória da Stays (ex.: botão «Atualizar» no painel admin). */
+export function clearStaysClientCache(): void {
+  cache.clear();
+}
+
 /** Apenas em dev — ajuda a mapear respostas da API Stays; evitar em produção (dados sensíveis). */
 function devLogStays(label: string, ...args: unknown[]) {
   if (import.meta.env.DEV) {

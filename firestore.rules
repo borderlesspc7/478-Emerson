@@ -1,10 +1,21 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Admin: perfil Firestore com role explícita OU documento legado sem `role` mas
+    // JWT com e-mail corporativo (não @zen.com.br). Alinha com `syncUserProfileToFirestore`,
+    // que grava `role: admin` para estes e-mails — evita negar escrita quando o doc
+    // ainda não tem o campo (UI antiga inferia admin só pelo e-mail).
     function isAdmin() {
       return request.auth != null
         && exists(/databases/$(database)/documents/users/$(request.auth.uid))
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+        && (
+          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+          || (
+            !('role' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data)
+            && request.auth.token.email != null
+            && !(request.auth.token.email.matches('(?i).+@zen\\.com\\.br$'))
+          )
+        );
     }
 
     function isGuestUser() {
@@ -78,8 +89,7 @@ service cloud.firestore {
     match /guestAccessLinks/{reservationCode} {
       allow read: if request.auth != null;
       allow create, delete: if isAdmin();
-      allow update: if isAdmin();
-      allow update: if guestAccessUsageUpdateOnly(reservationCode);
+      allow update: if isAdmin() || guestAccessUsageUpdateOnly(reservationCode);
     }
 
     // Tentativas de login hóspede falhadas (sem auth obrigatório; payload limitado)

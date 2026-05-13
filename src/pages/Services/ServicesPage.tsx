@@ -218,15 +218,18 @@ export function ServicesPage() {
             </div>
             <div className="page-services__history-body" role="rowgroup">
               {requests.map((req) => {
-                const isPending = req.status === 'pending'
+                const isOpen = req.status !== 'completed'
                 const title = req.serviceName || t('servicesPage.unknownService')
                 const requested = formatRequestedAt(req.createdAt, locale)
                 const requestPrice = formatPrice(locale, req.priceInCents)
                 const requestReservation = req.reservationCode || reservationCode
                 const requestProperty = req.propertyName || propertyName
-                const statusLabel = isPending
-                  ? t('servicesPage.statusPending')
-                  : t('servicesPage.statusCompleted')
+                const statusLabel =
+                  req.status === 'completed'
+                    ? t('servicesPage.statusCompleted')
+                    : req.status === 'in_progress'
+                      ? t('servicesPage.statusInProgress')
+                      : t('servicesPage.statusPending')
 
                 return (
                   <div key={req.id} className="page-services__history-row" role="row">
@@ -244,7 +247,7 @@ export function ServicesPage() {
                     >
                       <span
                         className={`page-services__badge ${
-                          isPending
+                          isOpen
                             ? 'page-services__badge--pending'
                             : 'page-services__badge--completed'
                         }`}

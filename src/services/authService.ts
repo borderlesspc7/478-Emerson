@@ -26,6 +26,7 @@ import {
 import { filterGuestStayStaysCustomFields } from '../lib/staysCustomFields'
 import {
   getGuestAccessLink,
+  normalizeGuestAccessReservationCode,
   recordGuestAccessLinkUsage,
 } from './guestAccessLinkFirestore'
 import { getPropertyCuration } from './propertyCurationFirestore'
@@ -51,12 +52,16 @@ function mapUser(u: User, profile: FirestoreUserDocument | null = null): AppUser
   const looksGuestEmail =
     email?.toLowerCase().endsWith(`@${GUEST_FIREBASE_EMAIL_DOMAIN}`) ?? false
   const fromProfile = profile?.role
-  const role: AppUser['role'] =
-    fromProfile === 'guest' || fromProfile === 'admin'
-      ? fromProfile
-      : looksGuestEmail
+  // Só `admin` na UI quando o Firestore confirma — evita área admin com writes negadas
+  // (`isAdmin()` exige `role == 'admin'` ou legado sem campo + e-mail não-hóspede nas regras).
+  const role: AppUser['role'] | undefined =
+    fromProfile === 'admin'
+      ? 'admin'
+      : fromProfile === 'guest'
         ? 'guest'
-        : 'admin'
+        : looksGuestEmail
+          ? 'guest'
+          : undefined
 
   return {
     uid: u.uid,
@@ -372,7 +377,7 @@ export async function loginWithStaysReservation(
   }
 
   await ensureGuestProfileDocument(credUser.uid, {
-    reservationCode: normalized,
+    reservationCode: normalizeGuestAccessReservationCode(normalized),
     displayName,
     email: credUser.email ?? email,
   })

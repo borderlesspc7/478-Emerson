@@ -186,3 +186,45 @@
   border-radius: var(--radius-sm);
   border: 1px solid var(--border-default);
 }
+
+.thumb-slot {
+  position: relative;
+  display: inline-flex;
+}
+
+.thumb-slot__remove {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--surface-elevated) 92%, #000);
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thumb-slot__remove:hover {
+  background: color-mix(in srgb, #ef4444 85%, var(--surface-elevated));
+  color: #fff;
+}
+
+.admin-property-edit__upload-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  min-height: 1.5rem;
+}
+
+.admin-property-edit__upload-status .app-shell-loading__spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+}

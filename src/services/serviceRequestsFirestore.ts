@@ -52,13 +52,17 @@ function mapDoc(
   const status = data.status
   const statusNorm =
     typeof status === 'string' ? status.trim().toLowerCase() : status
-  const st: ServiceRequestStatus =
+  let st: ServiceRequestStatus = 'pending'
+  if (
     status === 'completed' ||
     statusNorm === 'completed' ||
     statusNorm === 'concluído' ||
     statusNorm === 'concluido'
-      ? 'completed'
-      : 'pending'
+  ) {
+    st = 'completed'
+  } else if (statusNorm === 'in_progress' || statusNorm === 'em_andamento' || statusNorm === 'em curso') {
+    st = 'in_progress'
+  }
   const rawPriceInCents = data.priceInCents
   const priceInCents =
     typeof rawPriceInCents === 'number' && Number.isFinite(rawPriceInCents)

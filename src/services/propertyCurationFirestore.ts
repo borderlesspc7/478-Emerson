@@ -1,7 +1,7 @@
 import {
   collection,
   doc,
-  getDoc,
+  getDocFromServer,
   onSnapshot,
   serverTimestamp,
   setDoc,
@@ -47,7 +47,7 @@ export async function getPropertyCuration(
   if (!isFirebaseConfigured()) return null
   const db = getFirebaseFirestore()
   if (!db) return null
-  const snap = await getDoc(doc(db, PROPERTY_CURATIONS_COLLECTION, propertyId))
+  const snap = await getDocFromServer(doc(db, PROPERTY_CURATIONS_COLLECTION, propertyId))
   if (!snap.exists()) return null
   return mapPropertyCurationDoc(propertyId, snap.data() as Record<string, unknown>)
 }

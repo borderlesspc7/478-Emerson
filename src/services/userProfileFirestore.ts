@@ -1,6 +1,6 @@
 import {
   doc,
-  getDoc,
+  getDocFromServer,
   serverTimestamp,
   setDoc,
   type Timestamp,
@@ -12,7 +12,7 @@ import type { FirestoreUserDocument } from '../types/firestoreUser'
 
 const USERS_COLLECTION = 'users'
 
-/** Evita `getDoc`/`setDoc` concorrentes no mesmo `users/{uid}` (ex.: login JIT + `onAuthStateChanged`). */
+/** Evita `getDocFromServer`/`setDoc` concorrentes no mesmo `users/{uid}` (ex.: login JIT + `onAuthStateChanged`). */
 const userDocSerializedChains = new Map<string, Promise<unknown>>()
 
 function runSerializedUserDocOperation<T>(uid: string, op: () => Promise<T>): Promise<T> {
@@ -54,7 +54,7 @@ export async function ensureGuestProfileDocument(
   if (!ref) return
 
   await runSerializedUserDocOperation(uid, async () => {
-    const snap = await getDoc(ref)
+    const snap = await getDocFromServer(ref)
     const isNew = !snap.exists()
 
     const payload: Record<string, unknown> = {
@@ -80,7 +80,7 @@ export async function syncUserProfileToFirestore(user: User): Promise<void> {
   if (!ref) return
 
   await runSerializedUserDocOperation(user.uid, async () => {
-    const snap = await getDoc(ref)
+    const snap = await getDocFromServer(ref)
     const isNew = !snap.exists()
 
     const emailLower = user.email?.toLowerCase() ?? ''
@@ -93,11 +93,11 @@ export async function syncUserProfileToFirestore(user: User): Promise<void> {
       updatedAt: serverTimestamp(),
     }
 
+    // Email corporativo / não-hóspede: o perfil Firestore deve ser admin para
+    // `isAdmin()` nas regras (ex.: guestAccessLinks). Não condicionar ao
+    // `role` anterior — um `role: 'guest'` incorreto bloqueava o sync para admin.
     if (!isGuestEmail) {
-      const prevRole = snap.data()?.['role'] as string | undefined
-      if (prevRole !== 'guest') {
-        payload.role = 'admin'
-      }
+      payload.role = 'admin'
     }
 
     if (isNew) {
@@ -116,7 +116,7 @@ export async function fetchUserProfileFromFirestore(
   if (!ref) return null
 
   return runSerializedUserDocOperation(uid, async () => {
-    const snap = await getDoc(ref)
+    const snap = await getDocFromServer(ref)
     if (!snap.exists()) return null
 
     const d = snap.data()

@@ -365,6 +365,7 @@
       "future": "Future",
       "expired": "Expired",
       "pending": "Pending",
+      "inProgress": "In progress",
       "completed": "Completed"
     },
     "guests": {
@@ -419,6 +420,7 @@
     "historyEmpty": "No requests yet. Pick a service above to create your first one.",
     "requestedAt": "Requested on {{date}}",
     "statusPending": "Pending",
+    "statusInProgress": "In progress",
     "statusCompleted": "Completed",
     "detailGuest": "Guest:",
     "detailReservation": "Reservation:",
@@ -475,10 +477,47 @@
   },
   "adminNav": {
     "aria": "Admin area sections",
+    "dashboard": "Dashboard",
     "orders": "Orders",
     "services": "Services",
     "properties": "Properties",
     "access": "Access links"
+  },
+  "adminDashboard": {
+    "title": "Admin dashboard",
+    "lead": "Near real-time metrics from Firestore (requests, guest links) and Stays (stays, listings). Use Refresh to clear the Stays client cache.",
+    "refresh": "Refresh",
+    "period": {
+      "label": "Chart period",
+      "today": "Today",
+      "last7": "Last 7 days",
+      "thisMonth": "This month"
+    },
+    "kpi": {
+      "guests": "Active guests",
+      "guestsHint": "Active links whose reservation is within the stay window (Stays).",
+      "orders": "Pending orders",
+      "ordersHint": "Requests not yet completed.",
+      "quality": "Incomplete units",
+      "qualityHint": "Listings without Zen garage photos or with Wi‑Fi still placeholder after heuristics.",
+      "magic": "Link usage",
+      "magicHint": "Share of active links with at least one recorded access (magic link / login)."
+    },
+    "topServicesTitle": "Most requested services (top 3)",
+    "chartTitle": "Order volume by category",
+    "chartSubtitle": "Auto-classified from service name; filtered by the period above.",
+    "chartSeries": "Orders",
+    "chartTooltipCount": "Orders",
+    "chartCategory": {
+      "cleaning": "Cleaning",
+      "linen": "Linen / laundry",
+      "maintenance": "Maintenance",
+      "other": "Other"
+    },
+    "urgentTitle": "Urgent actions",
+    "urgentLead": "Oldest pending requests (up to 5).",
+    "urgentEmpty": "No pending requests.",
+    "unknownService": "Service"
   },
   "adminServices": {
     "title": "Services area",
@@ -522,10 +561,14 @@
     "displayName": "Display name",
     "garagePhotos": "Photos — parking / garage",
     "elevatorPhotos": "Photos — elevator / route",
-    "dropHint": "Drop images here or click to choose files.",
+    "dropHint": "Drop images or click to choose files (JPG, PNG or WEBP, max 5 MB).",
     "uploading": "Uploading…",
-    "uploadOk": "Upload finished.",
-    "uploadFail": "Upload failed. Check permissions and connection.",
+    "uploadOk": "Image uploaded successfully!",
+    "uploadOkPlural": "Images uploaded successfully!",
+    "uploadFail": "Error uploading image.",
+    "uploadFileTooLarge": "File is too large (maximum 5 MB).",
+    "uploadUnsupported": "Unsupported format. Use JPG, PNG or WEBP.",
+    "removePhoto": "Remove image",
     "clearGarage": "Clear garage photos",
     "clearElevator": "Clear elevator photos",
     "manualAccess": "Access instructions (text)",
@@ -568,6 +611,8 @@
     "validation": "Enter the code and choose a property.",
     "success": "Access created successfully.",
     "error": "Could not save the link.",
+    "errorPermission":
+      "Firestore permission denied. Make sure your user has `role: \"admin\"` in `users/{uid}` and you are signed in.",
     "visibilityTitle": "Custom fields visible to the guest",
     "visibilityLead": "Each switch maps to a Stays API custom field for this listing. Turn off anything that should not appear in the guide (Wi‑Fi, passwords, instructions, etc.).",
     "loadingCustomFields": "Loading listing custom fields…",

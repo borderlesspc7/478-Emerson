@@ -9,11 +9,20 @@ import {
   savePropertyCuration,
 } from '../../services/propertyCurationFirestore'
 import { fetchListingById } from '../../services/staysService'
-import { uploadPropertyCurationImage } from '../../services/storageUpload'
+import {
+  tryDeletePropertyImageByUrl,
+  uploadPropertyImage,
+} from '../../services/storageService'
 import type { StaysPropertyListing } from '../../types/staysApi'
 import { PATHS } from '../../routes/path'
 import '../../components/AdminLayout/AdminLayout.css'
 import '../shared/guestContent.css'
+
+const DROP_ACCEPT = {
+  'image/jpeg': ['.jpg', '.jpeg'],
+  'image/png': ['.png'],
+  'image/webp': ['.webp'],
+} as const
 
 function listingTitle(l: StaysPropertyListing | null): string {
   if (!l) return ''
@@ -27,6 +36,10 @@ function listingTitle(l: StaysPropertyListing | null): string {
     if (txt) return String(txt).trim().slice(0, 120)
   }
   return l.internalName?.trim() || l.id?.trim() || l._id || ''
+}
+
+function isUploadErrorCode(msg: string, code: string): boolean {
+  return msg === code
 }
 
 export function AdminPropertyEditPage() {
@@ -45,6 +58,39 @@ export function AdminPropertyEditPage() {
   const [saving, setSaving] = useState(false)
   const [uploadingG, setUploadingG] = useState(false)
   const [uploadingE, setUploadingE] = useState(false)
+
+  const persistCuration = useCallback(
+    async (nextGarage: string[], nextElevator: string[]) => {
+      await savePropertyCuration(propertyId, {
+        garagePhotoUrls: nextGarage,
+        elevatorPhotoUrls: nextElevator,
+        manualAccessTips: manualAccess,
+        manualPropertyTips: manualProperty,
+        displayName: title || null,
+      })
+    },
+    [propertyId, manualAccess, manualProperty, title],
+  )
+
+  const toastUploadError = useCallback(
+    (e: unknown) => {
+      const msg = e instanceof Error ? e.message : ''
+      if (isUploadErrorCode(msg, 'storage/file-too-large')) {
+        showToast(t('adminPropertyEdit.uploadFileTooLarge'), 'error')
+        return
+      }
+      if (isUploadErrorCode(msg, 'storage/unsupported-format')) {
+        showToast(t('adminPropertyEdit.uploadUnsupported'), 'error')
+        return
+      }
+      if (isUploadErrorCode(msg, 'storage/not-configured') || isUploadErrorCode(msg, 'storage/invalid-property-id')) {
+        showToast(t('adminPropertyEdit.uploadFail'), 'error')
+        return
+      }
+      showToast(t('adminPropertyEdit.uploadFail'), 'error')
+    },
+    [showToast, t],
+  )
 
   useEffect(() => {
     if (!propertyId) return
@@ -81,17 +127,22 @@ export function AdminPropertyEditPage() {
       try {
         const urls: string[] = []
         for (const f of files) {
-          urls.push(await uploadPropertyCurationImage(propertyId, f))
+          urls.push(await uploadPropertyImage(propertyId, f, 'garage'))
         }
-        setGarageUrls((prev) => [...prev, ...urls])
-        showToast(t('adminPropertyEdit.uploadOk'), 'success')
-      } catch {
-        showToast(t('adminPropertyEdit.uploadFail'), 'error')
+        const nextGarage = [...garageUrls, ...urls]
+        setGarageUrls(nextGarage)
+        await persistCuration(nextGarage, elevatorUrls)
+        showToast(
+          urls.length > 1 ? t('adminPropertyEdit.uploadOkPlural') : t('adminPropertyEdit.uploadOk'),
+          'success',
+        )
+      } catch (e) {
+        toastUploadError(e)
       } finally {
         setUploadingG(false)
       }
     },
-    [propertyId, showToast, t]
+    [propertyId, garageUrls, elevatorUrls, persistCuration, showToast, t, toastUploadError],
   )
 
   const onDropElevator = useCallback(
@@ -101,27 +152,88 @@ export function AdminPropertyEditPage() {
       try {
         const urls: string[] = []
         for (const f of files) {
-          urls.push(await uploadPropertyCurationImage(propertyId, f))
+          urls.push(await uploadPropertyImage(propertyId, f, 'elevator'))
         }
-        setElevatorUrls((prev) => [...prev, ...urls])
-        showToast(t('adminPropertyEdit.uploadOk'), 'success')
-      } catch {
-        showToast(t('adminPropertyEdit.uploadFail'), 'error')
+        const nextElevator = [...elevatorUrls, ...urls]
+        setElevatorUrls(nextElevator)
+        await persistCuration(garageUrls, nextElevator)
+        showToast(
+          urls.length > 1 ? t('adminPropertyEdit.uploadOkPlural') : t('adminPropertyEdit.uploadOk'),
+          'success',
+        )
+      } catch (e) {
+        toastUploadError(e)
       } finally {
         setUploadingE(false)
       }
     },
-    [propertyId, showToast, t]
+    [propertyId, garageUrls, elevatorUrls, persistCuration, showToast, t, toastUploadError],
   )
+
+  const removeGarageAt = useCallback(
+    async (url: string) => {
+      if (!propertyId) return
+      await tryDeletePropertyImageByUrl(url)
+      const next = garageUrls.filter((u) => u !== url)
+      setGarageUrls(next)
+      try {
+        await persistCuration(next, elevatorUrls)
+      } catch {
+        showToast(t('adminPropertyEdit.saveFail'), 'error')
+      }
+    },
+    [propertyId, garageUrls, elevatorUrls, persistCuration, showToast, t],
+  )
+
+  const removeElevatorAt = useCallback(
+    async (url: string) => {
+      if (!propertyId) return
+      await tryDeletePropertyImageByUrl(url)
+      const next = elevatorUrls.filter((u) => u !== url)
+      setElevatorUrls(next)
+      try {
+        await persistCuration(garageUrls, next)
+      } catch {
+        showToast(t('adminPropertyEdit.saveFail'), 'error')
+      }
+    },
+    [propertyId, garageUrls, elevatorUrls, persistCuration, showToast, t],
+  )
+
+  const clearGarage = useCallback(async () => {
+    if (!propertyId) return
+    for (const u of garageUrls) {
+      await tryDeletePropertyImageByUrl(u)
+    }
+    setGarageUrls([])
+    try {
+      await persistCuration([], elevatorUrls)
+    } catch {
+      showToast(t('adminPropertyEdit.saveFail'), 'error')
+    }
+  }, [propertyId, garageUrls, elevatorUrls, persistCuration, showToast, t])
+
+  const clearElevator = useCallback(async () => {
+    if (!propertyId) return
+    for (const u of elevatorUrls) {
+      await tryDeletePropertyImageByUrl(u)
+    }
+    setElevatorUrls([])
+    try {
+      await persistCuration(garageUrls, [])
+    } catch {
+      showToast(t('adminPropertyEdit.saveFail'), 'error')
+    }
+  }, [propertyId, garageUrls, elevatorUrls, persistCuration, showToast, t])
 
   const dzG = useDropzone({
     onDrop: onDropGarage,
-    accept: { 'image/*': [] },
+    accept: DROP_ACCEPT,
     disabled: uploadingG || !propertyId,
   })
   const dzE = useDropzone({
     onDrop: onDropElevator,
-    accept: { 'image/*': [] },
+    accept: DROP_ACCEPT,
     disabled: uploadingE || !propertyId,
   })
 
@@ -165,7 +277,7 @@ export function AdminPropertyEditPage() {
       {loading ? (
         <p className="guest-content__card-meta">{t('adminPropertyEdit.loading')}</p>
       ) : (
-        <form className="admin-form" onSubmit={handleSave}>
+        <form className="admin-form admin-property-edit" onSubmit={handleSave}>
           <label>
             <span>{t('adminPropertyEdit.displayName')}</span>
             <input value={title} onChange={(e) => setTitle(e.target.value)} />
@@ -183,21 +295,29 @@ export function AdminPropertyEditPage() {
               <p>{t('adminPropertyEdit.dropHint')}</p>
             </div>
             {uploadingG ? (
-              <p className="guest-content__card-meta">{t('adminPropertyEdit.uploading')}</p>
+              <div className="admin-property-edit__upload-status" role="status" aria-live="polite">
+                <span className="app-shell-loading__spinner" aria-hidden />
+                <span className="guest-content__card-meta">{t('adminPropertyEdit.uploading')}</span>
+              </div>
             ) : null}
             <div className="thumb-row">
               {garageUrls.map((url) => (
-                <img key={url} src={url} alt="" />
+                <div key={url} className="thumb-slot">
+                  <img src={url} alt="" />
+                  <button
+                    type="button"
+                    className="thumb-slot__remove"
+                    onClick={() => void removeGarageAt(url)}
+                    aria-label={t('adminPropertyEdit.removePhoto')}
+                    title={t('adminPropertyEdit.removePhoto')}
+                  >
+                    ×
+                  </button>
+                </div>
               ))}
             </div>
             {garageUrls.length ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => setGarageUrls([])}
-                style={{ marginTop: '0.5rem' }}
-              >
+              <Button type="button" variant="ghost" size="sm" onClick={() => void clearGarage()} style={{ marginTop: '0.5rem' }}>
                 {t('adminPropertyEdit.clearGarage')}
               </Button>
             ) : null}
@@ -215,11 +335,25 @@ export function AdminPropertyEditPage() {
               <p>{t('adminPropertyEdit.dropHint')}</p>
             </div>
             {uploadingE ? (
-              <p className="guest-content__card-meta">{t('adminPropertyEdit.uploading')}</p>
+              <div className="admin-property-edit__upload-status" role="status" aria-live="polite">
+                <span className="app-shell-loading__spinner" aria-hidden />
+                <span className="guest-content__card-meta">{t('adminPropertyEdit.uploading')}</span>
+              </div>
             ) : null}
             <div className="thumb-row">
               {elevatorUrls.map((url) => (
-                <img key={url} src={url} alt="" />
+                <div key={url} className="thumb-slot">
+                  <img src={url} alt="" />
+                  <button
+                    type="button"
+                    className="thumb-slot__remove"
+                    onClick={() => void removeElevatorAt(url)}
+                    aria-label={t('adminPropertyEdit.removePhoto')}
+                    title={t('adminPropertyEdit.removePhoto')}
+                  >
+                    ×
+                  </button>
+                </div>
               ))}
             </div>
             {elevatorUrls.length ? (
@@ -227,7 +361,7 @@ export function AdminPropertyEditPage() {
                 type="button"
                 variant="ghost"
                 size="sm"
-                onClick={() => setElevatorUrls([])}
+                onClick={() => void clearElevator()}
                 style={{ marginTop: '0.5rem' }}
               >
                 {t('adminPropertyEdit.clearElevator')}

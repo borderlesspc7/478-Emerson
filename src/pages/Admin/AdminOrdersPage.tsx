@@ -52,10 +52,12 @@ export function AdminOrdersPage() {
       }),
       columnHelper.accessor('status', {
         header: t('adminOrders.colStatus'),
-        cell: (info) =>
-          info.getValue() === 'completed'
-            ? t('admin.status.completed')
-            : t('admin.status.pending'),
+        cell: (info) => {
+          const v = info.getValue()
+          if (v === 'completed') return t('admin.status.completed')
+          if (v === 'in_progress') return t('admin.status.inProgress')
+          return t('admin.status.pending')
+        },
       }),
       columnHelper.display({
         id: 'actions',

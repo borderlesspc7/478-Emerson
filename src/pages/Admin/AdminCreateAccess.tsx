@@ -13,7 +13,12 @@ import { useToast } from '../../contexts/ToastContext'
 import { guestDirectEntryAbsUrl } from '../../lib/guestDirectLink'
 import { normalizeStaysCustomFields } from '../../lib/staysCustomFields'
 import type { StaysCustomFieldGuest } from '../../types/staysCustomField'
-import { upsertGuestAccessLink } from '../../services/guestAccessLinkFirestore'
+import { getFirebaseAuth } from '../../lib/firebase'
+import {
+  normalizeGuestAccessReservationCode,
+  upsertGuestAccessLink,
+} from '../../services/guestAccessLinkFirestore'
+import { syncUserProfileToFirestore } from '../../services/userProfileFirestore'
 import {
   fetchListingById,
   fetchListingCustomFieldLabelMap,
@@ -166,6 +171,10 @@ export function AdminCreateAccess({
     }
     setSubmitting(true)
     try {
+      const authUser = getFirebaseAuth()?.currentUser
+      if (authUser) {
+        await syncUserProfileToFirestore(authUser)
+      }
       await upsertGuestAccessLink({
         reservationCode: trimmed,
         propertyId: propertyId.trim(),
@@ -173,15 +182,31 @@ export function AdminCreateAccess({
         customFieldVisibility:
           Object.keys(visibility).length > 0 ? visibility : undefined,
       })
-      setLastGuestDirectUrl(guestDirectEntryAbsUrl(trimmed))
+      setLastGuestDirectUrl(
+        guestDirectEntryAbsUrl(normalizeGuestAccessReservationCode(trimmed)),
+      )
       showToast(t('adminCreateAccess.success'), 'success')
       setCode('')
       setPropertyId('')
       setPropertySummary('')
       setFieldDefs([])
       setVisibility({})
-    } catch {
-      showToast(t('adminCreateAccess.error'), 'error')
+    } catch (err: unknown) {
+      console.error('[AdminCreateAccess] upsertGuestAccessLink', err)
+      const code =
+        err && typeof err === 'object' && 'code' in err
+          ? String((err as { code: string }).code)
+          : ''
+      if (code === 'permission-denied') {
+        showToast(t('adminCreateAccess.errorPermission'), 'error')
+      } else if (
+        err instanceof Error &&
+        err.message === 'guest-access/invalid-reservation-code'
+      ) {
+        showToast(t('adminCreateAccess.validation'), 'error')
+      } else {
+        showToast(t('adminCreateAccess.error'), 'error')
+      }
     } finally {
       setSubmitting(false)
     }

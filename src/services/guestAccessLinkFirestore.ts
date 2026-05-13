@@ -1,7 +1,7 @@
 import {
   collection,
   doc,
-  getDoc,
+  getDocFromServer,
   increment,
   onSnapshot,
   serverTimestamp,
@@ -17,7 +17,30 @@ import type { GuestAccessLinkRecord } from '../types/guestAccessLink'
 export const GUEST_ACCESS_LINKS_COLLECTION = 'guestAccessLinks'
 
 export function normalizeGuestAccessReservationCode(raw: string): string {
-  return raw.trim().toUpperCase()
+  const s = raw
+    .trim()
+    .toUpperCase()
+    .replace(/\//g, '-')
+    .replace(/\\/g, '-')
+    .replace(/[\u0000-\u001F\u007F]/g, '')
+    .slice(0, 800)
+  if (!s) return ''
+  if (/^\.+$/.test(s)) return 'EMPTY'
+  return s
+}
+
+function scrubCustomFieldVisibility(
+  input: Record<string, boolean> | null | undefined,
+): Record<string, boolean> | undefined {
+  if (!input || typeof input !== 'object') return undefined
+  const out: Record<string, boolean> = {}
+  for (const [k, v] of Object.entries(input)) {
+    if (typeof v !== 'boolean') continue
+    const key = String(k).trim().slice(0, 300)
+    if (!key) continue
+    out[key] = v
+  }
+  return Object.keys(out).length > 0 ? out : undefined
 }
 
 function toDate(v: unknown): Date | null {
@@ -75,7 +98,8 @@ export async function getGuestAccessLink(
   const db = getFirebaseFirestore()
   if (!db) return null
   const id = normalizeGuestAccessReservationCode(reservationCode)
-  const snap = await getDoc(doc(db, GUEST_ACCESS_LINKS_COLLECTION, id))
+  if (!id) return null
+  const snap = await getDocFromServer(doc(db, GUEST_ACCESS_LINKS_COLLECTION, id))
   if (!snap.exists()) return null
   return mapGuestAccessLinkDoc(id, snap.data() as Record<string, unknown>)
 }
@@ -89,22 +113,32 @@ export async function upsertGuestAccessLink(input: {
   const db = getFirebaseFirestore()
   if (!db) throw new Error('AUTH_NOT_CONFIGURED')
   const id = normalizeGuestAccessReservationCode(input.reservationCode)
+  if (!id) {
+    throw new Error('guest-access/invalid-reservation-code')
+  }
+  const pid = input.propertyId.trim()
+  if (!pid) {
+    throw new Error('guest-access/invalid-property-id')
+  }
   const ref = doc(db, GUEST_ACCESS_LINKS_COLLECTION, id)
-  const existing = await getDoc(ref)
-  await setDoc(
-    ref,
-    {
-      reservationCode: id,
-      propertyId: input.propertyId.trim(),
-      accessActive: input.accessActive !== false,
-      updatedAt: serverTimestamp(),
-      ...(existing.exists() ? {} : { createdAt: serverTimestamp() }),
-      ...(input.customFieldVisibility !== undefined
-        ? { customFieldVisibility: input.customFieldVisibility }
-        : {}),
-    },
-    { merge: true }
+  const existing = await getDocFromServer(ref)
+
+  const visibility = scrubCustomFieldVisibility(
+    input.customFieldVisibility === undefined
+      ? undefined
+      : input.customFieldVisibility ?? undefined,
   )
+
+  const payload: Record<string, unknown> = {
+    reservationCode: id,
+    propertyId: pid,
+    accessActive: input.accessActive !== false,
+    updatedAt: serverTimestamp(),
+    ...(existing.exists() ? {} : { createdAt: serverTimestamp() }),
+    ...(visibility !== undefined ? { customFieldVisibility: visibility } : {}),
+  }
+
+  await setDoc(ref, payload, { merge: true })
 }
 
 /**
@@ -118,8 +152,10 @@ export async function recordGuestAccessLinkUsage(
   if (!db || typeof navigator === 'undefined') return
 
   const id = normalizeGuestAccessReservationCode(reservationCode)
+  if (!id) return
+
   const ref = doc(db, GUEST_ACCESS_LINKS_COLLECTION, id)
-  const snap = await getDoc(ref)
+  const snap = await getDocFromServer(ref)
   if (!snap.exists()) return
 
   const deviceInfo = buildSimplifiedDeviceInfo(navigator.userAgent).slice(0, 500)

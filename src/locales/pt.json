@@ -365,6 +365,7 @@
       "future": "Futuro",
       "expired": "Expirado",
       "pending": "Pendente",
+      "inProgress": "Em curso",
       "completed": "Concluído"
     },
     "guests": {
@@ -419,6 +420,7 @@
     "historyEmpty": "Ainda não há pedidos. Escolha um serviço acima para registar o primeiro.",
     "requestedAt": "Pedido em {{date}}",
     "statusPending": "Pendente",
+    "statusInProgress": "Em curso",
     "statusCompleted": "Concluído",
     "detailGuest": "Hóspede:",
     "detailReservation": "Reserva:",
@@ -475,10 +477,47 @@
   },
   "adminNav": {
     "aria": "Secções da área administrativa",
+    "dashboard": "Painel",
     "orders": "Pedidos",
     "services": "Serviços",
     "properties": "Imóveis",
     "access": "Acessos"
+  },
+  "adminDashboard": {
+    "title": "Painel administrativo",
+    "lead": "Métricas em tempo quase real: Firestore (pedidos, vínculos) e Stays (estadias, listagem). Use «Atualizar» para limpar a cache da Stays.",
+    "refresh": "Atualizar",
+    "period": {
+      "label": "Período do gráfico",
+      "today": "Hoje",
+      "last7": "Últimos 7 dias",
+      "thisMonth": "Este mês"
+    },
+    "kpi": {
+      "guests": "Hóspedes ativos",
+      "guestsHint": "Vínculos ativos cuja reserva está dentro da janela de estadia (Stays).",
+      "orders": "Pedidos pendentes",
+      "ordersHint": "Pedidos ainda não concluídos.",
+      "quality": "Unidades incompletas",
+      "qualityHint": "Imóveis sem fotos de garagem na curadoria Zen ou com Wi‑Fi ainda «—» após heurísticas.",
+      "magic": "Utilização do link",
+      "magicHint": "Percentagem de vínculos ativos com pelo menos um acesso (link mágico / login)."
+    },
+    "topServicesTitle": "Serviços mais solicitados (top 3)",
+    "chartTitle": "Volume de pedidos por categoria",
+    "chartSubtitle": "Classificação automática pelo nome do serviço; filtra pelo período acima.",
+    "chartSeries": "Pedidos",
+    "chartTooltipCount": "Pedidos",
+    "chartCategory": {
+      "cleaning": "Limpeza",
+      "linen": "Enxoval",
+      "maintenance": "Manutenção",
+      "other": "Outros"
+    },
+    "urgentTitle": "Ações urgentes",
+    "urgentLead": "Pedidos pendentes mais antigos (máximo 5).",
+    "urgentEmpty": "Nenhum pedido pendente.",
+    "unknownService": "Serviço"
   },
   "adminServices": {
     "title": "Área de serviços",
@@ -522,10 +561,14 @@
     "displayName": "Nome de exibição",
     "garagePhotos": "Fotos — vaga / garagem",
     "elevatorPhotos": "Fotos — elevador / caminho",
-    "dropHint": "Arraste imagens ou clique para escolher ficheiros.",
+    "dropHint": "Arraste imagens ou clique para escolher ficheiros (JPG, PNG ou WEBP, máx. 5 MB).",
     "uploading": "A enviar…",
-    "uploadOk": "Upload concluído.",
-    "uploadFail": "Falha no upload. Verifique permissões e ligação.",
+    "uploadOk": "Imagem enviada com sucesso!",
+    "uploadOkPlural": "Imagens enviadas com sucesso!",
+    "uploadFail": "Erro ao enviar imagem.",
+    "uploadFileTooLarge": "Ficheiro demasiado grande (máximo 5 MB).",
+    "uploadUnsupported": "Formato não suportado. Use JPG, PNG ou WEBP.",
+    "removePhoto": "Remover imagem",
     "clearGarage": "Limpar fotos da garagem",
     "clearElevator": "Limpar fotos do elevador",
     "manualAccess": "Instruções de acesso (texto)",
@@ -568,6 +611,8 @@
     "validation": "Preencha o código e escolha um imóvel.",
     "success": "Acesso criado com sucesso.",
     "error": "Não foi possível guardar o vínculo.",
+    "errorPermission":
+      "Sem permissão no Firestore (permission-denied). Confirme que o seu utilizador tem `role: \"admin\"` em `users/{uid}` e que está autenticado.",
     "visibilityTitle": "Campos personalizados visíveis para o hóspede",
     "visibilityLead": "Cada interruptor corresponde a um campo da API Stays deste imóvel. Desligue o que não deve aparecer no Guia (Wi‑Fi, senhas, instruções, etc.).",
     "loadingCustomFields": "A carregar campos do imóvel…",

@@ -1,420 +1,216 @@
-import { useMemo, useState, type FormEvent } from 'react'
+import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
+import { FiAlertTriangle, FiRefreshCw, FiShoppingBag, FiTrendingUp, FiUsers } from 'react-icons/fi'
+import { Link } from 'react-router-dom'
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 import { Button } from '../../components/ui/Button/Button'
-import { mockActiveGuests, mockServiceRequestsAdmin } from '../../data/adminMock'
-import { getGuestAccessWindows, upsertGuestAccessWindow } from '../../lib/guestAccess'
-import type { ActiveGuest, GuestAccessStatus, ServiceRequestAdmin } from '../../types/admin'
+import { useAdminAnalytics, type AdminAnalyticsPeriodId } from '../../hooks/useAdminAnalytics'
+import { PATHS } from '../../routes/path'
+import type { ServiceOrderCategoryKey } from '../../services/adminAnalyticsCompute'
+import '../../components/AdminLayout/AdminLayout.css'
 import '../shared/guestContent.css'
 import './AdminDashboardPage.css'
+import './AdminDashboardPage.css'
 
-const tabKeys = ['guests', 'create', 'services'] as const
-
-type ServiceGroup = {
-  reservationCode: string
-  items: ServiceRequestAdmin[]
-}
-
-function normalizeDate(value: string): Date {
-  return new Date(`${value}T00:00:00`)
-}
-
-function getGuestStatus(guest: ActiveGuest): GuestAccessStatus {
-  const now = new Date()
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const checkIn = normalizeDate(guest.checkInDate)
-  const checkOut = normalizeDate(guest.checkOutDate)
-
-  if (today < checkIn) return 'future'
-  if (today > checkOut) return 'expired'
-  return 'active'
-}
-
-function formatDate(value: string, locale: string): string {
-  return new Intl.DateTimeFormat(locale, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  }).format(normalizeDate(value))
-}
-
-function formatDateTime(value: string, locale: string): string {
-  return new Intl.DateTimeFormat(locale, {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  }).format(new Date(value))
-}
-
-function groupServicesByReservation(services: ServiceRequestAdmin[]): ServiceGroup[] {
-  const map = new Map<string, ServiceRequestAdmin[]>()
-
-  for (const service of services) {
-    const list = map.get(service.reservationCode) ?? []
-    list.push(service)
-    map.set(service.reservationCode, list)
-  }
-
-  return Array.from(map.entries()).map(([reservationCode, items]) => ({
-    reservationCode,
-    items: items.sort(
-      (a, b) => new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime()
-    ),
-  }))
+function categoryLabel(t: (k: string) => string, key: ServiceOrderCategoryKey): string {
+  return t(`adminDashboard.chartCategory.${key}`)
 }
 
 export function AdminDashboardPage() {
   const { t, i18n } = useTranslation()
-  const [activeTab, setActiveTab] = useState<(typeof tabKeys)[number]>('guests')
-  const [guests, setGuests] = useState<ActiveGuest[]>(() => {
-    const fromAccess = getGuestAccessWindows().map((window) => ({
-      id: `access-${window.reservationCode}`,
-      reservationCode: window.reservationCode,
-      checkInDate: window.startDate,
-      checkOutDate: window.endDate,
-    }))
+  const locale = i18n.language === 'en' ? 'en-US' : 'pt-BR'
+  const {
+    period,
+    setPeriod,
+    refresh,
+    refreshing,
+    staysLoading,
+    activeGuestsLoading,
+    activeGuestsInStayWindow,
+    pendingOrdersCount,
+    incompleteUnitsCount,
+    magicLinkUsagePercent,
+    topServices,
+    volumeByCategory,
+    urgentOrders,
+  } = useAdminAnalytics()
 
-    const uniqueByReservation = new Map<string, ActiveGuest>()
-    for (const guest of [...fromAccess, ...mockActiveGuests]) {
-      if (!uniqueByReservation.has(guest.reservationCode)) {
-        uniqueByReservation.set(guest.reservationCode, guest)
-      }
-    }
-    return Array.from(uniqueByReservation.values())
-  })
-  const [services, setServices] = useState<ServiceRequestAdmin[]>(mockServiceRequestsAdmin)
-  const [reservationCode, setReservationCode] = useState('')
-  const [startDate, setStartDate] = useState('')
-  const [endDate, setEndDate] = useState('')
-  const [formError, setFormError] = useState<string | null>(null)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
-
-  const pendingServices = useMemo(
-    () => services.filter((service) => service.status === 'pending'),
-    [services]
+  const chartData = useMemo(
+    () =>
+      volumeByCategory.map((row) => ({
+        name: categoryLabel(t, row.category),
+        count: row.count,
+      })),
+    [volumeByCategory, t],
   )
 
-  const completedServices = useMemo(
-    () => services.filter((service) => service.status === 'completed'),
-    [services]
-  )
+  const periodOptions: { id: AdminAnalyticsPeriodId; labelKey: string }[] = [
+    { id: 'today', labelKey: 'adminDashboard.period.today' },
+    { id: 'last7', labelKey: 'adminDashboard.period.last7' },
+    { id: 'thisMonth', labelKey: 'adminDashboard.period.thisMonth' },
+  ]
 
-  const guestByReservation = useMemo(() => {
-    const entries = guests.map((guest) => [guest.reservationCode, guest] as const)
-    return new Map(entries)
-  }, [guests])
-
-  const pendingServiceGroups = useMemo(
-    () => groupServicesByReservation(pendingServices),
-    [pendingServices]
-  )
-
-  const completedServiceGroups = useMemo(
-    () => groupServicesByReservation(completedServices),
-    [completedServices]
-  )
-
-  function resetCreateForm() {
-    setReservationCode('')
-    setStartDate('')
-    setEndDate('')
-  }
-
-  function handleCreateAccess(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    setFormError(null)
-    setSuccessMessage(null)
-
-    if (!reservationCode.trim() || !startDate || !endDate) {
-      setFormError(t('admin.create.errorRequired'))
-      return
-    }
-
-    if (normalizeDate(endDate) < normalizeDate(startDate)) {
-      setFormError(t('admin.create.errorDateRange'))
-      return
-    }
-
-    const newGuest: ActiveGuest = {
-      id: `guest-${Date.now()}`,
-      reservationCode: reservationCode.trim().toUpperCase(),
-      checkInDate: startDate,
-      checkOutDate: endDate,
-    }
-
-    upsertGuestAccessWindow({
-      reservationCode: newGuest.reservationCode,
-      startDate,
-      endDate,
-    })
-
-    setGuests((current) => {
-      const withoutSameCode = current.filter(
-        (guest) => guest.reservationCode !== newGuest.reservationCode
-      )
-      return [newGuest, ...withoutSameCode]
-    })
-    resetCreateForm()
-    setSuccessMessage(t('admin.create.success'))
-    setActiveTab('guests')
-
-    window.setTimeout(() => {
-      setSuccessMessage(null)
-    }, 2400)
-  }
-
-  function handleCompleteService(serviceId: string) {
-    setServices((current) =>
-      current.map((service) =>
-        service.id === serviceId ? { ...service, status: 'completed' } : service
-      )
-    )
-  }
-
-  function handleDeleteService(serviceId: string) {
-    setServices((current) => current.filter((service) => service.id !== serviceId))
-  }
+  const pendingTone =
+    pendingOrdersCount > 5 ? 'is-critical' : pendingOrdersCount > 0 ? 'is-warn' : ''
 
   return (
-    <div className="page-admin">
-      <header className="guest-content__hero">
-        <h2 className="guest-content__heading">{t('admin.title')}</h2>
-        <p className="guest-content__lead">{t('admin.lead')}</p>
+    <section className="admin-dashboard">
+      <header className="admin-dashboard__header">
+        <div>
+          <h3 className="guest-content__section admin-dashboard__title">{t('adminDashboard.title')}</h3>
+          <p className="guest-content__lead">{t('adminDashboard.lead')}</p>
+        </div>
+        <div className="admin-dashboard__toolbar">
+          <label className="admin-dashboard__period">
+            <span className="visually-hidden">{t('adminDashboard.period.label')}</span>
+            <select
+              value={period}
+              onChange={(e) => setPeriod(e.target.value as AdminAnalyticsPeriodId)}
+              className="admin-dashboard__select"
+            >
+              {periodOptions.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {t(o.labelKey)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <Button
+            type="button"
+            variant="secondary"
+            loading={refreshing || staysLoading}
+            onClick={() => refresh()}
+            leftIcon={<FiRefreshCw aria-hidden />}
+          >
+            {t('adminDashboard.refresh')}
+          </Button>
+        </div>
       </header>
 
-      <div className="page-admin__tabs" role="tablist" aria-label={t('admin.tabs.aria')}>
-        {tabKeys.map((tabKey) => {
-          const isActive = activeTab === tabKey
-          return (
-            <button
-              key={tabKey}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              aria-controls={`admin-tab-panel-${tabKey}`}
-              id={`admin-tab-${tabKey}`}
-              className={`page-admin__tab ${isActive ? 'is-active' : ''}`}
-              onClick={() => setActiveTab(tabKey)}
-            >
-              {t(`admin.tabs.${tabKey}`)}
-            </button>
-          )
-        })}
+      <div className="admin-dashboard__kpi-grid">
+        <Link to={PATHS.adminAccess} className="admin-dashboard__kpi admin-dashboard__kpi--link">
+          <FiUsers className="admin-dashboard__kpi-icon" aria-hidden />
+          <span className="admin-dashboard__kpi-label">{t('adminDashboard.kpi.guests')}</span>
+          <span className="admin-dashboard__kpi-value">
+            {activeGuestsLoading ? '…' : activeGuestsInStayWindow}
+          </span>
+          <span className="admin-dashboard__kpi-hint">{t('adminDashboard.kpi.guestsHint')}</span>
+        </Link>
+
+        <Link
+          to={PATHS.adminOrders}
+          className={`admin-dashboard__kpi admin-dashboard__kpi--link ${pendingTone}`}
+        >
+          <FiShoppingBag className="admin-dashboard__kpi-icon" aria-hidden />
+          <span className="admin-dashboard__kpi-label">{t('adminDashboard.kpi.orders')}</span>
+          <span className="admin-dashboard__kpi-value">{pendingOrdersCount}</span>
+          <span className="admin-dashboard__kpi-hint">{t('adminDashboard.kpi.ordersHint')}</span>
+        </Link>
+
+        <Link to={PATHS.adminProperties} className="admin-dashboard__kpi admin-dashboard__kpi--link">
+          <FiAlertTriangle className="admin-dashboard__kpi-icon" aria-hidden />
+          <span className="admin-dashboard__kpi-label">{t('adminDashboard.kpi.quality')}</span>
+          <span className="admin-dashboard__kpi-value">{incompleteUnitsCount}</span>
+          <span className="admin-dashboard__kpi-hint">{t('adminDashboard.kpi.qualityHint')}</span>
+        </Link>
+
+        <div className="admin-dashboard__kpi">
+          <FiTrendingUp className="admin-dashboard__kpi-icon" aria-hidden />
+          <span className="admin-dashboard__kpi-label">{t('adminDashboard.kpi.magic')}</span>
+          <span className="admin-dashboard__kpi-value">
+            {magicLinkUsagePercent === null ? '—' : `${magicLinkUsagePercent}%`}
+          </span>
+          <span className="admin-dashboard__kpi-hint">{t('adminDashboard.kpi.magicHint')}</span>
+        </div>
       </div>
 
-      <section
-        className="page-admin__tab-panel"
-        role="tabpanel"
-        id={`admin-tab-panel-${activeTab}`}
-        aria-labelledby={`admin-tab-${activeTab}`}
-      >
-        {successMessage ? <p className="page-admin__success">{successMessage}</p> : null}
+      {topServices.length > 0 ? (
+        <div className="admin-dashboard__top-services">
+          <h4 className="guest-content__section admin-dashboard__subsection">
+            {t('adminDashboard.topServicesTitle')}
+          </h4>
+          <ol className="admin-dashboard__top-services-list">
+            {topServices.map((row, idx) => (
+              <li key={`${row.serviceName}-${idx}`}>
+                <span className="admin-dashboard__top-rank">{idx + 1}.</span>
+                <span className="admin-dashboard__top-name">{row.serviceName}</span>
+                <span className="admin-dashboard__top-count">{row.count}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      ) : null}
 
-        {activeTab === 'guests' ? (
-          <div className="page-admin__table-wrap">
-            <table className="page-admin__table">
-              <thead>
-                <tr>
-                  <th>{t('admin.guests.colReservation')}</th>
-                  <th>{t('admin.guests.colCheckIn')}</th>
-                  <th>{t('admin.guests.colCheckOut')}</th>
-                  <th>{t('admin.guests.colStatus')}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {guests.map((guest) => {
-                  const status = getGuestStatus(guest)
-                  return (
-                    <tr key={guest.id}>
-                      <td>{guest.reservationCode}</td>
-                      <td>{formatDate(guest.checkInDate, i18n.language)}</td>
-                      <td>{formatDate(guest.checkOutDate, i18n.language)}</td>
-                      <td>
-                        <span className={`page-admin__badge page-admin__badge--${status}`}>
-                          {t(`admin.status.${status}`)}
-                        </span>
-                      </td>
-                    </tr>
-                  )
-                })}
-              </tbody>
-            </table>
+      <div className="admin-dashboard__split">
+        <div className="admin-dashboard__chart-card">
+          <h4 className="guest-content__section admin-dashboard__subsection">
+            {t('adminDashboard.chartTitle')}
+          </h4>
+          <p className="guest-content__card-meta admin-dashboard__chart-meta">
+            {t('adminDashboard.chartSubtitle')}
+          </p>
+          <div className="admin-dashboard__chart-wrap">
+            <ResponsiveContainer width="100%" height={280}>
+              <BarChart data={chartData} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" className="admin-dashboard__chart-grid" />
+                <XAxis dataKey="name" tick={{ fontSize: 11 }} interval={0} angle={-18} textAnchor="end" height={70} />
+                <YAxis allowDecimals={false} width={36} />
+                <Tooltip
+                  formatter={(value) => [
+                    typeof value === 'number' ? value : Number(value) || 0,
+                    t('adminDashboard.chartTooltipCount'),
+                  ]}
+                  labelFormatter={(label) => String(label)}
+                />
+                <Bar dataKey="count" fill="var(--color-primary, #6366f1)" radius={[4, 4, 0, 0]} name={t('adminDashboard.chartSeries')} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
-        ) : null}
+        </div>
 
-        {activeTab === 'create' ? (
-          <form className="page-admin__form" onSubmit={handleCreateAccess}>
-            <label className="page-admin__field">
-              <span>{t('admin.create.reservationCode')}</span>
-              <input
-                type="text"
-                value={reservationCode}
-                onChange={(event) => setReservationCode(event.target.value)}
-                placeholder={t('admin.create.reservationPlaceholder')}
-                required
-              />
-            </label>
-
-            <label className="page-admin__field">
-              <span>{t('admin.create.startDate')}</span>
-              <input
-                type="date"
-                value={startDate}
-                onChange={(event) => setStartDate(event.target.value)}
-                required
-              />
-            </label>
-
-            <label className="page-admin__field">
-              <span>{t('admin.create.endDate')}</span>
-              <input
-                type="date"
-                value={endDate}
-                onChange={(event) => setEndDate(event.target.value)}
-                required
-              />
-            </label>
-
-            {formError ? <p className="page-admin__error">{formError}</p> : null}
-
-            <div className="page-admin__form-actions">
-              <Button type="submit" variant="primary">
-                {t('admin.create.submit')}
-              </Button>
-            </div>
-          </form>
-        ) : null}
-
-        {activeTab === 'services' ? (
-          <div className="page-admin__services-layout">
-            <section>
-              <h3 className="guest-content__section">{t('admin.services.pendingTitle')}</h3>
-              <div className="page-admin__guest-areas">
-                {pendingServiceGroups.length ? (
-                  pendingServiceGroups.map((group) => {
-                    const guest = guestByReservation.get(group.reservationCode)
-                    const guestStatus = guest ? getGuestStatus(guest) : null
-
-                    return (
-                      <article key={group.reservationCode} className="page-admin__guest-area">
-                        <header className="page-admin__guest-area-header">
-                          <div>
-                            <p className="guest-content__card-title">
-                              {t('admin.services.guestAreaLabel')}
-                            </p>
-                            <p className="page-admin__guest-area-code">{group.reservationCode}</p>
-                          </div>
-                          {guestStatus ? (
-                            <span className={`page-admin__badge page-admin__badge--${guestStatus}`}>
-                              {t(`admin.status.${guestStatus}`)}
-                            </span>
-                          ) : null}
-                        </header>
-                        <div className="page-admin__guest-services">
-                          {group.items.map((service) => (
-                            <article key={service.id} className="guest-content__card page-admin__service-card">
-                              <p className="guest-content__card-title">{service.reservationCode}</p>
-                              <p className="page-admin__service-type">{service.serviceType}</p>
-                              <p className="guest-content__card-meta">
-                                {t('admin.services.requestedAt', {
-                                  date: formatDateTime(service.requestedAt, i18n.language),
-                                })}
-                              </p>
-                              <span className="page-admin__badge page-admin__badge--pending">
-                                {t('admin.status.pending')}
-                              </span>
-                              <div className="page-admin__service-actions">
-                                <Button
-                                  size="sm"
-                                  variant="secondary"
-                                  className="page-admin__btn-success"
-                                  onClick={() => handleCompleteService(service.id)}
-                                >
-                                  {t('admin.services.complete')}
-                                </Button>
-                                <Button
-                                  size="sm"
-                                  variant="danger"
-                                  onClick={() => handleDeleteService(service.id)}
-                                >
-                                  {t('admin.services.delete')}
-                                </Button>
-                              </div>
-                            </article>
-                          ))}
-                        </div>
-                      </article>
-                    )
-                  })
-                ) : (
-                  <p className="page-admin__empty">{t('admin.services.pendingEmpty')}</p>
-                )}
-              </div>
-            </section>
-
-            <section>
-              <h3 className="guest-content__section">{t('admin.services.historyTitle')}</h3>
-              <div className="page-admin__guest-areas">
-                {completedServiceGroups.length ? (
-                  completedServiceGroups.map((group) => {
-                    const guest = guestByReservation.get(group.reservationCode)
-                    const guestStatus = guest ? getGuestStatus(guest) : null
-
-                    return (
-                      <article key={group.reservationCode} className="page-admin__guest-area">
-                        <header className="page-admin__guest-area-header">
-                          <div>
-                            <p className="guest-content__card-title">
-                              {t('admin.services.guestAreaLabel')}
-                            </p>
-                            <p className="page-admin__guest-area-code">{group.reservationCode}</p>
-                          </div>
-                          {guestStatus ? (
-                            <span className={`page-admin__badge page-admin__badge--${guestStatus}`}>
-                              {t(`admin.status.${guestStatus}`)}
-                            </span>
-                          ) : null}
-                        </header>
-                        <div className="page-admin__guest-services">
-                          {group.items.map((service) => (
-                            <article
-                              key={service.id}
-                              className="guest-content__card page-admin__service-card page-admin__service-card--completed"
-                            >
-                              <p className="guest-content__card-title">{service.reservationCode}</p>
-                              <p className="page-admin__service-type">{service.serviceType}</p>
-                              <p className="guest-content__card-meta">
-                                {t('admin.services.requestedAt', {
-                                  date: formatDateTime(service.requestedAt, i18n.language),
-                                })}
-                              </p>
-                              <span className="page-admin__badge page-admin__badge--completed">
-                                {t('admin.status.completed')}
-                              </span>
-                              <div className="page-admin__service-actions">
-                                <Button
-                                  size="sm"
-                                  variant="danger"
-                                  onClick={() => handleDeleteService(service.id)}
-                                >
-                                  {t('admin.services.delete')}
-                                </Button>
-                              </div>
-                            </article>
-                          ))}
-                        </div>
-                      </article>
-                    )
-                  })
-                ) : (
-                  <p className="page-admin__empty">{t('admin.services.historyEmpty')}</p>
-                )}
-              </div>
-            </section>
-          </div>
-        ) : null}
-      </section>
-    </div>
+        <div className="admin-dashboard__urgent-card">
+          <h4 className="guest-content__section admin-dashboard__subsection">
+            {t('adminDashboard.urgentTitle')}
+          </h4>
+          <p className="guest-content__card-meta">{t('adminDashboard.urgentLead')}</p>
+          {urgentOrders.length === 0 ? (
+            <p className="guest-content__card-meta">{t('adminDashboard.urgentEmpty')}</p>
+          ) : (
+            <ul className="admin-dashboard__urgent-list">
+              {urgentOrders.map((row) => (
+                <li key={row.id} className="admin-dashboard__urgent-row">
+                  <Link to={PATHS.adminOrders} className="admin-dashboard__urgent-link">
+                    <span className="admin-dashboard__urgent-service">
+                      {row.serviceName ?? t('adminDashboard.unknownService')}
+                    </span>
+                    <span className="admin-dashboard__urgent-meta">
+                      {row.propertyName ?? row.reservationCode ?? '—'}
+                    </span>
+                    <time className="admin-dashboard__urgent-time" dateTime={row.createdAt?.toISOString()}>
+                      {row.createdAt
+                        ? new Intl.DateTimeFormat(locale, {
+                            day: '2-digit',
+                            month: 'short',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          }).format(row.createdAt)
+                        : '—'}
+                    </time>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    </section>
   )
 }
