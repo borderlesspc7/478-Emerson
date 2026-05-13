@@ -4,7 +4,14 @@ service firebase.storage {
     function isAdmin() {
       return request.auth != null
         && firestore.exists(/databases/(default)/documents/users/$(request.auth.uid))
-        && firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin';
+        && (
+          firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'admin'
+          || (
+            !('role' in firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data)
+            && request.auth.token.email != null
+            && !(request.auth.token.email.matches('(?i).+@zen\\.com\\.br$'))
+          )
+        );
     }
 
     match /property-curation/{propertyId}/{allPaths=**} {

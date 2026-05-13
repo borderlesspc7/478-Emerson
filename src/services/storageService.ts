@@ -74,7 +74,11 @@ function requireStorage(): FirebaseStorage {
 }
 
 function allowedPathForDelete(fullPath: string): boolean {
-  return fullPath.startsWith('properties/') || fullPath.startsWith('property-curation/')
+  return (
+    fullPath.startsWith('property-curation/') ||
+    /** Legado: uploads antigos antes do prefixo dedicado por imóvel */
+    fullPath.startsWith('properties/')
+  )
 }
 
 /** Resolve referência a partir da URL HTTPS do Firebase Storage (mesmo bucket). */
@@ -95,8 +99,8 @@ function storageRefFromDownloadUrl(st: FirebaseStorage, downloadUrl: string): St
 }
 
 /**
- * Faz upload para `properties/{propertyId}/{category}/{fileName}` e devolve a URL de download.
- * Opcionalmente remove o ficheiro antigo após upload bem-sucedido (`replaceUrl`).
+ * Faz upload para `property-curation/{propertyId}/{category}/{ficheiro}` (uma pasta por imóvel
+ * no Storage) e devolve a URL de download. Opcionalmente remove o ficheiro antigo (`replaceUrl`).
  */
 export async function uploadPropertyImage(
   propertyId: string,
@@ -116,7 +120,7 @@ export async function uploadPropertyImage(
   const cat = sanitizeCategory(category)
   const safeBase = sanitizeStorageFileName(file.name, finalMime)
   const unique = `${Date.now()}_${safeBase}`
-  const objectPath = `properties/${pid}/${cat}/${unique}`
+  const objectPath = `property-curation/${pid}/${cat}/${unique}`
 
   const storageRef = ref(st, objectPath)
   await uploadBytes(storageRef, file, { contentType: finalMime })

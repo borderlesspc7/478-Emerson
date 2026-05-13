@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
-import { useDropzone } from 'react-dropzone'
+import { ErrorCode, useDropzone, type FileRejection } from 'react-dropzone'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../../components/ui/Button/Button'
@@ -23,6 +23,8 @@ const DROP_ACCEPT = {
   'image/png': ['.png'],
   'image/webp': ['.webp'],
 } as const
+
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 
 function listingTitle(l: StaysPropertyListing | null): string {
   if (!l) return ''
@@ -70,6 +72,23 @@ export function AdminPropertyEditPage() {
       })
     },
     [propertyId, manualAccess, manualProperty, title],
+  )
+
+  const toastDropRejected = useCallback(
+    (rejections: FileRejection[]) => {
+      if (!rejections.length) return
+      const tooLarge = rejections.some((r) =>
+        r.errors.some(
+          (e) => e.code === ErrorCode.FileTooLarge || String(e.code).includes('too-large'),
+        ),
+      )
+      if (tooLarge) {
+        showToast(t('adminPropertyEdit.uploadFileTooLarge'), 'error')
+      } else {
+        showToast(t('adminPropertyEdit.uploadUnsupported'), 'error')
+      }
+    },
+    [showToast, t],
   )
 
   const toastUploadError = useCallback(
@@ -226,15 +245,21 @@ export function AdminPropertyEditPage() {
     }
   }, [propertyId, garageUrls, elevatorUrls, persistCuration, showToast, t])
 
-  const dzG = useDropzone({
+  const garageDropzone = useDropzone({
     onDrop: onDropGarage,
+    onDropRejected: toastDropRejected,
     accept: DROP_ACCEPT,
     disabled: uploadingG || !propertyId,
+    multiple: true,
+    maxSize: MAX_IMAGE_BYTES,
   })
-  const dzE = useDropzone({
+  const elevatorDropzone = useDropzone({
     onDrop: onDropElevator,
+    onDropRejected: toastDropRejected,
     accept: DROP_ACCEPT,
     disabled: uploadingE || !propertyId,
+    multiple: true,
+    maxSize: MAX_IMAGE_BYTES,
   })
 
   async function handleSave(e: React.FormEvent) {
@@ -287,11 +312,22 @@ export function AdminPropertyEditPage() {
             <span className="guest-content__card-title" style={{ display: 'block', marginBottom: '0.5rem' }}>
               {t('adminPropertyEdit.garagePhotos')}
             </span>
+            <div className="admin-property-edit__drop-actions">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                disabled={uploadingG || !propertyId}
+                onClick={garageDropzone.open}
+              >
+                {t('adminPropertyEdit.attachImagesGarage')}
+              </Button>
+            </div>
             <div
-              {...dzG.getRootProps()}
-              className={`dropzone ${dzG.isDragActive ? 'is-focused' : ''}`}
+              {...garageDropzone.getRootProps()}
+              className={`dropzone ${garageDropzone.isDragActive ? 'is-focused' : ''}`}
             >
-              <input {...dzG.getInputProps()} />
+              <input {...garageDropzone.getInputProps()} />
               <p>{t('adminPropertyEdit.dropHint')}</p>
             </div>
             {uploadingG ? (
@@ -327,11 +363,22 @@ export function AdminPropertyEditPage() {
             <span className="guest-content__card-title" style={{ display: 'block', marginBottom: '0.5rem' }}>
               {t('adminPropertyEdit.elevatorPhotos')}
             </span>
+            <div className="admin-property-edit__drop-actions">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                disabled={uploadingE || !propertyId}
+                onClick={elevatorDropzone.open}
+              >
+                {t('adminPropertyEdit.attachImagesElevator')}
+              </Button>
+            </div>
             <div
-              {...dzE.getRootProps()}
-              className={`dropzone ${dzE.isDragActive ? 'is-focused' : ''}`}
+              {...elevatorDropzone.getRootProps()}
+              className={`dropzone ${elevatorDropzone.isDragActive ? 'is-focused' : ''}`}
             >
-              <input {...dzE.getInputProps()} />
+              <input {...elevatorDropzone.getInputProps()} />
               <p>{t('adminPropertyEdit.dropHint')}</p>
             </div>
             {uploadingE ? (

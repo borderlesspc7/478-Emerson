@@ -216,6 +216,10 @@
   color: #fff;
 }
 
+.admin-property-edit__drop-actions {
+  margin-bottom: 0.5rem;
+}
+
 .admin-property-edit__upload-status {
   display: flex;
   align-items: center;
