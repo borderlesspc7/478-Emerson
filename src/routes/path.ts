@@ -1,5 +1,7 @@
 export const PATHS = {
   login: '/login',
+  /** Entrada direta do hóspede (magic link): `/entrar/:reservationCode`. */
+  guestDirectEntry: '/entrar',
   accessExpired: '/acesso-expirado',
   dashboard: '/',
   admin: '/admin',

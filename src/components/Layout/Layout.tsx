@@ -4,6 +4,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { PATHS } from '../../routes/path'
+import { GuestNotificationCenter } from '../GuestNotificationCenter/GuestNotificationCenter'
 import { Header } from '../Header/Header'
 import { Sidebar } from '../Sidebar/Sidebar'
 import './Layout.css'
@@ -68,6 +69,11 @@ export function AppLayout() {
     t('common.account')
   const userInitial = (userLabel[0] ?? '?').toUpperCase()
 
+  const headerTrailing = useMemo(() => {
+    if (user?.role !== 'guest' || !user.uid) return undefined
+    return <GuestNotificationCenter guestUid={user.uid} />
+  }, [user?.role, user?.uid])
+
   async function handleLogout() {
     setLogoutLoading(true)
     try {
@@ -100,6 +106,7 @@ export function AppLayout() {
           title={title}
           onMenuClick={toggleSidebar}
           menuAriaLabel={menuAriaLabel}
+          trailingSlot={headerTrailing}
           userLabel={user?.email ?? userLabel}
           userInitial={userInitial}
           onLogout={handleLogout}

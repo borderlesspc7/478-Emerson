@@ -4,6 +4,7 @@ import { AppLayout } from '../components/Layout/Layout'
 import { LocaleSwitcher } from '../components/LocaleSwitcher/LocaleSwitcher'
 import { ThemeSwitcher } from '../components/ThemeSwitcher/ThemeSwitcher'
 import { LoginPage } from '../pages/Login/Login'
+import { GuestMagicLoginPage } from '../pages/GuestMagicLogin/GuestMagicLoginPage'
 import { DashboardPage } from '../pages/Dashboard/DashboardPage'
 import { AdminLayout } from '../components/AdminLayout/AdminLayout'
 import { AdminOrdersPage } from '../pages/Admin/AdminOrdersPage'
@@ -27,6 +28,10 @@ export function AppRoutes() {
   return (
     <Routes>
       <Route path={PATHS.login} element={<LoginPage />} />
+      <Route
+        path={`${PATHS.guestDirectEntry}/:reservationCode`}
+        element={<GuestMagicLoginPage />}
+      />
       <Route path={PATHS.accessExpired} element={<AccessExpiredGate />} />
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>

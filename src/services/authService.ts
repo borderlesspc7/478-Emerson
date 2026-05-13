@@ -24,8 +24,12 @@ import {
   syncUserProfileToFirestore,
 } from './userProfileFirestore'
 import { filterGuestStayStaysCustomFields } from '../lib/staysCustomFields'
-import { getGuestAccessLink } from './guestAccessLinkFirestore'
+import {
+  getGuestAccessLink,
+  recordGuestAccessLinkUsage,
+} from './guestAccessLinkFirestore'
 import { getPropertyCuration } from './propertyCurationFirestore'
+import { logGuestLoginFailure } from './securityLogsFirestore'
 import {
   mapStaysToGuestStayBundle,
   mergeGuestStayWithZenCuration,
@@ -203,9 +207,12 @@ export function subscribeAuth(
     return () => {}
   }
 
+  let authHandlerSeq = 0
+
   return onAuthStateChanged(
     auth,
     (firebaseUser) => {
+      const seq = ++authHandlerSeq
       if (!firebaseUser) {
         onUser(null)
         return
@@ -222,6 +229,7 @@ export function subscribeAuth(
           console.error('[Firestore] syncUserProfileToFirestore', e)
         }
 
+        if (seq !== authHandlerSeq) return
         if (!auth.currentUser || auth.currentUser.uid !== uid) return
 
         let profile: FirestoreUserDocument | null = null
@@ -231,14 +239,18 @@ export function subscribeAuth(
           console.error('[Firestore] fetchUserProfileFromFirestore', e)
         }
 
+        if (seq !== authHandlerSeq) return
         if (!auth.currentUser || auth.currentUser.uid !== uid) return
 
         try {
           const appUser = await buildAppUser(auth.currentUser, profile)
+          if (seq !== authHandlerSeq) return
           if (!auth.currentUser || auth.currentUser.uid !== uid) return
           onUser(appUser)
         } catch (e) {
           console.error('[Auth] buildAppUser', e)
+          if (seq !== authHandlerSeq) return
+          if (!auth.currentUser || auth.currentUser.uid !== uid) return
           onUser(mapUser(auth.currentUser, profile))
         }
       })()
@@ -253,6 +265,21 @@ export function subscribeAuth(
 /**
  * Login de hóspede: valida Stays, período da estadia, depois Firebase (sign-in ou registo JIT).
  */
+function guestLoginFailureReasonFromError(error: unknown): string {
+  if (error instanceof StaysApiError && error.code) return error.code
+  if (error instanceof Error) {
+    const m = error.message
+    if (
+      m === 'stay/access-expired' ||
+      m === 'stays/reservation-canceled' ||
+      m.startsWith('auth/')
+    ) {
+      return m
+    }
+  }
+  return 'unknown'
+}
+
 export async function loginWithStaysReservation(
   reservationCode: string,
   password: string
@@ -269,6 +296,10 @@ export async function loginWithStaysReservation(
   const parsed = parseStaysReservationUserInput(reservationCode)
   const normalized = normalizeStaysReservationId(parsed)
   if (!normalized) {
+    void logGuestLoginFailure({
+      attemptedReservationCode: parsed.trim().slice(0, 40) || '(vazio)',
+      reason: 'auth/invalid-reservation-format',
+    })
     throw new Error('auth/invalid-reservation-format')
   }
 
@@ -279,13 +310,18 @@ export async function loginWithStaysReservation(
     if (e instanceof StaysApiError && e.code === 'stays/not-configured') {
       throw e
     }
-    if (e instanceof StaysApiError) {
-      throw e
-    }
+    void logGuestLoginFailure({
+      attemptedReservationCode: normalized,
+      reason: guestLoginFailureReasonFromError(e),
+    })
     throw e
   }
 
   if (booking.type === 'canceled') {
+    void logGuestLoginFailure({
+      attemptedReservationCode: normalized,
+      reason: 'stays/reservation-canceled',
+    })
     throw new Error('stays/reservation-canceled')
   }
 
@@ -293,6 +329,10 @@ export async function loginWithStaysReservation(
   const checkOutAt = toStayCheckOutIso(booking.checkOutDate, booking.checkOutTime)
 
   if (!isStayAccessActive({ checkInAt, checkOutAt })) {
+    void logGuestLoginFailure({
+      attemptedReservationCode: normalized,
+      reason: 'stay/access-expired',
+    })
     throw new Error('stay/access-expired')
   }
 
@@ -336,10 +376,10 @@ export async function loginWithStaysReservation(
     displayName,
     email: credUser.email ?? email,
   })
-  await syncUserProfileToFirestore(credUser)
+  await recordGuestAccessLinkUsage(normalized)
 }
 
-export async function loginWithEmail(email: string, password: string): Promise<AppUser> {
+export async function loginWithEmail(email: string, password: string): Promise<void> {
   const auth = getFirebaseAuth()
   if (!auth || !isFirebaseConfigured()) {
     throw new Error('AUTH_NOT_CONFIGURED')
@@ -347,26 +387,16 @@ export async function loginWithEmail(email: string, password: string): Promise<A
 
   await setPersistence(auth, browserLocalPersistence)
   await signInWithEmailAndPassword(auth, email.trim(), password)
-  const u = auth.currentUser
-  if (!u) {
-    throw new Error('auth/user-missing')
-  }
-  await syncUserProfileToFirestore(u)
-  const profile = await fetchUserProfileFromFirestore(u.uid)
-  return buildAppUser(u, profile)
 }
 
-export async function registerWithEmail(email: string, password: string): Promise<AppUser> {
+export async function registerWithEmail(email: string, password: string): Promise<void> {
   const auth = getFirebaseAuth()
   if (!auth || !isFirebaseConfigured()) {
     throw new Error('AUTH_NOT_CONFIGURED')
   }
 
   await setPersistence(auth, browserLocalPersistence)
-  const cred = await createUserWithEmailAndPassword(auth, email.trim(), password)
-  await syncUserProfileToFirestore(cred.user)
-  const profile = await fetchUserProfileFromFirestore(cred.user.uid)
-  return buildAppUser(cred.user, profile)
+  await createUserWithEmailAndPassword(auth, email.trim(), password)
 }
 
 export async function logout(): Promise<void> {

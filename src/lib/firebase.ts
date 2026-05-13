@@ -1,4 +1,4 @@
-import { initializeApp, type FirebaseApp } from 'firebase/app'
+import { getApp, getApps, initializeApp, type FirebaseApp } from 'firebase/app'
 import { getAuth, type Auth } from 'firebase/auth'
 import { getFirestore, type Firestore } from 'firebase/firestore'
 import { getStorage, type FirebaseStorage } from 'firebase/storage'
@@ -24,44 +24,34 @@ function isConfigValid(): boolean {
   )
 }
 
-let app: FirebaseApp | null = null
-let auth: Auth | null = null
-let firestore: Firestore | null = null
-let storage: FirebaseStorage | null = null
-
+/**
+ * Usa `getApps`/`getApp` para evitar `[DEFAULT] already exists` com HMR (Vite) e
+ * para não manter referências a instâncias antigas do SDK entre recargas.
+ */
 export function getFirebaseApp(): FirebaseApp | null {
   if (!isConfigValid()) return null
-  if (!app) {
-    app = initializeApp(firebaseConfig)
+  if (!getApps().length) {
+    return initializeApp(firebaseConfig)
   }
-  return app
+  return getApp()
 }
 
 export function getFirebaseAuth(): Auth | null {
   const a = getFirebaseApp()
   if (!a) return null
-  if (!auth) {
-    auth = getAuth(a)
-  }
-  return auth
+  return getAuth(a)
 }
 
 export function getFirebaseFirestore(): Firestore | null {
   const a = getFirebaseApp()
   if (!a) return null
-  if (!firestore) {
-    firestore = getFirestore(a)
-  }
-  return firestore
+  return getFirestore(a)
 }
 
 export function getFirebaseStorage(): FirebaseStorage | null {
   const a = getFirebaseApp()
   if (!a) return null
-  if (!storage) {
-    storage = getStorage(a)
-  }
-  return storage
+  return getStorage(a)
 }
 
 export { isConfigValid as isFirebaseConfigured }

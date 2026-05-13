@@ -142,6 +142,16 @@
     "footerNoAccount": "Não tem conta?",
     "footerCreateAccount": "Criar conta"
   },
+  "guestMagicLogin": {
+    "title": "Acesso do hóspede",
+    "subtitle": "A iniciar sessão com o código da reserva…",
+    "signingIn": "A autenticar…",
+    "redirecting": "A abrir os dados da reserva…",
+    "goToLogin": "Ir para o login",
+    "missingCode": "Código da reserva em falta no endereço.",
+    "adminBlockLead": "Link de entrada para hóspede",
+    "adminMustLogout": "Termine a sessão de administrador para abrir este link. Depois pode voltar a entrar com o código da reserva."
+  },
   "dashboard": {
     "greeting": "Olá, {{name}}",
     "lead": "Seu guia digital da estadia em um só lugar: reserva, acesso ao imóvel, Wi-Fi e solicitações de serviços.",
@@ -452,6 +462,17 @@
       "confirmDeleteOffer": "Remover este serviço do catálogo? (Pedidos antigos no histórico mantêm o nome gravado no pedido.)"
     }
   },
+  "guestNotifications": {
+    "bellAria": "Notificações de pedidos de serviço",
+    "drawerTitle": "Atualizações dos seus pedidos",
+    "closeDrawer": "Fechar painel de notificações",
+    "markAllRead": "Marcar todas como lidas",
+    "empty": "Ainda não há pedidos concluídos. Quando um pedido for concluído, aparece aqui.",
+    "statusCompleted": "Concluído",
+    "statusLine": "{{status}} · {{date}}",
+    "toastCompleted": "Sua solicitação de {{serviceName}} foi concluída!",
+    "unknownService": "Serviço"
+  },
   "adminNav": {
     "aria": "Secções da área administrativa",
     "orders": "Pedidos",
@@ -519,9 +540,19 @@
     "listTitle": "Acessos manuais",
     "listLead": "Códigos de reserva (Stays) associados a um imóvel para carregar curadoria Zen no app do hóspede.",
     "colReservation": "Código da reserva",
+    "colDirectLink": "Link direto",
+    "copyDirectLink": "Copiar link",
+    "directLinkCopied": "Link copiado para a área de transferência.",
+    "directLinkCopyFailed": "Não foi possível copiar. Copie manualmente.",
     "colProperty": "Property ID",
     "colActive": "Ativo",
+    "colLastAccess": "Último acesso",
+    "colDevice": "Dispositivo",
+    "colInteractions": "Interações",
     "colUpdated": "Atualizado",
+    "neverAccessed": "Nunca acedeu",
+    "activityRecent": "Sessão nas últimas 24 horas",
+    "activityStale": "Sem sessão nas últimas 24 horas",
     "yes": "Sim",
     "no": "Não",
     "empty": "Ainda não há vínculos. Crie o primeiro acima."
@@ -556,7 +587,13 @@
     "paginationPrev": "Anterior",
     "paginationNext": "Seguinte",
     "paginationSummary": "Página {{page}} de {{totalPages}} · {{from}}–{{to}} de {{total}}",
-    "paginationCountOnly": "{{from}}–{{to}} de {{total}} imóveis"
+    "paginationCountOnly": "{{from}}–{{to}} de {{total}} imóveis",
+    "directLinkTitle": "Link para o hóspede (sem formulário)",
+    "directLinkLead": "Envie este endereço ao hóspede: ao abrir, entra direto nos dados da reserva (usa o mesmo acesso Stays por baixo).",
+    "copyDirectLink": "Copiar",
+    "directLinkCopied": "Link copiado.",
+    "directLinkCopyFailed": "Não foi possível copiar o link.",
+    "dismissDirectLink": "Fechar"
   },
   "placeholders": {
     "settingsTitle": "Configurações",

@@ -2,6 +2,44 @@
   margin-bottom: 2rem;
 }
 
+.admin-create-access__direct-link {
+  margin-top: 1.25rem;
+  padding: 1rem 1rem 1.1rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-default);
+  background: var(--surface-subtle);
+}
+
+.admin-create-access__direct-link-title {
+  margin: 0 0 0.35rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.admin-create-access__direct-link-lead {
+  margin: 0 0 0.75rem;
+}
+
+.admin-create-access__direct-link-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: stretch;
+  margin-bottom: 0.65rem;
+}
+
+.admin-create-access__direct-link-input {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.8125rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+}
+
 .admin-create-access__visibility {
   margin: 1.25rem 0;
   padding: 1rem 1rem 1.1rem;

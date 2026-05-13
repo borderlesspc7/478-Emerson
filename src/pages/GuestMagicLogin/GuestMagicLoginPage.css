@@ -1,0 +1,16 @@
+.guest-magic-login__card {
+  max-width: 26rem;
+}
+
+.guest-magic-login__error {
+  margin-top: 0.75rem;
+}
+
+.guest-magic-login__loading {
+  margin: 1.25rem auto;
+  min-height: 2.5rem;
+}
+
+.guest-magic-login__btn {
+  margin-top: 1rem;
+}

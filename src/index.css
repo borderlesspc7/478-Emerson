@@ -39,6 +39,8 @@
   --header-height: 3.5rem;
   --z-sidebar: 100;
   --z-header: 50;
+  --z-notification-backdrop: 110;
+  --z-notification-panel: 111;
 }
 
 @media (prefers-color-scheme: dark) {

@@ -6,6 +6,9 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { useTranslation } from 'react-i18next'
+import { Button } from '../../components/ui/Button/Button'
+import { useToast } from '../../contexts/ToastContext'
+import { guestDirectEntryAbsUrl } from '../../lib/guestDirectLink'
 import { pickListingCardImageUrl } from '../../lib/staysListingMedia'
 import { subscribeGuestAccessLinks } from '../../services/guestAccessLinkFirestore'
 import { fetchListings } from '../../services/staysService'
@@ -16,8 +19,23 @@ import type { StaysPropertyListing } from '../../types/staysApi'
 import { AdminCreateAccess, type AdminPropertyPickerItem } from './AdminCreateAccess'
 import '../../components/AdminLayout/AdminLayout.css'
 import '../shared/guestContent.css'
+import './AdminAccessPage.css'
 
 const columnHelper = createColumnHelper<GuestAccessLinkRecord>()
+
+function formatGuestLastAccess(d: Date, locale: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    day: '2-digit',
+    month: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).format(d)
+}
+
+function isWithinLast24Hours(d: Date): boolean {
+  return Date.now() - d.getTime() < 24 * 60 * 60 * 1000
+}
 
 function listingTitle(l: StaysPropertyListing): string {
   const m = l._mstitle
@@ -38,6 +56,7 @@ function propertyKey(l: StaysPropertyListing): string {
 
 export function AdminAccessPage() {
   const { t, i18n } = useTranslation()
+  const { showToast } = useToast()
   const [links, setLinks] = useState<GuestAccessLinkRecord[]>([])
   const [listings, setListings] = useState<StaysPropertyListing[]>([])
   const [curations, setCurations] = useState<PropertyCurationRecord[]>([])
@@ -101,6 +120,28 @@ export function AdminAccessPage() {
         header: t('adminAccess.colReservation'),
         cell: (info) => <span className="guest-content__code">{info.getValue()}</span>,
       }),
+      columnHelper.display({
+        id: 'guestDirectLink',
+        header: t('adminAccess.colDirectLink'),
+        cell: ({ row }) => {
+          const url = guestDirectEntryAbsUrl(row.original.reservationCode)
+          return (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                void navigator.clipboard.writeText(url).then(
+                  () => showToast(t('adminAccess.directLinkCopied'), 'success'),
+                  () => showToast(t('adminAccess.directLinkCopyFailed'), 'error'),
+                )
+              }}
+            >
+              {t('adminAccess.copyDirectLink')}
+            </Button>
+          )
+        },
+      }),
       columnHelper.accessor('propertyId', {
         header: t('adminAccess.colProperty'),
         cell: (info) => info.getValue(),
@@ -108,6 +149,52 @@ export function AdminAccessPage() {
       columnHelper.accessor('accessActive', {
         header: t('adminAccess.colActive'),
         cell: (info) => (info.getValue() ? t('adminAccess.yes') : t('adminAccess.no')),
+      }),
+      columnHelper.display({
+        id: 'lastAccess',
+        header: t('adminAccess.colLastAccess'),
+        cell: ({ row }) => {
+          const d = row.original.lastAccessAt
+          if (!d || Number.isNaN(d.getTime())) {
+            return (
+              <span className="admin-access__last-cell">
+                <span
+                  className="admin-access__activity-dot admin-access__activity-dot--idle"
+                  title={t('adminAccess.activityStale')}
+                  aria-label={t('adminAccess.activityStale')}
+                />
+                <span>{t('adminAccess.neverAccessed')}</span>
+              </span>
+            )
+          }
+          const recent = isWithinLast24Hours(d)
+          return (
+            <span className="admin-access__last-cell">
+              <span
+                className={`admin-access__activity-dot ${
+                  recent ? 'admin-access__activity-dot--recent' : 'admin-access__activity-dot--idle'
+                }`}
+                title={recent ? t('adminAccess.activityRecent') : t('adminAccess.activityStale')}
+                aria-label={recent ? t('adminAccess.activityRecent') : t('adminAccess.activityStale')}
+              />
+              <time className="admin-access__last-time" dateTime={d.toISOString()}>
+                {formatGuestLastAccess(d, locale)}
+              </time>
+            </span>
+          )
+        },
+      }),
+      columnHelper.accessor('deviceInfo', {
+        header: t('adminAccess.colDevice'),
+        cell: (info) => (
+          <span className="admin-access__device-cell">{info.getValue()?.trim() || '—'}</span>
+        ),
+      }),
+      columnHelper.accessor('accessCount', {
+        header: t('adminAccess.colInteractions'),
+        cell: (info) => (
+          <span className="admin-access__count-cell">{info.getValue() ?? 0}</span>
+        ),
       }),
       columnHelper.accessor('updatedAt', {
         header: t('adminAccess.colUpdated'),
@@ -117,7 +204,7 @@ export function AdminAccessPage() {
         },
       }),
     ],
-    [t, locale]
+    [t, locale, showToast],
   )
 
   const table = useReactTable({

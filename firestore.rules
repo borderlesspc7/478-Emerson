@@ -7,6 +7,54 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
     }
 
+    function isGuestUser() {
+      return request.auth != null
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'guest';
+    }
+
+    function guestReservationCodeMatches(reservationCode) {
+      return isGuestUser()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.reservationCode == reservationCode;
+    }
+
+    function guestAccessUsageUpdateOnly(reservationCode) {
+      return guestReservationCodeMatches(reservationCode)
+        && request.resource.data.propertyId == resource.data.propertyId
+        && request.resource.data.reservationCode == resource.data.reservationCode
+        && request.resource.data.accessActive == resource.data.accessActive
+        && (!('createdAt' in resource.data) || request.resource.data.createdAt == resource.data.createdAt)
+        && (!('updatedAt' in resource.data) || request.resource.data.updatedAt == resource.data.updatedAt)
+        && (
+          (!('customFieldVisibility' in resource.data) && !('customFieldVisibility' in request.resource.data))
+          || request.resource.data.customFieldVisibility == resource.data.customFieldVisibility
+        )
+        && request.resource.data.lastAccessAt is timestamp
+        && request.resource.data.deviceInfo is string
+        && request.resource.data.deviceInfo.size() > 0
+        && request.resource.data.deviceInfo.size() <= 500
+        && request.resource.data.accessCount is int
+        && request.resource.data.accessCount >= 1
+        && (
+          !('accessCount' in resource.data)
+          || request.resource.data.accessCount == resource.data.accessCount + 1
+        );
+    }
+
+    function securityLogCreateValid() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['attemptedReservationCode', 'reason', 'deviceInfo', 'createdAt'])
+        && d.attemptedReservationCode is string
+        && d.attemptedReservationCode.size() > 0
+        && d.attemptedReservationCode.size() <= 40
+        && d.reason is string
+        && d.reason.size() > 0
+        && d.reason.size() <= 96
+        && d.deviceInfo is string
+        && d.deviceInfo.size() <= 400
+        && d.createdAt is timestamp;
+    }
+
     // Perfil do utilizador autenticado (sincronizado com Firebase Auth)
     match /users/{userId} {
       allow read, create, update: if request.auth != null
@@ -29,7 +77,16 @@ service cloud.firestore {
     // Vínculo manual reserva → imóvel (prioridade no Guia Zen)
     match /guestAccessLinks/{reservationCode} {
       allow read: if request.auth != null;
-      allow create, update, delete: if isAdmin();
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin();
+      allow update: if guestAccessUsageUpdateOnly(reservationCode);
+    }
+
+    // Tentativas de login hóspede falhadas (sem auth obrigatório; payload limitado)
+    match /securityLogs/{logId} {
+      allow read: if isAdmin();
+      allow create: if securityLogCreateValid();
+      allow update, delete: if false;
     }
 
     // Pedidos de serviço: o dono vê o seu; admin vê e gere todos

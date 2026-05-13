@@ -2,13 +2,16 @@ import {
   collection,
   doc,
   getDoc,
+  increment,
   onSnapshot,
   serverTimestamp,
   setDoc,
+  updateDoc,
   type Unsubscribe,
 } from 'firebase/firestore'
 import type { Timestamp } from 'firebase/firestore'
 import { getFirebaseFirestore, isFirebaseConfigured } from '../lib/firebase'
+import { buildSimplifiedDeviceInfo } from '../lib/deviceInfo'
 import type { GuestAccessLinkRecord } from '../types/guestAccessLink'
 
 export const GUEST_ACCESS_LINKS_COLLECTION = 'guestAccessLinks'
@@ -22,6 +25,11 @@ function toDate(v: unknown): Date | null {
     const d = (v as Timestamp).toDate()
     return Number.isNaN(d.getTime()) ? null : d
   }
+  return null
+}
+
+function toNumber(v: unknown): number | null {
+  if (typeof v === 'number' && Number.isFinite(v)) return Math.max(0, Math.floor(v))
   return null
 }
 
@@ -42,6 +50,11 @@ export function mapGuestAccessLinkDoc(
   const propertyId = data.propertyId
   if (typeof propertyId !== 'string' || !propertyId.trim()) return null
   const accessActive = data.accessActive !== false
+  const accessCount = toNumber(data.accessCount) ?? 0
+  const deviceInfo =
+    typeof data.deviceInfo === 'string' && data.deviceInfo.trim()
+      ? data.deviceInfo.trim().slice(0, 500)
+      : null
   return {
     reservationCode,
     propertyId: propertyId.trim(),
@@ -49,6 +62,9 @@ export function mapGuestAccessLinkDoc(
     customFieldVisibility: parseCustomFieldVisibility(data.customFieldVisibility),
     createdAt: toDate(data.createdAt),
     updatedAt: toDate(data.updatedAt),
+    lastAccessAt: toDate(data.lastAccessAt),
+    deviceInfo,
+    accessCount,
   }
 }
 
@@ -91,6 +107,34 @@ export async function upsertGuestAccessLink(input: {
   )
 }
 
+/**
+ * Após login bem-sucedido: incrementa contador e grava último acesso (só se existir vínculo em `guestAccessLinks`).
+ */
+export async function recordGuestAccessLinkUsage(
+  reservationCode: string
+): Promise<void> {
+  if (!isFirebaseConfigured()) return
+  const db = getFirebaseFirestore()
+  if (!db || typeof navigator === 'undefined') return
+
+  const id = normalizeGuestAccessReservationCode(reservationCode)
+  const ref = doc(db, GUEST_ACCESS_LINKS_COLLECTION, id)
+  const snap = await getDoc(ref)
+  if (!snap.exists()) return
+
+  const deviceInfo = buildSimplifiedDeviceInfo(navigator.userAgent).slice(0, 500)
+
+  try {
+    await updateDoc(ref, {
+      lastAccessAt: serverTimestamp(),
+      deviceInfo,
+      accessCount: increment(1),
+    })
+  } catch {
+    /* regras / rede: não falhar o login */
+  }
+}
+
 export function subscribeGuestAccessLinks(
   onNext: (items: GuestAccessLinkRecord[]) => void,
   onError?: (e: Error) => void
@@ -109,7 +153,11 @@ export function subscribeGuestAccessLinks(
         const row = mapGuestAccessLinkDoc(d.id, d.data() as Record<string, unknown>)
         if (row) items.push(row)
       }
-      items.sort((a, b) => (b.updatedAt?.getTime() ?? 0) - (a.updatedAt?.getTime() ?? 0))
+      items.sort((a, b) => {
+        const ta = a.lastAccessAt?.getTime() ?? a.updatedAt?.getTime() ?? 0
+        const tb = b.lastAccessAt?.getTime() ?? b.updatedAt?.getTime() ?? 0
+        return tb - ta
+      })
       onNext(items)
     },
     (err) => onError?.(err)

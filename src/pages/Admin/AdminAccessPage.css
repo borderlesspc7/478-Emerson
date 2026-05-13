@@ -1,0 +1,42 @@
+.admin-access__last-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.admin-access__activity-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 1px solid var(--border-default);
+}
+
+.admin-access__activity-dot--recent {
+  background: var(--color-success);
+  border-color: color-mix(in srgb, var(--color-success) 55%, var(--border-default));
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-success) 22%, transparent);
+}
+
+.admin-access__activity-dot--idle {
+  background: var(--text-muted);
+  opacity: 0.65;
+}
+
+.admin-access__last-time {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}
+
+.admin-access__device-cell {
+  max-width: 14rem;
+  word-break: break-word;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.admin-access__count-cell {
+  font-variant-numeric: tabular-nums;
+  color: var(--text-primary);
+}

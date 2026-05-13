@@ -50,8 +50,15 @@ function mapDoc(
   const uid = data.userId
   if (typeof uid !== 'string' || !uid) return null
   const status = data.status
+  const statusNorm =
+    typeof status === 'string' ? status.trim().toLowerCase() : status
   const st: ServiceRequestStatus =
-    status === 'completed' ? 'completed' : 'pending'
+    status === 'completed' ||
+    statusNorm === 'completed' ||
+    statusNorm === 'concluído' ||
+    statusNorm === 'concluido'
+      ? 'completed'
+      : 'pending'
   const rawPriceInCents = data.priceInCents
   const priceInCents =
     typeof rawPriceInCents === 'number' && Number.isFinite(rawPriceInCents)

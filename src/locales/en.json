@@ -142,6 +142,16 @@
     "footerNoAccount": "No account?",
     "footerCreateAccount": "Create account"
   },
+  "guestMagicLogin": {
+    "title": "Guest access",
+    "subtitle": "Signing in with your reservation code…",
+    "signingIn": "Authenticating…",
+    "redirecting": "Opening reservation details…",
+    "goToLogin": "Go to login",
+    "missingCode": "Reservation code missing from the URL.",
+    "adminBlockLead": "Guest entry link",
+    "adminMustLogout": "Sign out of the admin account to open this link. You can then sign in again with the reservation code."
+  },
   "dashboard": {
     "greeting": "Hello, {{name}}",
     "lead": "Your digital stay guide in one place: reservation, property access, Wi‑Fi and service requests.",
@@ -452,6 +462,17 @@
       "confirmDeleteOffer": "Remove this service from the catalog? (Existing requests in history keep the name stored on the request.)"
     }
   },
+  "guestNotifications": {
+    "bellAria": "Service request notifications",
+    "drawerTitle": "Your request updates",
+    "closeDrawer": "Close notification panel",
+    "markAllRead": "Mark all as read",
+    "empty": "No completed requests yet. When a request is completed, it will appear here.",
+    "statusCompleted": "Completed",
+    "statusLine": "{{status}} · {{date}}",
+    "toastCompleted": "Your {{serviceName}} request has been completed!",
+    "unknownService": "Service"
+  },
   "adminNav": {
     "aria": "Admin area sections",
     "orders": "Orders",
@@ -519,9 +540,19 @@
     "listTitle": "Manual access links",
     "listLead": "Stays reservation codes linked to a property so the guest app loads Zen curation for that unit.",
     "colReservation": "Reservation code",
+    "colDirectLink": "Direct link",
+    "copyDirectLink": "Copy link",
+    "directLinkCopied": "Link copied to clipboard.",
+    "directLinkCopyFailed": "Could not copy. Copy manually.",
     "colProperty": "Property ID",
     "colActive": "Active",
+    "colLastAccess": "Last access",
+    "colDevice": "Device",
+    "colInteractions": "Interactions",
     "colUpdated": "Updated",
+    "neverAccessed": "Never signed in",
+    "activityRecent": "Session in the last 24 hours",
+    "activityStale": "No session in the last 24 hours",
     "yes": "Yes",
     "no": "No",
     "empty": "No links yet. Create one above."
@@ -556,7 +587,13 @@
     "paginationPrev": "Previous",
     "paginationNext": "Next",
     "paginationSummary": "Page {{page}} of {{totalPages}} · {{from}}–{{to}} of {{total}}",
-    "paginationCountOnly": "{{from}}–{{to}} of {{total}} properties"
+    "paginationCountOnly": "{{from}}–{{to}} of {{total}} properties",
+    "directLinkTitle": "Guest link (no form)",
+    "directLinkLead": "Send this URL to the guest: it opens reservation details directly (same Stays sign-in under the hood).",
+    "copyDirectLink": "Copy",
+    "directLinkCopied": "Link copied.",
+    "directLinkCopyFailed": "Could not copy the link.",
+    "dismissDirectLink": "Dismiss"
   },
   "placeholders": {
     "settingsTitle": "Settings",

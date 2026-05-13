@@ -10,4 +10,10 @@ export type GuestAccessLinkRecord = {
   customFieldVisibility: Record<string, boolean> | null
   createdAt: Date | null
   updatedAt: Date | null
+  /** Último login do hóspede com este código (quando o vínculo existe e o registo é atualizado). */
+  lastAccessAt?: Date | null
+  /** Resumo do dispositivo/navegador na última sessão. */
+  deviceInfo?: string | null
+  /** Número de logins registados (incremento no Firestore). */
+  accessCount?: number
 }

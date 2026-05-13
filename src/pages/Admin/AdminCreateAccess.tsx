@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next'
 import { FiImage } from 'react-icons/fi'
 import { Button } from '../../components/ui/Button/Button'
 import { useToast } from '../../contexts/ToastContext'
+import { guestDirectEntryAbsUrl } from '../../lib/guestDirectLink'
 import { normalizeStaysCustomFields } from '../../lib/staysCustomFields'
 import type { StaysCustomFieldGuest } from '../../types/staysCustomField'
 import { upsertGuestAccessLink } from '../../services/guestAccessLinkFirestore'
@@ -46,6 +47,7 @@ export function AdminCreateAccess({
   const [pickerQuery, setPickerQuery] = useState('')
   const [pickerPage, setPickerPage] = useState(0)
   const [submitting, setSubmitting] = useState(false)
+  const [lastGuestDirectUrl, setLastGuestDirectUrl] = useState<string | null>(null)
   const [fieldDefs, setFieldDefs] = useState<StaysCustomFieldGuest[]>([])
   const [loadingCustomFields, setLoadingCustomFields] = useState(false)
   const [visibility, setVisibility] = useState<Record<string, boolean>>({})
@@ -171,6 +173,7 @@ export function AdminCreateAccess({
         customFieldVisibility:
           Object.keys(visibility).length > 0 ? visibility : undefined,
       })
+      setLastGuestDirectUrl(guestDirectEntryAbsUrl(trimmed))
       showToast(t('adminCreateAccess.success'), 'success')
       setCode('')
       setPropertyId('')
@@ -181,6 +184,16 @@ export function AdminCreateAccess({
       showToast(t('adminCreateAccess.error'), 'error')
     } finally {
       setSubmitting(false)
+    }
+  }
+
+  async function copyGuestDirectUrl() {
+    if (!lastGuestDirectUrl) return
+    try {
+      await navigator.clipboard.writeText(lastGuestDirectUrl)
+      showToast(t('adminCreateAccess.directLinkCopied'), 'success')
+    } catch {
+      showToast(t('adminCreateAccess.directLinkCopyFailed'), 'error')
     }
   }
 
@@ -429,6 +442,30 @@ export function AdminCreateAccess({
         <Button type="submit" variant="primary" loading={submitting}>
           {t('adminCreateAccess.submit')}
         </Button>
+
+        {lastGuestDirectUrl ? (
+          <div className="admin-create-access__direct-link" role="region" aria-label={t('adminCreateAccess.directLinkTitle')}>
+            <h5 className="admin-create-access__direct-link-title">{t('adminCreateAccess.directLinkTitle')}</h5>
+            <p className="guest-content__card-meta admin-create-access__direct-link-lead">
+              {t('adminCreateAccess.directLinkLead')}
+            </p>
+            <div className="admin-create-access__direct-link-row">
+              <input
+                type="text"
+                readOnly
+                className="admin-create-access__direct-link-input"
+                value={lastGuestDirectUrl}
+                onFocus={(ev) => ev.currentTarget.select()}
+              />
+              <Button type="button" variant="secondary" onClick={() => void copyGuestDirectUrl()}>
+                {t('adminCreateAccess.copyDirectLink')}
+              </Button>
+            </div>
+            <Button type="button" variant="secondary" onClick={() => setLastGuestDirectUrl(null)}>
+              {t('adminCreateAccess.dismissDirectLink')}
+            </Button>
+          </div>
+        ) : null}
       </form>
     </>
   )

@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, type ReactNode } from 'react'
 import { Button } from '../ui/Button/Button'
 import './Header.css'
 
@@ -7,6 +7,8 @@ type HeaderProps = {
   onMenuClick: () => void
   /** Acessibilidade: texto muda entre mobile (drawer) e desktop (recolher/expandir) */
   menuAriaLabel?: string
+  /** Ex.: centro de notificações do hóspede (antes do bloco do utilizador). */
+  trailingSlot?: ReactNode
   userLabel: string
   userInitial: string
   onLogout: () => void
@@ -18,6 +20,7 @@ export function Header({
   title = 'Painel',
   onMenuClick,
   menuAriaLabel = 'Abrir menu de navegação',
+  trailingSlot,
   userLabel,
   userInitial,
   onLogout,
@@ -56,6 +59,9 @@ export function Header({
       </div>
 
       <div className="app-header__right">
+        {trailingSlot ? (
+          <div className="app-header__trailing">{trailingSlot}</div>
+        ) : null}
         <div className="app-header__user" title={userLabel}>
           <span className="app-header__avatar" aria-hidden>
             {userInitial}
