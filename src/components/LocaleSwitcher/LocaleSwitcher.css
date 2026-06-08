@@ -19,7 +19,7 @@
 }
 
 .locale-switcher__btn {
-  padding: 0.45rem 0.85rem;
+  padding: 0.55rem 1.125rem;
   font-family: var(--font-sans);
   font-size: 0.875rem;
   font-weight: 500;
@@ -28,10 +28,7 @@
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition:
-    background 0.15s ease,
-    border-color 0.15s ease,
-    color 0.15s ease;
+  transition: var(--transition-premium);
 }
 
 .locale-switcher__btn:hover {

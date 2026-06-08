@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   createColumnHelper,
   flexRender,
@@ -10,12 +10,17 @@ import { Button } from '../../components/ui/Button/Button'
 import { useToast } from '../../contexts/ToastContext'
 import { guestDirectEntryAbsUrl } from '../../lib/guestDirectLink'
 import { pickListingCardImageUrl } from '../../lib/staysListingMedia'
-import { subscribeGuestAccessLinks } from '../../services/guestAccessLinkFirestore'
+import {
+  renameGuestAccessLinkReservationCode,
+  subscribeGuestAccessLinks,
+  updateGuestAccessLinkFields,
+} from '../../services/guestAccessLinkFirestore'
 import { fetchListings } from '../../services/staysService'
 import { subscribePropertyCurations } from '../../services/propertyCurationFirestore'
 import type { GuestAccessLinkRecord } from '../../types/guestAccessLink'
 import type { PropertyCurationRecord } from '../../types/propertyCuration'
 import type { StaysPropertyListing } from '../../types/staysApi'
+import { AdminAccessEditableField } from './AdminAccessEditableField'
 import { AdminCreateAccess, type AdminPropertyPickerItem } from './AdminCreateAccess'
 import '../../components/AdminLayout/AdminLayout.css'
 import '../shared/guestContent.css'
@@ -114,11 +119,61 @@ export function AdminAccessPage() {
       .sort((a, b) => a.title.localeCompare(b.title, locale))
   }, [listings, curations, locale])
 
+  const handleSaveReservationCode = useCallback(
+    async (currentCode: string, nextCode: string) => {
+      try {
+        await renameGuestAccessLinkReservationCode(currentCode, nextCode)
+        showToast(t('adminAccess.editReservationSuccess'), 'success')
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : ''
+        if (message === 'guest-access/code-already-exists') {
+          showToast(t('adminAccess.editReservationDuplicate'), 'error')
+          return
+        }
+        showToast(t('adminAccess.editError'), 'error')
+      }
+    },
+    [showToast, t],
+  )
+
+  const handleSavePropertyId = useCallback(
+    async (reservationCode: string, propertyId: string) => {
+      try {
+        await updateGuestAccessLinkFields(reservationCode, { propertyId })
+        showToast(t('adminAccess.editPropertySuccess'), 'success')
+      } catch {
+        showToast(t('adminAccess.editError'), 'error')
+      }
+    },
+    [showToast, t],
+  )
+
+  const handleToggleActive = useCallback(
+    async (reservationCode: string, accessActive: boolean) => {
+      try {
+        await updateGuestAccessLinkFields(reservationCode, { accessActive })
+        showToast(
+          accessActive ? t('adminAccess.editActiveOn') : t('adminAccess.editActiveOff'),
+          'success',
+        )
+      } catch {
+        showToast(t('adminAccess.editError'), 'error')
+      }
+    },
+    [showToast, t],
+  )
+
   const columns = useMemo(
     () => [
       columnHelper.accessor('reservationCode', {
         header: t('adminAccess.colReservation'),
-        cell: (info) => <span className="guest-content__code">{info.getValue()}</span>,
+        cell: (info) => (
+          <AdminAccessEditableField
+            value={info.getValue()}
+            label={t('adminAccess.colReservation')}
+            onSave={(next) => handleSaveReservationCode(info.getValue(), next)}
+          />
+        ),
       }),
       columnHelper.display({
         id: 'guestDirectLink',
@@ -144,11 +199,33 @@ export function AdminAccessPage() {
       }),
       columnHelper.accessor('propertyId', {
         header: t('adminAccess.colProperty'),
-        cell: (info) => info.getValue(),
+        cell: (info) => (
+          <AdminAccessEditableField
+            value={info.getValue()}
+            label={t('adminAccess.colProperty')}
+            monospace
+            onSave={(next) => handleSavePropertyId(info.row.original.reservationCode, next)}
+          />
+        ),
       }),
       columnHelper.accessor('accessActive', {
         header: t('adminAccess.colActive'),
-        cell: (info) => (info.getValue() ? t('adminAccess.yes') : t('adminAccess.no')),
+        cell: (info) => (
+          <select
+            className="admin-access__active-select"
+            value={info.getValue() ? 'yes' : 'no'}
+            aria-label={t('adminAccess.colActive')}
+            onChange={(e) => {
+              void handleToggleActive(
+                info.row.original.reservationCode,
+                e.target.value === 'yes',
+              )
+            }}
+          >
+            <option value="yes">{t('adminAccess.yes')}</option>
+            <option value="no">{t('adminAccess.no')}</option>
+          </select>
+        ),
       }),
       columnHelper.display({
         id: 'lastAccess',
@@ -204,7 +281,7 @@ export function AdminAccessPage() {
         },
       }),
     ],
-    [t, locale, showToast],
+    [t, locale, showToast, handleSaveReservationCode, handleSavePropertyId, handleToggleActive],
   )
 
   const table = useReactTable({

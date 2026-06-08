@@ -30,11 +30,7 @@
   padding: 0.625rem 0.9rem;
   white-space: nowrap;
   cursor: pointer;
-  transition:
-    color 0.2s ease,
-    background 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: var(--transition-premium);
 }
 
 .page-about-property__tab:hover {
@@ -153,14 +149,14 @@
 .page-about-property__rule-title {
   font-size: 1rem;
   font-weight: 700;
-  letter-spacing: -0.01em;
+  letter-spacing: 0.02em;
   color: var(--text-primary);
 }
 
 .page-about-property__rule-collapse {
   display: grid;
   grid-template-rows: 0fr;
-  transition: all 0.3s ease-in-out;
+  transition: var(--transition-premium);
 }
 
 .page-about-property__rule-collapse.is-open {
@@ -174,7 +170,7 @@
   padding-top: 0.75rem;
   opacity: 0;
   transform: translateY(-4px);
-  transition: all 0.3s ease-in-out;
+  transition: var(--transition-premium);
 }
 
 .page-about-property__rule-collapse.is-open .page-about-property__rule-content {
@@ -204,6 +200,7 @@
   background: var(--surface-elevated);
   box-shadow: var(--shadow-sm);
   cursor: pointer;
+  transition: var(--transition-premium);
 }
 
 .page-about-property__accordion-item:focus-visible {
@@ -221,7 +218,7 @@
   width: 100%;
   border: none;
   background: transparent;
-  padding: 1rem 1.125rem;
+  padding: var(--spacing-card);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -233,11 +230,11 @@
 }
 
 .page-about-property__accordion-panel {
-  padding: 0 1.125rem 1rem;
+  padding: 0 var(--spacing-card) var(--spacing-card);
 }
 
 .page-about-property__chevron {
-  transition: transform 0.2s ease;
+  transition: var(--transition-premium);
   color: var(--text-muted);
 }
 

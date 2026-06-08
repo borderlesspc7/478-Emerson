@@ -4,6 +4,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { PATHS } from '../../routes/path'
+import { BottomBar } from '../BottomBar/BottomBar'
 import { GuestNotificationCenter } from '../GuestNotificationCenter/GuestNotificationCenter'
 import { Header } from '../Header/Header'
 import { PWAInstallBanner } from '../PWAInstallBanner/PWAInstallBanner'
@@ -14,22 +15,13 @@ export function AppLayout() {
   const { t } = useTranslation()
   const { user, logout } = useAuth()
   const location = useLocation()
-  /** Drawer mobile (overlay) */
-  const [mobileDrawerOpen, setMobileDrawerOpen] = useState(false)
-  /** Desktop: barra estreita só com ícones */
   const [desktopCollapsed, setDesktopCollapsed] = useState(false)
   const [logoutLoading, setLogoutLoading] = useState(false)
   const isDesktop = useMediaQuery('(min-width: 1024px)')
 
-  const closeMobileDrawer = useCallback(() => setMobileDrawerOpen(false), [])
-
   const toggleSidebar = useCallback(() => {
-    if (isDesktop) {
-      setDesktopCollapsed((c) => !c)
-    } else {
-      setMobileDrawerOpen((o) => !o)
-    }
-  }, [isDesktop])
+    setDesktopCollapsed((c) => !c)
+  }, [])
 
   const { pathname } = location
   const title = useMemo(() => {
@@ -87,29 +79,21 @@ export function AppLayout() {
     }
   }
 
-  const menuAriaLabel = isDesktop
-    ? desktopCollapsed
-      ? t('layout.expandSidebar')
-      : t('layout.collapseSidebar')
-    : mobileDrawerOpen
-      ? t('layout.closeMenu')
-      : t('layout.openMenu')
+  const menuAriaLabel = desktopCollapsed
+    ? t('layout.expandSidebar')
+    : t('layout.collapseSidebar')
 
   return (
     <div className="app-layout">
-      <Sidebar
-        open={isDesktop ? true : mobileDrawerOpen}
-        collapsed={isDesktop && desktopCollapsed}
-        isDesktop={isDesktop}
-        showBackdrop={!isDesktop && mobileDrawerOpen}
-        onNavigate={closeMobileDrawer}
-        onToggleSidebar={toggleSidebar}
-      />
+      {isDesktop ? (
+        <Sidebar collapsed={desktopCollapsed} onToggleSidebar={toggleSidebar} />
+      ) : null}
       <div className="app-layout__main">
         <Header
           title={title}
           onMenuClick={toggleSidebar}
           menuAriaLabel={menuAriaLabel}
+          showMenuButton={isDesktop}
           trailingSlot={headerTrailing}
           userLabel={user?.email ?? userLabel}
           userInitial={userInitial}
@@ -122,6 +106,7 @@ export function AppLayout() {
           <Outlet />
         </main>
       </div>
+      {!isDesktop ? <BottomBar /> : null}
     </div>
   )
 }

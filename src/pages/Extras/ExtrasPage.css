@@ -6,7 +6,7 @@
 .page-extras__grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.25rem;
+  gap: var(--spacing-gap-lg);
 }
 
 @media (min-width: 768px) {

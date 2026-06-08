@@ -23,9 +23,17 @@
   overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior: contain;
-  padding: clamp(1.25rem, 3vw, 2rem);
-  padding-bottom: clamp(1.5rem, 3.5vw, 2.5rem);
-  animation: layout-fade 0.35s ease both;
+  padding: clamp(1.5rem, 3.5vw, 2.5rem);
+  padding-bottom: clamp(1.875rem, 4vw, 3rem);
+  animation: layout-fade 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@media (max-width: 1023px) {
+  .app-layout__content {
+    padding-bottom: calc(
+      var(--bottom-bar-height) + env(safe-area-inset-bottom, 0px) + 1.25rem
+    );
+  }
 }
 
 @keyframes layout-fade {

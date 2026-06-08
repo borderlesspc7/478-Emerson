@@ -6,16 +6,16 @@
 .page-interests__section-title {
   margin: 0 0 1rem;
   font-size: 1.125rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: 0.02em;
 }
 
 .page-interests__grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: var(--spacing-gap-md);
+  margin-bottom: 2.5rem;
 }
 
 @media (min-width: 640px) {
@@ -33,7 +33,7 @@
 .page-interests__card {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: var(--spacing-gap-sm);
   height: 100%;
 }
 
@@ -76,7 +76,7 @@
 .page-interests__desc {
   margin: 0;
   font-size: 0.875rem;
-  line-height: 1.45;
+  line-height: 1.6;
   color: var(--text-secondary);
   flex: 1;
 }

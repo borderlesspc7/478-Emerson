@@ -223,6 +223,36 @@ export async function markServiceRequestCompletedById(requestId: string): Promis
   })
 }
 
+/** Admin / operador: marcar pedido como em curso pelo id do documento. */
+export async function markServiceRequestInProgressById(requestId: string): Promise<void> {
+  const db = getFirebaseFirestore()
+  if (!db) throw new Error('AUTH_NOT_CONFIGURED')
+  const ref = doc(db, SERVICE_REQUESTS_COLLECTION, requestId)
+  await updateDoc(ref, {
+    status: 'in_progress',
+    updatedAt: serverTimestamp(),
+  })
+}
+
+/** Admin / operador: reabrir pedido concluído (volta a pendente). */
+export async function reopenServiceRequestById(requestId: string): Promise<void> {
+  const db = getFirebaseFirestore()
+  if (!db) throw new Error('AUTH_NOT_CONFIGURED')
+  const ref = doc(db, SERVICE_REQUESTS_COLLECTION, requestId)
+  await updateDoc(ref, {
+    status: 'pending',
+    completedAt: null,
+    updatedAt: serverTimestamp(),
+  })
+}
+
+/** Admin / operador: eliminar pedido pelo id do documento. */
+export async function deleteServiceRequestById(requestId: string): Promise<void> {
+  const db = getFirebaseFirestore()
+  if (!db) throw new Error('AUTH_NOT_CONFIGURED')
+  await deleteDoc(doc(db, SERVICE_REQUESTS_COLLECTION, requestId))
+}
+
 export async function markServiceRequestCompleted(
   uid: string,
   requestId: string

@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(1rem, 4vw, 2.5rem);
+  padding: clamp(1.25rem, 4.5vw, 3rem);
   box-sizing: border-box;
   /* Cor próxima às bordas da foto — evita “barras” óbvias em carregamento */
   background-color: #e8eaed;
@@ -34,24 +34,24 @@
   align-items: center;
   justify-content: center;
   width: min(100%, 440px);
-  padding: clamp(1.25rem, 3vw, 2rem);
+  padding: clamp(1.5rem, 3.5vw, 2.5rem);
   background: color-mix(in srgb, #fff 18%, transparent);
   backdrop-filter: blur(10px) saturate(130%);
   -webkit-backdrop-filter: blur(10px) saturate(130%);
   border-radius: calc(var(--radius-lg) + 8px);
   border: 1px solid color-mix(in srgb, var(--border-default) 72%, transparent);
-  box-shadow: 0 24px 50px -28px rgba(15, 23, 42, 0.45);
+  box-shadow: var(--shadow-lg);
 }
 
 .login-card {
   width: 100%;
   max-width: 400px;
-  padding: clamp(1.1rem, 2vw, 1.4rem);
+  padding: var(--spacing-card);
   border-radius: calc(var(--radius-lg) + 4px);
   background: color-mix(in srgb, var(--surface-elevated) 78%, transparent);
   border: 1px solid color-mix(in srgb, var(--border-default) 88%, transparent);
-  box-shadow: 0 20px 35px -16px rgba(15, 23, 42, 0.36);
-  animation: login-card-in 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+  box-shadow: var(--shadow-md);
+  animation: login-card-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 @keyframes login-card-in {
@@ -100,8 +100,8 @@
 .login-card__title {
   margin: 0 0 0.5rem;
   font-size: 1.5rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
+  font-weight: var(--font-weight-heading);
+  letter-spacing: 0.02em;
   color: var(--text-primary);
 }
 
@@ -109,7 +109,7 @@
   margin: 0;
   font-size: 0.9375rem;
   color: var(--text-muted);
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .login-card__modes {
@@ -132,10 +132,7 @@
   font-size: 0.8125rem;
   font-weight: 700;
   cursor: pointer;
-  transition:
-    color 0.18s ease,
-    background 0.18s ease,
-    border-color 0.18s ease;
+  transition: var(--transition-premium);
 }
 
 .login-card__mode-btn.is-active {
@@ -184,9 +181,7 @@
   background: var(--surface-elevated);
   border: 1px solid var(--border-default);
   border-radius: var(--radius-md);
-  transition:
-    border-color 0.18s ease,
-    box-shadow 0.18s ease;
+  transition: var(--transition-premium);
 }
 
 .login-form__input::placeholder {
@@ -224,7 +219,7 @@
   font-weight: 500;
   color: var(--color-primary);
   text-decoration: none;
-  transition: color 0.15s ease;
+  transition: var(--transition-premium);
 }
 
 .login-form__link:hover {

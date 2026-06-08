@@ -2,9 +2,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: var(--spacing-gap-md);
   min-height: var(--header-height);
-  padding: 0 clamp(1rem, 3vw, 1.5rem);
+  padding: 0 clamp(1.25rem, 3.5vw, 1.875rem);
   background: var(--surface-elevated);
   border-bottom: 1px solid var(--border-default);
   position: sticky;
@@ -17,7 +17,7 @@
 .app-header__left {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--spacing-gap-sm);
   min-width: 0;
 }
 
@@ -33,9 +33,7 @@
   background: transparent;
   color: var(--text-secondary);
   cursor: pointer;
-  transition:
-    background 0.15s ease,
-    color 0.15s ease;
+  transition: var(--transition-premium);
 }
 
 .app-header__menu-btn:hover {
@@ -67,8 +65,8 @@
 .app-header__title {
   margin: 0;
   font-size: 1.0625rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-weight: var(--font-weight-heading);
+  letter-spacing: 0.02em;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -78,7 +76,7 @@
 .app-header__right {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: var(--spacing-gap-sm);
   flex-shrink: 0;
 }
 

@@ -5,7 +5,8 @@ import './Header.css'
 type HeaderProps = {
   title?: string
   onMenuClick: () => void
-  /** Acessibilidade: texto muda entre mobile (drawer) e desktop (recolher/expandir) */
+  /** Desktop: botão recolher/expandir sidebar. Oculto em mobile (bottom bar). */
+  showMenuButton?: boolean
   menuAriaLabel?: string
   /** Ex.: centro de notificações do hóspede (antes do bloco do utilizador). */
   trailingSlot?: ReactNode
@@ -19,6 +20,7 @@ type HeaderProps = {
 export function Header({
   title = 'Painel',
   onMenuClick,
+  showMenuButton = true,
   menuAriaLabel = 'Abrir menu de navegação',
   trailingSlot,
   userLabel,
@@ -42,19 +44,21 @@ export function Header({
   return (
     <header className="app-header">
       <div className="app-header__left">
-        <button
-          ref={menuBtnRef}
-          type="button"
-          className="app-header__menu-btn"
-          onClick={onMenuClick}
-          aria-label={menuAriaLabel}
-        >
-          <span className="app-header__menu-icon" aria-hidden>
-            <span />
-            <span />
-            <span />
-          </span>
-        </button>
+        {showMenuButton ? (
+          <button
+            ref={menuBtnRef}
+            type="button"
+            className="app-header__menu-btn"
+            onClick={onMenuClick}
+            aria-label={menuAriaLabel}
+          >
+            <span className="app-header__menu-icon" aria-hidden>
+              <span />
+              <span />
+              <span />
+            </span>
+          </button>
+        ) : null}
         <h1 className="app-header__title">{title}</h1>
       </div>
 

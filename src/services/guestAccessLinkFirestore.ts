@@ -1,5 +1,6 @@
 import {
   collection,
+  deleteDoc,
   doc,
   getDocFromServer,
   increment,
@@ -169,6 +170,66 @@ export async function recordGuestAccessLinkUsage(
   } catch {
     /* regras / rede: não falhar o login */
   }
+}
+
+export async function updateGuestAccessLinkFields(
+  reservationCode: string,
+  patch: {
+    propertyId?: string
+    accessActive?: boolean
+  },
+): Promise<void> {
+  const db = getFirebaseFirestore()
+  if (!db) throw new Error('AUTH_NOT_CONFIGURED')
+
+  const id = normalizeGuestAccessReservationCode(reservationCode)
+  if (!id) throw new Error('guest-access/invalid-reservation-code')
+
+  const payload: Record<string, unknown> = {
+    updatedAt: serverTimestamp(),
+  }
+
+  if (patch.propertyId !== undefined) {
+    const pid = patch.propertyId.trim()
+    if (!pid) throw new Error('guest-access/invalid-property-id')
+    payload.propertyId = pid
+  }
+
+  if (patch.accessActive !== undefined) {
+    payload.accessActive = patch.accessActive
+  }
+
+  await updateDoc(doc(db, GUEST_ACCESS_LINKS_COLLECTION, id), payload)
+}
+
+/** Renomeia o código da reserva (migra o documento Firestore). */
+export async function renameGuestAccessLinkReservationCode(
+  currentReservationCode: string,
+  nextReservationCodeRaw: string,
+): Promise<void> {
+  const db = getFirebaseFirestore()
+  if (!db) throw new Error('AUTH_NOT_CONFIGURED')
+
+  const oldId = normalizeGuestAccessReservationCode(currentReservationCode)
+  const newId = normalizeGuestAccessReservationCode(nextReservationCodeRaw)
+  if (!oldId || !newId) throw new Error('guest-access/invalid-reservation-code')
+  if (oldId === newId) return
+
+  const oldRef = doc(db, GUEST_ACCESS_LINKS_COLLECTION, oldId)
+  const oldSnap = await getDocFromServer(oldRef)
+  if (!oldSnap.exists()) throw new Error('guest-access/not-found')
+
+  const newRef = doc(db, GUEST_ACCESS_LINKS_COLLECTION, newId)
+  const newSnap = await getDocFromServer(newRef)
+  if (newSnap.exists()) throw new Error('guest-access/code-already-exists')
+
+  const data = oldSnap.data() as Record<string, unknown>
+  await setDoc(newRef, {
+    ...data,
+    reservationCode: newId,
+    updatedAt: serverTimestamp(),
+  })
+  await deleteDoc(oldRef)
 }
 
 export function subscribeGuestAccessLinks(
