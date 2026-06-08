@@ -33,6 +33,14 @@
   "header": {
     "logout": "Sair"
   },
+  "pwa": {
+    "installBannerMessage": "Instale o Guia da Zen no seu telemóvel para acesso mais rápido",
+    "installButton": "Instalar",
+    "iosHint": "Para instalar no iPhone, toque em",
+    "iosHintSuffix": "e depois em \"Adicionar ao Ecrã Principal\"",
+    "dismiss": "Agora não",
+    "installBannerAria": "Instalar aplicação no telemóvel"
+  },
   "accessExpired": {
     "title": "Acesso fora do período",
     "lead": "O seu acesso ao painel só é válido durante a estadia (entre o check-in e o check-out). Contacte a equipa se precisar de ajuda.",

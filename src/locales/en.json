@@ -33,6 +33,14 @@
   "header": {
     "logout": "Log out"
   },
+  "pwa": {
+    "installBannerMessage": "Install Guia da Zen on your phone for faster access",
+    "installButton": "Install",
+    "iosHint": "To install on iPhone, tap",
+    "iosHintSuffix": "then tap \"Add to Home Screen\"",
+    "dismiss": "Not now",
+    "installBannerAria": "Install app on your phone"
+  },
   "accessExpired": {
     "title": "Access outside stay period",
     "lead": "Your dashboard access is only valid during your stay (between check-in and check-out). Contact the team if you need help.",

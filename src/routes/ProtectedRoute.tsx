@@ -36,6 +36,11 @@ export function ProtectedRoute() {
 
   const isAdminArea =
     location.pathname === PATHS.admin || location.pathname.startsWith(`${PATHS.admin}/`)
+
+  if (user.role === 'admin' && location.pathname === PATHS.dashboard) {
+    return <Navigate to={PATHS.admin} replace />
+  }
+
   if (user.role === 'guest' && isAdminArea) {
     return <Navigate to={PATHS.dashboard} replace />
   }

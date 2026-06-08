@@ -52,8 +52,7 @@ function mapUser(u: User, profile: FirestoreUserDocument | null = null): AppUser
   const looksGuestEmail =
     email?.toLowerCase().endsWith(`@${GUEST_FIREBASE_EMAIL_DOMAIN}`) ?? false
   const fromProfile = profile?.role
-  // Só `admin` na UI quando o Firestore confirma — evita área admin com writes negadas
-  // (`isAdmin()` exige `role == 'admin'` ou legado sem campo + e-mail não-hóspede nas regras).
+  // E-mail corporativo segue a mesma regra de `syncUserProfileToFirestore` (role admin).
   const role: AppUser['role'] | undefined =
     fromProfile === 'admin'
       ? 'admin'
@@ -61,7 +60,9 @@ function mapUser(u: User, profile: FirestoreUserDocument | null = null): AppUser
         ? 'guest'
         : looksGuestEmail
           ? 'guest'
-          : undefined
+          : email
+            ? 'admin'
+            : undefined
 
   return {
     uid: u.uid,

@@ -5,15 +5,14 @@ import { Link, Navigate, useLocation } from 'react-router-dom'
 import { Button } from '../../components/ui/Button/Button'
 import { ErrorMessage } from '../../components/ui/ErrorMessage'
 import { useAuth } from '../../hooks/useAuth'
-import { PATHS } from '../../routes/path'
+import { getDefaultPathForUser } from '../../lib/defaultRoute'
 import './Login.css'
 
 export function LoginPage() {
   const { t } = useTranslation()
   const { user, authReady, loginGuest, loginAdmin, lastError, clearError } = useAuth()
   const location = useLocation()
-  const from =
-    (location.state as { from?: string } | null)?.from ?? PATHS.dashboard
+  const fromState = (location.state as { from?: string } | null)?.from
 
   const reservationId = useId()
   const emailId = useId()
@@ -32,7 +31,8 @@ export function LoginPage() {
   }, [reservationCode, email, password, authMode, clearError, t])
 
   if (authReady && user) {
-    return <Navigate to={from} replace />
+    const target = fromState ?? getDefaultPathForUser(user)
+    return <Navigate to={target} replace />
   }
 
   if (!authReady) {

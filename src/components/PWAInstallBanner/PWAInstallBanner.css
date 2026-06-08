@@ -1,0 +1,97 @@
+.pwa-install-banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-primary) 8%, var(--surface-elevated)),
+    var(--surface-elevated)
+  );
+  box-shadow: var(--shadow-sm);
+}
+
+.pwa-install-banner__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.pwa-install-banner__message {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.pwa-install-banner__ios-hint {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+  margin: 0.5rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.pwa-install-banner__share-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-subtle);
+  color: var(--color-primary);
+  vertical-align: middle;
+}
+
+.pwa-install-banner__actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.pwa-install-banner__dismiss {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.pwa-install-banner__dismiss:hover {
+  background: var(--surface-hover);
+  color: var(--text-secondary);
+}
+
+.pwa-install-banner__dismiss:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  .pwa-install-banner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .pwa-install-banner__actions {
+    justify-content: flex-end;
+  }
+}

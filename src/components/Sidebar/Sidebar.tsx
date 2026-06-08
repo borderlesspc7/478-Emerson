@@ -8,7 +8,6 @@ import {
   FiKey,
   FiMapPin,
   FiPhone,
-  FiShield,
   FiStar,
 } from 'react-icons/fi'
 import { GiLotusFlower } from 'react-icons/gi'
@@ -17,7 +16,7 @@ import {
   MdKeyboardDoubleArrowRight,
 } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
-import { NavLink, useLocation } from 'react-router-dom'
+import { NavLink } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { PATHS } from '../../routes/path'
 import './Sidebar.css'
@@ -42,12 +41,9 @@ export function Sidebar({
   onToggleSidebar,
 }: SidebarProps) {
   const { t } = useTranslation()
-  const { pathname } = useLocation()
   const { user } = useAuth()
   const backdrop = showBackdrop ?? false
   const isAdmin = user?.role === 'admin'
-  const isAdminRoute =
-    pathname === PATHS.admin || pathname.startsWith(`${PATHS.admin}/`)
 
   const { requests: adminServiceRequests } = useServiceRequests(
     isAdmin ? user?.uid : undefined,
@@ -61,7 +57,7 @@ export function Sidebar({
     pendingOrdersCount > 99 ? '99+' : pendingOrdersCount > 0 ? String(pendingOrdersCount) : null
 
   const nav = useMemo(() => {
-    if (isAdmin && isAdminRoute) {
+    if (isAdmin) {
       return [
         {
           to: PATHS.admin,
@@ -93,15 +89,6 @@ export function Sidebar({
 
     return [
       { to: PATHS.dashboard, labelKey: 'nav.overview' as const, icon: IconHome },
-      ...(isAdmin
-        ? [
-            {
-              to: PATHS.admin,
-              labelKey: 'nav.admin' as const,
-              icon: FiShield,
-            },
-          ]
-        : []),
       {
         to: PATHS.reservation,
         labelKey: 'nav.reservation' as const,
@@ -129,7 +116,7 @@ export function Sidebar({
         icon: IconSettings,
       },
     ] as const
-  }, [isAdmin, isAdminRoute])
+  }, [isAdmin])
 
   return (
     <>

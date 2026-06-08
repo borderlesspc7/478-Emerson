@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { useAuth } from '../hooks/useAuth'
+import { getDefaultPathForUser } from '../lib/defaultRoute'
 import { AppLayout } from '../components/Layout/Layout'
 import { LocaleSwitcher } from '../components/LocaleSwitcher/LocaleSwitcher'
 import { ThemeSwitcher } from '../components/ThemeSwitcher/ThemeSwitcher'
@@ -22,6 +24,11 @@ import { PlaceholderPage } from '../pages/PlaceholderPage'
 import { PATHS } from './path'
 import { AccessExpiredGate } from './AccessExpiredGate'
 import { ProtectedRoute } from './ProtectedRoute'
+
+function DefaultRedirect() {
+  const { user } = useAuth()
+  return <Navigate to={getDefaultPathForUser(user)} replace />
+}
 
 export function AppRoutes() {
   const { t } = useTranslation()
@@ -64,7 +71,7 @@ export function AppRoutes() {
           />
         </Route>
       </Route>
-      <Route path="*" element={<Navigate to={PATHS.dashboard} replace />} />
+      <Route path="*" element={<DefaultRedirect />} />
     </Routes>
   )
 }
