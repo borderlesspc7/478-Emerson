@@ -1,7 +1,7 @@
 /* Padrão visual compartilhado: dashboard, reserva, serviços */
 
 .guest-content__hero {
-  margin-bottom: 2.5rem;
+  margin-bottom: var(--spacing-section);
 }
 
 .guest-content__heading {
@@ -95,7 +95,7 @@
 }
 
 .guest-content__section {
-  margin: 2.5rem 0 1.25rem;
+  margin: var(--spacing-section) 0 var(--spacing-gap-md);
   font-size: 1rem;
   font-weight: var(--font-weight-heading);
   letter-spacing: 0.02em;

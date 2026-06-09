@@ -505,6 +505,7 @@ export function mergeGuestStayWithZenCuration(
 
   const zenCurated: GuestZenCurated = {
     garageImageUrls: [...curation.garagePhotoUrls].filter(Boolean),
+    garageVideoUrl: curation.garageVideoUrl?.trim() || null,
     elevatorImageUrls: [...curation.elevatorPhotoUrls].filter(Boolean),
     manualAccessNotes: curation.manualAccessTips?.trim() || null,
     manualPropertyNotes: curation.manualPropertyTips?.trim() || null,
@@ -512,6 +513,7 @@ export function mergeGuestStayWithZenCuration(
 
   const hasExtras =
     zenCurated.garageImageUrls.length > 0 ||
+    Boolean(zenCurated.garageVideoUrl) ||
     zenCurated.elevatorImageUrls.length > 0 ||
     zenCurated.manualAccessNotes ||
     zenCurated.manualPropertyNotes

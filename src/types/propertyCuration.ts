@@ -2,6 +2,8 @@
 export type PropertyCurationRecord = {
   propertyId: string
   garagePhotoUrls: string[]
+  /** Link YouTube ou Vimeo exibido no card «Vaga de Garagem» do hóspede. */
+  garageVideoUrl?: string | null
   elevatorPhotoUrls: string[]
   manualAccessTips: string
   manualPropertyTips: string

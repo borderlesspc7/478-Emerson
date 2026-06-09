@@ -3,12 +3,19 @@ import { useTranslation } from 'react-i18next'
 import {
   FiChevronDown,
   FiExternalLink,
+  FiMaximize2,
   FiPlayCircle,
   FiShield,
   FiTrash2,
   FiTruck,
 } from 'react-icons/fi'
+import { MediaModal } from '../../components/MediaModal/MediaModal'
 import { PropertyDescriptionCardList } from '../../components/PropertyDescriptionCardList'
+import {
+  buildGarageMediaUrls,
+  isEmbeddableVideoUrl,
+  pickPrimaryGarageMediaUrl,
+} from '../../lib/mediaUrl'
 import { Button } from '../../components/ui/Button/Button'
 import {
   aboutPropertyFaqKeys,
@@ -44,6 +51,7 @@ export function AboutPropertyPage() {
     garageRules: false,
   })
   const [expandedFaq, setExpandedFaq] = useState<string | null>(null)
+  const [garageMediaOpen, setGarageMediaOpen] = useState(false)
 
   const addressFull = useMemo(
     () => [property.addressLine, property.city, property.postalCode].filter(Boolean).join(', '),
@@ -55,12 +63,24 @@ export function AboutPropertyPage() {
     window.open(mapsUrl, '_blank', 'noopener,noreferrer')
   }
 
-  const openGarageVideo = () => {
-    window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank', 'noopener,noreferrer')
-  }
-
   const hasZenNotes = Boolean(zen && (zen.manualAccessNotes || zen.manualPropertyNotes))
-  const showCuratedGaragePhotos = Boolean(zen?.garageImageUrls.length)
+  const garageVideoUrl = zen?.garageVideoUrl?.trim() || null
+  const garageImageUrls = useMemo(
+    () => (zen?.garageImageUrls ?? []).map((item) => item.trim()).filter(Boolean),
+    [zen?.garageImageUrls]
+  )
+  const garageMediaUrls = useMemo(
+    () => buildGarageMediaUrls(garageImageUrls, garageVideoUrl),
+    [garageImageUrls, garageVideoUrl]
+  )
+  const hasGarageMedia = garageMediaUrls.length > 0
+  const primaryGarageMediaUrl = useMemo(
+    () => pickPrimaryGarageMediaUrl(garageImageUrls, garageVideoUrl),
+    [garageImageUrls, garageVideoUrl]
+  )
+  const isGarageVideo = Boolean(
+    garageVideoUrl && primaryGarageMediaUrl && isEmbeddableVideoUrl(primaryGarageMediaUrl)
+  )
   const showCuratedElevatorPhotos = Boolean(zen?.elevatorImageUrls.length)
 
   function toggleFaq(faqKey: string) {
@@ -203,36 +223,40 @@ export function AboutPropertyPage() {
               </article>
             ) : null}
 
-            <article className="guest-content__card page-about-property__info-card">
-              <h3 className="guest-content__card-title">{t('aboutProperty.cards.garageVideo.title')}</h3>
-              {showCuratedGaragePhotos && zen ? (
-                <>
-                  <p className="guest-content__card-meta">{t('aboutProperty.zenCurated.garagePhotosHint')}</p>
+            {hasGarageMedia && primaryGarageMediaUrl ? (
+              <article className="guest-content__card page-about-property__info-card">
+                <h3 className="guest-content__card-title">
+                  {t('aboutProperty.cards.garageVideo.title')}
+                </h3>
+                <p className="guest-content__card-meta">
+                  {isGarageVideo
+                    ? t('aboutProperty.cards.garageVideo.description')
+                    : t('aboutProperty.zenCurated.garagePhotosHint')}
+                </p>
+                {!isGarageVideo && garageImageUrls.length > 0 ? (
                   <div className="page-about-property__zen-gallery page-about-property__zen-gallery--compact">
-                    {zen.garageImageUrls.map((url) => (
-                      <img key={url} src={url} alt="" loading="lazy" />
+                    {garageImageUrls.slice(0, 3).map((mediaUrl) => (
+                      <img key={mediaUrl} src={mediaUrl} alt="" loading="lazy" />
                     ))}
                   </div>
-                </>
-              ) : (
-                <>
-                  <p className="guest-content__card-meta">
-                    {t('aboutProperty.cards.garageVideo.description')}
-                  </p>
-                  <div className="page-about-property__actions">
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="md"
-                      leftIcon={<FiPlayCircle aria-hidden />}
-                      onClick={openGarageVideo}
-                    >
-                      {t('aboutProperty.cards.garageVideo.cta')}
-                    </Button>
-                  </div>
-                </>
-              )}
-            </article>
+                ) : null}
+                <div className="page-about-property__actions">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="md"
+                    leftIcon={
+                      isGarageVideo ? <FiPlayCircle aria-hidden /> : <FiMaximize2 aria-hidden />
+                    }
+                    onClick={() => setGarageMediaOpen(true)}
+                  >
+                    {isGarageVideo
+                      ? t('aboutProperty.cards.garageVideo.cta')
+                      : t('aboutProperty.cards.garageVideo.viewPhotos')}
+                  </Button>
+                </div>
+              </article>
+            ) : null}
 
             <article className="guest-content__card page-about-property__info-card">
               <h3 className="guest-content__card-title">{t('aboutProperty.cards.elevators.title')}</h3>
@@ -423,6 +447,15 @@ export function AboutPropertyPage() {
           </section>
         ) : null}
       </section>
+
+      {garageMediaOpen && primaryGarageMediaUrl ? (
+        <MediaModal
+          url={primaryGarageMediaUrl}
+          urls={garageMediaUrls}
+          title={t('aboutProperty.cards.garageVideo.title')}
+          onClose={() => setGarageMediaOpen(false)}
+        />
+      ) : null}
     </div>
   )
 }

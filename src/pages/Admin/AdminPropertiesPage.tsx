@@ -136,6 +136,7 @@ export function AdminPropertiesPage() {
           const hasCuration = Boolean(
             pack.curation &&
               (pack.curation.garagePhotoUrls.length > 0 ||
+                Boolean(pack.curation.garageVideoUrl?.trim()) ||
                 pack.curation.elevatorPhotoUrls.length > 0 ||
                 pack.curation.manualAccessTips.trim() ||
                 pack.curation.manualPropertyTips.trim())

@@ -23,8 +23,8 @@
   overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior: contain;
-  padding: clamp(1.5rem, 3.5vw, 2.5rem);
-  padding-bottom: clamp(1.875rem, 4vw, 3rem);
+  padding: var(--spacing-page-y) var(--spacing-page-x);
+  padding-bottom: calc(var(--spacing-page-y) + var(--spacing-gap-md));
   animation: layout-fade 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 

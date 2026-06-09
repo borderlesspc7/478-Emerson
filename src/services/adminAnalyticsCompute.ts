@@ -130,7 +130,9 @@ export function computeIncompleteListings(
     const id = listingPropertyKey(listing)
     if (!id) continue
     const curation = byCuration.get(id) ?? null
-    const hasGaragePhotos = (curation?.garagePhotoUrls?.length ?? 0) > 0
+    const hasGaragePhotos =
+      (curation?.garagePhotoUrls?.length ?? 0) > 0 ||
+      Boolean(curation?.garageVideoUrl?.trim())
     const bundle = mapStaysToGuestStayBundle(id, PLACEHOLDER_BOOKING, listing, null, null)
     const merged = mergeGuestStayWithZenCuration(bundle.guestStay, curation, {
       accessActive: curation != null,

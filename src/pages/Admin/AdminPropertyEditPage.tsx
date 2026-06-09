@@ -14,6 +14,7 @@ import {
   uploadPropertyImage,
 } from '../../services/storageService'
 import type { StaysPropertyListing } from '../../types/staysApi'
+import { isEmbeddableVideoUrl } from '../../lib/mediaUrl'
 import { PATHS } from '../../routes/path'
 import '../../components/AdminLayout/AdminLayout.css'
 import '../shared/guestContent.css'
@@ -53,6 +54,7 @@ export function AdminPropertyEditPage() {
 
   const [title, setTitle] = useState('')
   const [garageUrls, setGarageUrls] = useState<string[]>([])
+  const [garageVideoUrl, setGarageVideoUrl] = useState('')
   const [elevatorUrls, setElevatorUrls] = useState<string[]>([])
   const [manualAccess, setManualAccess] = useState('')
   const [manualProperty, setManualProperty] = useState('')
@@ -62,16 +64,17 @@ export function AdminPropertyEditPage() {
   const [uploadingE, setUploadingE] = useState(false)
 
   const persistCuration = useCallback(
-    async (nextGarage: string[], nextElevator: string[]) => {
+    async (nextGarage: string[], nextElevator: string[], nextGarageVideo = garageVideoUrl) => {
       await savePropertyCuration(propertyId, {
         garagePhotoUrls: nextGarage,
+        garageVideoUrl: nextGarageVideo.trim() || null,
         elevatorPhotoUrls: nextElevator,
         manualAccessTips: manualAccess,
         manualPropertyTips: manualProperty,
         displayName: title || null,
       })
     },
-    [propertyId, manualAccess, manualProperty, title],
+    [propertyId, manualAccess, manualProperty, title, garageVideoUrl],
   )
 
   const toastDropRejected = useCallback(
@@ -125,6 +128,7 @@ export function AdminPropertyEditPage() {
         const listTitle = listingTitle(listing)
         setTitle(listTitle || cur?.displayName || propertyId)
         setGarageUrls(cur?.garagePhotoUrls ?? [])
+        setGarageVideoUrl(cur?.garageVideoUrl ?? '')
         setElevatorUrls(cur?.elevatorPhotoUrls ?? [])
         setManualAccess(cur?.manualAccessTips ?? '')
         setManualProperty(cur?.manualPropertyTips ?? '')
@@ -265,10 +269,16 @@ export function AdminPropertyEditPage() {
   async function handleSave(e: React.FormEvent) {
     e.preventDefault()
     if (!propertyId) return
+    const trimmedVideo = garageVideoUrl.trim()
+    if (trimmedVideo && !isEmbeddableVideoUrl(trimmedVideo)) {
+      showToast(t('adminPropertyEdit.garageVideoInvalid'), 'error')
+      return
+    }
     setSaving(true)
     try {
       await savePropertyCuration(propertyId, {
         garagePhotoUrls: garageUrls,
+        garageVideoUrl: trimmedVideo || null,
         elevatorPhotoUrls: elevatorUrls,
         manualAccessTips: manualAccess,
         manualPropertyTips: manualProperty,
@@ -357,6 +367,21 @@ export function AdminPropertyEditPage() {
                 {t('adminPropertyEdit.clearGarage')}
               </Button>
             ) : null}
+            <label style={{ marginTop: '1rem' }}>
+              <span>{t('adminPropertyEdit.garageVideo')}</span>
+              <input
+                type="url"
+                inputMode="url"
+                value={garageVideoUrl}
+                onChange={(e) => setGarageVideoUrl(e.target.value)}
+                placeholder={t('adminPropertyEdit.garageVideoPlaceholder')}
+                autoComplete="off"
+                spellCheck={false}
+              />
+            </label>
+            <p className="guest-content__card-meta" style={{ marginTop: '0.35rem' }}>
+              {t('adminPropertyEdit.garageVideoHint')}
+            </p>
           </div>
 
           <div>

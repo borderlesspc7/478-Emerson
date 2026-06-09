@@ -259,7 +259,8 @@
       "garageVideo": {
         "title": "Vaga de Garagem",
         "description": "Veja o fluxo de entrada e saída da garagem para evitar dúvidas no acesso.",
-        "cta": "Ver vídeo explicativo"
+        "cta": "Ver vídeo explicativo",
+        "viewPhotos": "Ver fotos da garagem"
       },
       "elevators": {
         "title": "Elevadores",
@@ -461,6 +462,13 @@
       "edit": "Editar",
       "remove": "Remover",
       "cancelEdit": "Cancelar edição",
+      "cancel": "Cancelar",
+      "editModalTitle": "Editar serviço — {{name}}",
+      "deleteModalTitle": "Remover serviço",
+      "modalClose": "Fechar",
+      "confirmDelete": "Remover",
+      "confirmDeleteLead": "Tem a certeza que deseja remover este serviço do catálogo?",
+      "confirmDeleteHint": "Pedidos antigos no histórico mantêm o nome gravado no pedido.",
       "editing": "A editar: {{name}}",
       "listAria": "Itens atuais do catálogo",
       "catalogLoading": "A carregar o catálogo…",
@@ -471,6 +479,18 @@
       "errorDelete": "Não foi possível remover o item.",
       "confirmDeleteOffer": "Remover este serviço do catálogo? (Pedidos antigos no histórico mantêm o nome gravado no pedido.)"
     }
+  },
+  "mediaModal": {
+    "defaultTitle": "Mídia",
+    "close": "Fechar",
+    "loading": "A carregar mídia…",
+    "unsupported": "Não foi possível exibir esta mídia.",
+    "zoomIn": "Aumentar",
+    "zoomOut": "Reduzir",
+    "resetZoom": "Repor zoom",
+    "prev": "Anterior",
+    "next": "Seguinte",
+    "counter": "{{current}} de {{total}}"
   },
   "guestNotifications": {
     "bellAria": "Notificações de pedidos de serviço",
@@ -582,6 +602,10 @@
     "loadError": "Não foi possível carregar a curadoria.",
     "displayName": "Nome de exibição",
     "garagePhotos": "Fotos — vaga / garagem",
+    "garageVideo": "Vídeo — vaga / garagem (YouTube ou Vimeo)",
+    "garageVideoPlaceholder": "Ex.: https://www.youtube.com/watch?v=… ou https://vimeo.com/…",
+    "garageVideoHint": "Opcional. O hóspede vê este vídeo no card «Vaga de Garagem» com o player integrado.",
+    "garageVideoInvalid": "Indique um link válido do YouTube ou Vimeo, ou deixe o campo vazio.",
     "elevatorPhotos": "Fotos — elevador / caminho",
     "attachImagesGarage": "Anexar imagens (vaga / garagem)",
     "attachImagesElevator": "Anexar imagens (elevador / caminho)",

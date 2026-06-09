@@ -259,7 +259,8 @@
       "garageVideo": {
         "title": "Garage Spot",
         "description": "See the entry and exit flow for the garage to avoid confusion during access.",
-        "cta": "Watch explanatory video"
+        "cta": "Watch explanatory video",
+        "viewPhotos": "View garage photos"
       },
       "elevators": {
         "title": "Elevators",
@@ -461,6 +462,13 @@
       "edit": "Edit",
       "remove": "Remove",
       "cancelEdit": "Cancel edit",
+      "cancel": "Cancel",
+      "editModalTitle": "Edit service — {{name}}",
+      "deleteModalTitle": "Remove service",
+      "modalClose": "Close",
+      "confirmDelete": "Remove",
+      "confirmDeleteLead": "Are you sure you want to remove this service from the catalog?",
+      "confirmDeleteHint": "Existing requests in history keep the name stored on the request.",
       "editing": "Editing: {{name}}",
       "listAria": "Current catalog items",
       "catalogLoading": "Loading catalog…",
@@ -471,6 +479,18 @@
       "errorDelete": "Could not remove the item.",
       "confirmDeleteOffer": "Remove this service from the catalog? (Existing requests in history keep the name stored on the request.)"
     }
+  },
+  "mediaModal": {
+    "defaultTitle": "Media",
+    "close": "Close",
+    "loading": "Loading media…",
+    "unsupported": "This media could not be displayed.",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "resetZoom": "Reset zoom",
+    "prev": "Previous",
+    "next": "Next",
+    "counter": "{{current}} of {{total}}"
   },
   "guestNotifications": {
     "bellAria": "Service request notifications",
@@ -582,6 +602,10 @@
     "loadError": "Could not load curation data.",
     "displayName": "Display name",
     "garagePhotos": "Photos — parking / garage",
+    "garageVideo": "Video — parking / garage (YouTube or Vimeo)",
+    "garageVideoPlaceholder": "e.g. https://www.youtube.com/watch?v=… or https://vimeo.com/…",
+    "garageVideoHint": "Optional. Guests see this video on the «Garage Spot» card with the built-in player.",
+    "garageVideoInvalid": "Enter a valid YouTube or Vimeo link, or leave the field empty.",
     "elevatorPhotos": "Photos — elevator / route",
     "attachImagesGarage": "Attach images (parking / garage)",
     "attachImagesElevator": "Attach images (elevator / route)",

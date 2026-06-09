@@ -31,6 +31,7 @@ export type GuestAccess = {
 /** Conteúdo curado no Guia da Zen (Firestore), prioridade sobre heurísticas da Stays. */
 export type GuestZenCurated = {
   garageImageUrls: string[]
+  garageVideoUrl: string | null
   elevatorImageUrls: string[]
   manualAccessNotes: string | null
   manualPropertyNotes: string | null

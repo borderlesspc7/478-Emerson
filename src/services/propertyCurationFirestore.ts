@@ -33,6 +33,10 @@ export function mapPropertyCurationDoc(
   return {
     propertyId,
     garagePhotoUrls: toStringArray(data.garagePhotoUrls),
+    garageVideoUrl:
+      typeof data.garageVideoUrl === 'string' && data.garageVideoUrl.trim()
+        ? data.garageVideoUrl.trim()
+        : null,
     elevatorPhotoUrls: toStringArray(data.elevatorPhotoUrls),
     manualAccessTips: typeof data.manualAccessTips === 'string' ? data.manualAccessTips : '',
     manualPropertyTips: typeof data.manualPropertyTips === 'string' ? data.manualPropertyTips : '',
@@ -56,6 +60,7 @@ export async function savePropertyCuration(
   propertyId: string,
   input: {
     garagePhotoUrls: string[]
+    garageVideoUrl?: string | null
     elevatorPhotoUrls: string[]
     manualAccessTips: string
     manualPropertyTips: string
@@ -68,6 +73,7 @@ export async function savePropertyCuration(
     doc(db, PROPERTY_CURATIONS_COLLECTION, propertyId),
     {
       garagePhotoUrls: input.garagePhotoUrls,
+      garageVideoUrl: input.garageVideoUrl?.trim() || null,
       elevatorPhotoUrls: input.elevatorPhotoUrls,
       manualAccessTips: input.manualAccessTips,
       manualPropertyTips: input.manualPropertyTips,

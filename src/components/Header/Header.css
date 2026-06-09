@@ -4,7 +4,7 @@
   justify-content: space-between;
   gap: var(--spacing-gap-md);
   min-height: var(--header-height);
-  padding: 0 clamp(1.25rem, 3.5vw, 1.875rem);
+  padding: 0 var(--spacing-page-x);
   background: var(--surface-elevated);
   border-bottom: 1px solid var(--border-default);
   position: sticky;
