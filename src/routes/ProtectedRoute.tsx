@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { GuestStayExpiryMonitor } from '../components/GuestStayExpiryMonitor/GuestStayExpiryMonitor'
-import { isStayAccessActive } from '../lib/auth'
+import { isBeforeCheckInTime, isStayCheckOutExpired } from '../lib/auth'
 import { useAuth } from '../hooks/useAuth'
 import { PATHS } from './path'
 
@@ -31,8 +31,11 @@ export function ProtectedRoute() {
 
   const stay = user.stay
   const hasStayWindow = Boolean(stay?.checkInAt && stay?.checkOutAt)
-  const stayBlocked =
-    Boolean(stay) && hasStayWindow && !isStayAccessActive(stay!)
+  const stayExpired =
+    user.role === 'guest' && Boolean(stay) && hasStayWindow && isStayCheckOutExpired(stay!)
+  const preCheckIn =
+    user.role === 'guest' && Boolean(stay) && hasStayWindow && isBeforeCheckInTime(stay!)
+  const onPreCheckInPage = location.pathname === PATHS.preCheckIn
 
   const isAdminArea =
     location.pathname === PATHS.admin || location.pathname.startsWith(`${PATHS.admin}/`)
@@ -45,11 +48,22 @@ export function ProtectedRoute() {
     return <Navigate to={PATHS.dashboard} replace />
   }
 
+  if (stayExpired) {
+    return <Navigate to={PATHS.accessExpired} replace />
+  }
+
+  if (preCheckIn && !onPreCheckInPage) {
+    return <Navigate to={PATHS.preCheckIn} replace />
+  }
+
+  if (!preCheckIn && onPreCheckInPage) {
+    return <Navigate to={PATHS.dashboard} replace />
+  }
+
   return (
     <>
       <GuestStayExpiryMonitor />
-      {stayBlocked ? <Navigate to={PATHS.accessExpired} replace /> : null}
-      {!stayBlocked ? <Outlet /> : null}
+      <Outlet />
     </>
   )
 }

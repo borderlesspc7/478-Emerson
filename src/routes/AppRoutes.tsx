@@ -15,6 +15,8 @@ import { AdminPropertiesPage } from '../pages/Admin/AdminPropertiesPage'
 import { AdminPropertyEditPage } from '../pages/Admin/AdminPropertyEditPage'
 import { AdminAccessPage } from '../pages/Admin/AdminAccessPage'
 import { AdminServicesPage } from '../pages/Admin/AdminServicesPage'
+import { PreCheckInPage } from '../pages/PreCheckIn/PreCheckInPage'
+import { PreCheckInPreviewPage } from '../pages/PreCheckIn/PreCheckInPreviewPage'
 import { ReservationPage } from '../pages/Reservation/ReservationPage'
 import { AboutPropertyPage } from '../pages/AboutProperty/AboutPropertyPage'
 import { ServicesPage } from '../pages/Services/ServicesPage'
@@ -35,6 +37,9 @@ export function AppRoutes() {
 
   return (
     <Routes>
+      {import.meta.env.DEV ? (
+        <Route path={PATHS.preCheckInPreview} element={<PreCheckInPreviewPage />} />
+      ) : null}
       <Route path={PATHS.login} element={<LoginPage />} />
       <Route
         path={`${PATHS.guestDirectEntry}/:reservationCode`}
@@ -42,6 +47,7 @@ export function AppRoutes() {
       />
       <Route path={PATHS.accessExpired} element={<AccessExpiredGate />} />
       <Route element={<ProtectedRoute />}>
+        <Route path={PATHS.preCheckIn} element={<PreCheckInPage />} />
         <Route element={<AppLayout />}>
           <Route path={PATHS.dashboard} element={<DashboardPage />} />
           <Route path="admin" element={<AdminLayout />}>

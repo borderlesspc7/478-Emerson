@@ -47,6 +47,16 @@
     "logout": "Terminar sessão",
     "backToLogin": "Voltar ao login"
   },
+  "preCheckIn": {
+    "notice": "Você ainda não pode fazer check-in. Faça o seu check-in em <strong>{{checkInTime}}</strong> para liberar o acesso à plataforma.",
+    "servicesTitle": "Nossos serviços",
+    "servicesLead": "Precisa de algo antes de entrar? Solicite um serviço e a nossa equipa trata do pedido.",
+    "servicesSection": "Catálogo de serviços disponíveis antes do check-in",
+    "previewBanner": "Modo de pré-visualização — dados de exemplo, sem login.",
+    "previewPill": "Preview",
+    "previewBackToLogin": "Ir para o login",
+    "previewRequestDisabled": "Pedidos desativados nesta pré-visualização."
+  },
   "interests": {
     "title": "Interesses e pontos turísticos",
     "lead": "Sugestões próximas em Curitiba: serviços úteis e passeios. Distâncias são estimativas.",

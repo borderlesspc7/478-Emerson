@@ -4,6 +4,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../../components/ui/Button/Button'
 import { ErrorMessage } from '../../components/ui/ErrorMessage'
 import { useAuth } from '../../hooks/useAuth'
+import { getGuestHomePath } from '../../lib/guestHomePath'
 import { PATHS } from '../../routes/path'
 import '../Login/Login.css'
 import './GuestMagicLoginPage.css'
@@ -30,7 +31,7 @@ export function GuestMagicLoginPage() {
   useEffect(() => {
     if (!authReady) return
     if (user?.role === 'guest') {
-      navigate(PATHS.reservation, { replace: true })
+      navigate(getGuestHomePath(user), { replace: true })
     }
   }, [authReady, user, navigate])
 

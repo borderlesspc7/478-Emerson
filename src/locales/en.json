@@ -47,6 +47,16 @@
     "logout": "Sign out",
     "backToLogin": "Back to login"
   },
+  "preCheckIn": {
+    "notice": "You cannot check in yet. Complete your check-in on <strong>{{checkInTime}}</strong> to unlock full platform access.",
+    "servicesTitle": "Our services",
+    "servicesLead": "Need something before you arrive? Request a service and our team will handle it.",
+    "servicesSection": "Services available before check-in",
+    "previewBanner": "Preview mode — sample data, no login required.",
+    "previewPill": "Preview",
+    "previewBackToLogin": "Go to login",
+    "previewRequestDisabled": "Requests are disabled in this preview."
+  },
   "interests": {
     "title": "Interests & sightseeing",
     "lead": "Curated spots near Curitiba: essentials and leisure. Distances are estimates.",

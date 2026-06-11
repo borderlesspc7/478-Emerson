@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { isStayAccessActive } from '../../lib/auth'
+import { isStayCheckOutExpired } from '../../lib/auth'
 import { Button } from '../../components/ui/Button/Button'
 import '../../components/ui/Button/Button.css'
 import { useAuth } from '../../hooks/useAuth'
@@ -17,7 +17,7 @@ export function AccessExpiredPage() {
     if (!user) return
     const s = user.stay
     if (!s?.checkInAt || !s?.checkOutAt) return
-    if (isStayAccessActive(s)) return
+    if (!isStayCheckOutExpired(s)) return
     void (async () => {
       try {
         window.localStorage.clear()

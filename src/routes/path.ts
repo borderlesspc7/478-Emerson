@@ -3,6 +3,10 @@ export const PATHS = {
   /** Entrada direta do hóspede (magic link): `/entrar/:reservationCode`. */
   guestDirectEntry: '/entrar',
   accessExpired: '/acesso-expirado',
+  /** Hóspede antes do horário de check-in: pré-visualização e serviços. */
+  preCheckIn: '/aguardando-checkin',
+  /** Só em desenvolvimento: pré-visualização da tela sem login. */
+  preCheckInPreview: '/dev/preview/aguardando-checkin',
   dashboard: '/',
   admin: '/admin',
   adminOrders: '/admin/pedidos',

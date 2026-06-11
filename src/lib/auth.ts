@@ -1,4 +1,4 @@
-type StayWindow = {
+export type StayWindow = {
   checkInAt?: string | Date | null
   checkOutAt?: string | Date | null
 }
@@ -9,18 +9,34 @@ function toDate(value?: string | Date | null): Date | null {
   return Number.isNaN(parsed.getTime()) ? null : parsed
 }
 
-function startOfLocalDay(d: Date): Date {
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate(), 0, 0, 0, 0)
+/** Após o horário de check-out da Stays. */
+export function isStayCheckOutExpired(stay: StayWindow, now = new Date()): boolean {
+  const checkOut = toDate(stay.checkOutAt)
+  if (!checkOut) return false
+  return now > checkOut
+}
+
+/** Antes do horário exato de check-in da Stays. */
+export function isBeforeCheckInTime(stay: StayWindow, now = new Date()): boolean {
+  const checkIn = toDate(stay.checkInAt)
+  if (!checkIn) return false
+  return now < checkIn
 }
 
 /**
- * Regra base de sessão temporária:
- * início flexível no dia do check-in (00:00 local); fim rigoroso na data/hora de check-out da Stays.
+ * Janela completa da plataforma: a partir do horário de check-in até ao check-out.
  */
 export function isStayAccessActive(stay: StayWindow, now = new Date()): boolean {
   const checkIn = toDate(stay.checkInAt)
   const checkOut = toDate(stay.checkOutAt)
   if (!checkIn || !checkOut) return true
-  const windowStart = startOfLocalDay(checkIn)
-  return now >= windowStart && now <= checkOut
+  return now >= checkIn && now <= checkOut
+}
+
+/** Hóspede autenticado antes do check-in, mas ainda dentro da reserva (antes do check-out). */
+export function isStayPreCheckIn(stay: StayWindow, now = new Date()): boolean {
+  const checkIn = toDate(stay.checkInAt)
+  const checkOut = toDate(stay.checkOutAt)
+  if (!checkIn || !checkOut) return false
+  return now < checkIn && now <= checkOut
 }

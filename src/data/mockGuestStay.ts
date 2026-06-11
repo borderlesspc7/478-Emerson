@@ -10,6 +10,8 @@ export const mockGuestStay: GuestStay = {
     addressLine: 'Rua dos Pinheiros, 123',
     city: 'São Paulo, SP',
     postalCode: '05422-000',
+    imageUrl:
+      'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80',
   },
   checkInAt: '2026-04-14T15:00:00-03:00',
   checkOutAt: '2026-04-18T11:00:00-03:00',

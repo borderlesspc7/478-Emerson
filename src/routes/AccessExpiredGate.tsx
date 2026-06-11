@@ -1,9 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import { Navigate } from 'react-router-dom'
-import { isStayAccessActive } from '../lib/auth'
+import { isStayCheckOutExpired } from '../lib/auth'
+import { getGuestHomePath } from '../lib/guestHomePath'
 import { useAuth } from '../hooks/useAuth'
 import { AccessExpiredPage } from '../pages/AccessExpired/AccessExpiredPage'
-import { PATHS } from './path'
 
 /**
  * Rota pública: após logout por expiração o utilizador não tem sessão.
@@ -24,8 +24,8 @@ export function AccessExpiredGate() {
 
   const stay = user?.stay
   const hasWindow = Boolean(stay?.checkInAt && stay?.checkOutAt)
-  if (user && hasWindow && isStayAccessActive(stay!)) {
-    return <Navigate to={PATHS.dashboard} replace />
+  if (user?.role === 'guest' && hasWindow && !isStayCheckOutExpired(stay!)) {
+    return <Navigate to={getGuestHomePath(user)} replace />
   }
 
   return <AccessExpiredPage />

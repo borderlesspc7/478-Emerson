@@ -1,4 +1,5 @@
 import { normalizeStaysCustomFields } from '../lib/staysCustomFields'
+import { pickListingCardImageUrl } from '../lib/staysListingMedia'
 import { htmlToDescriptionPlainText } from '../lib/propertyDescriptionCards'
 import type { GuestStay, GuestZenCurated, ServiceOffer } from '../types/guestStay'
 import type { PropertyCurationRecord } from '../types/propertyCuration'
@@ -461,6 +462,7 @@ export function mapStaysToGuestStayBundle(
       city,
       postalCode: formatPostal(addr?.zip),
       description: descCommercial || null,
+      imageUrl: pickListingCardImageUrl(listing),
     },
     checkInAt: toStayIso(booking.checkInDate, booking.checkInTime, false),
     checkOutAt: toStayCheckOutIso(booking.checkOutDate, booking.checkOutTime),

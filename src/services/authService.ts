@@ -7,7 +7,7 @@ import {
   browserLocalPersistence,
   type User,
 } from 'firebase/auth'
-import { isStayAccessActive } from '../lib/auth'
+import { isStayCheckOutExpired } from '../lib/auth'
 import { parseStaysReservationUserInput } from '../lib/staysReservationInput'
 import type { AppUser } from '../types/user'
 import type { FirestoreUserDocument } from '../types/firestoreUser'
@@ -334,7 +334,7 @@ export async function loginWithStaysReservation(
   const checkInAt = toStayIso(booking.checkInDate, booking.checkInTime, false)
   const checkOutAt = toStayCheckOutIso(booking.checkOutDate, booking.checkOutTime)
 
-  if (!isStayAccessActive({ checkInAt, checkOutAt })) {
+  if (isStayCheckOutExpired({ checkInAt, checkOutAt })) {
     void logGuestLoginFailure({
       attemptedReservationCode: normalized,
       reason: 'stay/access-expired',

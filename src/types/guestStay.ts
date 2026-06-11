@@ -12,6 +12,8 @@ export type GuestProperty = {
   postalCode?: string | null
   /** Texto comercial do imóvel (ex.: descrição Stays HTML → texto). */
   description?: string | null
+  /** Foto de capa do imóvel (Stays ou curadoria). */
+  imageUrl?: string | null
 }
 
 export type GuestWifi = {
