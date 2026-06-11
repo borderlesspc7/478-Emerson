@@ -238,7 +238,7 @@ select {
 [class*='__card'],
 [class*='-card'],
 .guest-content__card,
-.page-services__row,
+.guest-services-grid__card,
 .page-about-property__accordion-item,
 .admin-dashboard__kpi,
 .admin-property-card,

@@ -44,8 +44,17 @@
   "accessExpired": {
     "title": "Acesso fora do período",
     "lead": "O seu acesso ao painel só é válido durante a estadia (entre o check-in e o check-out). Contacte a equipa se precisar de ajuda.",
+    "afterCheckOutTitle": "Estadia encerrada",
+    "beforeCheckInTitle": "Check-in ainda não disponível",
+    "stayWindow": "Check-in: {{checkIn}} · Check-out: {{checkOut}}",
     "logout": "Terminar sessão",
     "backToLogin": "Voltar ao login"
+  },
+  "guestAccessErrors": {
+    "checkOutExpired": "A sua estadia já terminou. O check-out foi em {{checkOutTime}}. Contacte a equipa se precisar de ajuda.",
+    "beforeCheckIn": "Ainda não é hora do check-in. O acesso completo libera-se em {{checkInTime}}. Até lá, pode voltar a abrir o link no horário de entrada.",
+    "checkOutExpiredGeneric": "A sua estadia já terminou. O acesso ao painel encerrou após o check-out.",
+    "beforeCheckInGeneric": "Ainda não é hora do check-in. Volte a abrir o link no horário de entrada da reserva."
   },
   "preCheckIn": {
     "notice": "Você ainda não pode fazer check-in. Faça o seu check-in em <strong>{{checkInTime}}</strong> para liberar o acesso à plataforma.",
@@ -60,9 +69,21 @@
   "interests": {
     "title": "Interesses e pontos turísticos",
     "lead": "Sugestões próximas em Curitiba: serviços úteis e passeios. Distâncias são estimativas.",
+    "leadLoading": "A procurar serviços e pontos turísticos perto do seu imóvel…",
+    "leadDynamic": "Sugestões próximas de {{region}}: farmácias, mercados, parques e museus com base na localização do imóvel.",
+    "regionFallback": "a sua região",
+    "distanceFromProperty": "≈ {{distance}} do imóvel",
+    "errorFallback": "Não foi possível carregar sugestões em tempo real para este endereço. Mostramos referências de Curitiba.",
+    "osmAttribution": "Dados de locais via OpenStreetMap (Photon / Komoot).",
     "sectionEssential": "Serviços essenciais",
     "sectionLeisure": "Lazer e turismo",
     "ctaMaps": "Como chegar",
+    "kindDescriptions": {
+      "pharmacy": "Farmácia para itens de saúde, higiene e medicamentos de venda livre.",
+      "grocery": "Supermercado para compras do dia a dia e abastecimento.",
+      "park": "Área verde para caminhada, descanso e lazer ao ar livre.",
+      "museum": "Espaço cultural com exposições e programação local."
+    },
     "kinds": {
       "pharmacy": "Farmácia",
       "grocery": "Supermercado",

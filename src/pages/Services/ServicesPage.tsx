@@ -1,8 +1,9 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate } from 'react-router-dom'
-import { Button } from '../../components/ui/Button/Button'
+import { GuestServicesCatalogGrid } from '../../components/GuestServicesCatalogGrid/GuestServicesCatalogGrid'
 import { useAuth } from '../../hooks/useAuth'
+import { formatServicePrice } from '../../lib/formatServicePrice'
 import { useGuestStay } from '../../hooks/useGuestStay'
 import { useServiceRequests } from '../../hooks/useServiceRequests'
 import { buildWhatsappRequestUrl } from '../../lib/whatsappUrl'
@@ -10,15 +11,6 @@ import { PATHS } from '../../routes/path'
 import { createServiceRequest } from '../../services/serviceRequestsFirestore'
 import '../shared/guestContent.css'
 import './ServicesPage.css'
-
-function formatPrice(locale: string, valueInCents: number): string {
-  const loc = locale === 'en' ? 'en-US' : 'pt-BR'
-  return new Intl.NumberFormat(loc, {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: 2,
-  }).format(valueInCents / 100)
-}
 
 function formatRequestedAt(date: Date | null, locale: string): string {
   if (!date || Number.isNaN(date.getTime())) return '—'
@@ -79,7 +71,7 @@ export function ServicesPage() {
           reservationCode,
           propertyName,
         })
-        const price = formatPrice(locale, priceInCents)
+        const price = formatServicePrice(locale, priceInCents)
         const message = t('servicesPage.whatsappMessage', {
           name: userName,
           reservationCode,
@@ -133,35 +125,13 @@ export function ServicesPage() {
         <h3 className="guest-content__section page-services__section-title">
           {t('servicesPage.sectionCatalog')}
         </h3>
-        <ul className="page-services__list" aria-label={t('servicesPage.listAria')}>
-          {serviceOffers.map((offer) => {
-            const formattedPrice = formatPrice(locale, offer.priceInCents)
-            return (
-              <li key={offer.id} className="page-services__row">
-                <div className="page-services__body">
-                  <h4 className="page-services__title">{offer.name}</h4>
-                  <p className="page-services__desc">{offer.description}</p>
-                </div>
-                <div className="page-services__action">
-                  <span className="page-services__price-label">
-                    {t('servicesPage.priceLabel')}
-                  </span>
-                  <strong className="page-services__price-value">{formattedPrice}</strong>
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="md"
-                    loading={offerLoadingId === offer.id}
-                    disabled={!uid || offerLoadingId !== null}
-                    onClick={() => void handleRequest(offer.id)}
-                  >
-                    {t('servicesPage.request')}
-                  </Button>
-                </div>
-              </li>
-            )
-          })}
-        </ul>
+        <GuestServicesCatalogGrid
+          offers={serviceOffers}
+          offerLoadingId={offerLoadingId}
+          requestDisabled={!uid}
+          columns={3}
+          onRequest={(serviceId) => void handleRequest(serviceId)}
+        />
       </section>
 
       <section
@@ -221,7 +191,7 @@ export function ServicesPage() {
                 const isOpen = req.status !== 'completed'
                 const title = req.serviceName || t('servicesPage.unknownService')
                 const requested = formatRequestedAt(req.createdAt, locale)
-                const requestPrice = formatPrice(locale, req.priceInCents)
+                const requestPrice = formatServicePrice(locale, req.priceInCents)
                 const requestReservation = req.reservationCode || reservationCode
                 const requestProperty = req.propertyName || propertyName
                 const statusLabel =

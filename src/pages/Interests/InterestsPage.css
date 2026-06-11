@@ -91,3 +91,38 @@
 .page-interests__cta {
   margin-top: auto;
 }
+
+.page-interests__notice {
+  margin: 0 0 0.5rem;
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--text-primary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: color-mix(in srgb, var(--accent-primary) 8%, var(--surface-elevated));
+}
+
+.page-interests__attribution {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.page-interests__skeleton {
+  min-height: 11rem;
+  background: linear-gradient(
+    110deg,
+    var(--surface-elevated) 8%,
+    color-mix(in srgb, var(--border-default) 40%, var(--surface-elevated)) 18%,
+    var(--surface-elevated) 33%
+  );
+  background-size: 200% 100%;
+  animation: page-interests-shimmer 1.2s ease-in-out infinite;
+}
+
+@keyframes page-interests-shimmer {
+  to {
+    background-position-x: -200%;
+  }
+}

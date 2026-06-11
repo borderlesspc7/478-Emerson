@@ -6,6 +6,9 @@ import {
   useState,
   type ReactNode,
 } from 'react'
+import i18n from '../i18n/i18n'
+import { clearGuestSession } from '../lib/guestAccess'
+import { resolveAuthErrorMessage } from '../lib/resolveAuthErrorMessage'
 import {
   firebaseErrorToMessage,
   GUEST_APP_DEFAULT_PASSWORD,
@@ -16,7 +19,6 @@ import {
   subscribeAuth,
 } from '../services/authService'
 import { StaysApiError } from '../services/staysClient'
-import { clearGuestSession } from '../lib/guestAccess'
 import type { AppUser } from '../types/user'
 
 type AuthContextValue = {
@@ -70,13 +72,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setLastError(msg)
         throw e
       }
-      const code =
-        e && typeof e === 'object' && 'code' in e
-          ? String((e as { code: string }).code)
-          : e instanceof Error
-          ? e.message
-          : 'unknown'
-      setLastError(firebaseErrorToMessage(code))
+      setLastError(resolveAuthErrorMessage(e, i18n.t.bind(i18n), i18n.language))
       throw e
     }
   }, [])

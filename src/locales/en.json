@@ -44,8 +44,17 @@
   "accessExpired": {
     "title": "Access outside stay period",
     "lead": "Your dashboard access is only valid during your stay (between check-in and check-out). Contact the team if you need help.",
+    "afterCheckOutTitle": "Stay ended",
+    "beforeCheckInTitle": "Check-in not available yet",
+    "stayWindow": "Check-in: {{checkIn}} · Check-out: {{checkOut}}",
     "logout": "Sign out",
     "backToLogin": "Back to login"
+  },
+  "guestAccessErrors": {
+    "checkOutExpired": "Your stay has ended. Check-out was on {{checkOutTime}}. Contact the team if you need help.",
+    "beforeCheckIn": "It is not check-in time yet. Full access unlocks on {{checkInTime}}. Until then, open the link again at your entry time.",
+    "checkOutExpiredGeneric": "Your stay has ended. Dashboard access closed after check-out.",
+    "beforeCheckInGeneric": "It is not check-in time yet. Open the link again at your reservation check-in time."
   },
   "preCheckIn": {
     "notice": "You cannot check in yet. Complete your check-in on <strong>{{checkInTime}}</strong> to unlock full platform access.",
@@ -60,9 +69,21 @@
   "interests": {
     "title": "Interests & sightseeing",
     "lead": "Curated spots near Curitiba: essentials and leisure. Distances are estimates.",
+    "leadLoading": "Finding services and sights near your property…",
+    "leadDynamic": "Suggestions near {{region}}: pharmacies, grocery stores, parks and museums based on the property location.",
+    "regionFallback": "your area",
+    "distanceFromProperty": "≈ {{distance}} from the property",
+    "errorFallback": "We could not load live suggestions for this address. Showing Curitiba reference points.",
+    "osmAttribution": "Place data via OpenStreetMap (Photon / Komoot).",
     "sectionEssential": "Essential services",
     "sectionLeisure": "Leisure & tourism",
     "ctaMaps": "Get directions",
+    "kindDescriptions": {
+      "pharmacy": "Pharmacy for health items, hygiene and over-the-counter products.",
+      "grocery": "Supermarket for daily shopping and supplies.",
+      "park": "Green area for walks, rest and outdoor leisure.",
+      "museum": "Cultural venue with exhibitions and local programming."
+    },
     "kinds": {
       "pharmacy": "Pharmacy",
       "grocery": "Supermarket",

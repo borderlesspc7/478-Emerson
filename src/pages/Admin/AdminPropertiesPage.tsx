@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
+import { FiImage } from 'react-icons/fi'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Button } from '../../components/ui/Button/Button'
+import { pickListingCardImageUrl } from '../../lib/staysListingMedia'
 import { useToast } from '../../contexts/ToastContext'
 import { fetchListingById, fetchListings } from '../../services/staysService'
 import {
@@ -28,6 +30,19 @@ function listingTitle(l: StaysPropertyListing): string {
 
 function propertyKey(l: StaysPropertyListing): string {
   return String(l._id || l.id || '').trim()
+}
+
+function pickAdminPropertyCardImageUrl(
+  listing: StaysPropertyListing | undefined,
+  curation: PropertyCurationRecord | undefined,
+): string | null {
+  const fromListing = pickListingCardImageUrl(listing ?? null)
+  if (fromListing) return fromListing
+  const fromGarage = curation?.garagePhotoUrls.find((url) => url.trim())?.trim()
+  if (fromGarage) return fromGarage
+  const fromElevator = curation?.elevatorPhotoUrls.find((url) => url.trim())?.trim()
+  if (fromElevator) return fromElevator
+  return null
 }
 
 export function AdminPropertiesPage() {
@@ -141,19 +156,31 @@ export function AdminPropertiesPage() {
                 pack.curation.manualAccessTips.trim() ||
                 pack.curation.manualPropertyTips.trim())
           )
+          const imageUrl = pickAdminPropertyCardImageUrl(pack.listing, pack.curation)
           return (
             <Link
               key={id}
               to={`${PATHS.adminProperties}/${encodeURIComponent(id)}`}
               className="admin-property-card"
             >
-              <span className="guest-content__card-title">{title}</span>
-              <span className="admin-property-card__meta">{id}</span>
-              {hasCuration ? (
-                <span className="guest-content__card-meta">{t('adminProperties.badgeCurated')}</span>
-              ) : (
-                <span className="guest-content__card-meta">{t('adminProperties.badgeStaysOnly')}</span>
-              )}
+              <div className="admin-property-card__thumb">
+                {imageUrl ? (
+                  <img src={imageUrl} alt="" loading="lazy" />
+                ) : (
+                  <span className="admin-property-card__thumb-fallback" aria-hidden>
+                    <FiImage />
+                  </span>
+                )}
+              </div>
+              <div className="admin-property-card__body">
+                <span className="guest-content__card-title">{title}</span>
+                <span className="admin-property-card__meta">{id}</span>
+                {hasCuration ? (
+                  <span className="guest-content__card-meta">{t('adminProperties.badgeCurated')}</span>
+                ) : (
+                  <span className="guest-content__card-meta">{t('adminProperties.badgeStaysOnly')}</span>
+                )}
+              </div>
             </Link>
           )
         })}

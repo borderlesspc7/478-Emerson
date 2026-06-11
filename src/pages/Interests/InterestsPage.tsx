@@ -1,8 +1,10 @@
-import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FiHeart, FiMapPin, FiPackage, FiSun } from 'react-icons/fi'
 import { Button } from '../../components/ui/Button/Button'
-import { CURITIBA_INTERESTS, type CuritibaInterest, type InterestKind } from '../../data/interestsCuritiba'
+import type { InterestKind } from '../../data/interestsCuritiba'
+import { formatDistanceLabel } from '../../lib/geo/formatDistanceLabel'
+import { useNearbyInterests } from '../../hooks/useNearbyInterests'
+import type { NearbyPlace } from '../../types/nearbyPlace'
 import '../shared/guestContent.css'
 import './InterestsPage.css'
 
@@ -26,23 +28,28 @@ function InterestKindIcon({ kind }: { kind: InterestKind }) {
   }
 }
 
-function InterestCard({ place }: { place: CuritibaInterest }) {
-  const { t } = useTranslation()
-  const prefix = `interests.items.${place.id}` as const
+function InterestCard({ place, isFallback }: { place: NearbyPlace; isFallback: boolean }) {
+  const { t, i18n } = useTranslation()
+
+  const distanceLabel = isFallback
+    ? t(`interests.items.${place.id}.distance`, { defaultValue: '—' })
+    : t('interests.distanceFromProperty', {
+        distance: formatDistanceLabel(place.distanceMeters, i18n.language),
+      })
 
   return (
-    <article className={`guest-content__card page-interests__card`}>
+    <article className="guest-content__card page-interests__card">
       <div className="page-interests__card-head">
         <span className="page-interests__cat-icon" aria-hidden>
           <InterestKindIcon kind={place.kind} />
         </span>
         <div>
-          <h3 className="page-interests__card-title">{t(`${prefix}.name`)}</h3>
+          <h3 className="page-interests__card-title">{place.name}</h3>
           <span className="page-interests__badge">{t(`interests.kinds.${place.kind}`)}</span>
         </div>
       </div>
-      <p className="page-interests__desc">{t(`${prefix}.description`)}</p>
-      <p className="page-interests__meta">{t(`${prefix}.distance`)}</p>
+      <p className="page-interests__desc">{place.description}</p>
+      <p className="page-interests__meta">{distanceLabel}</p>
       <div className="page-interests__cta">
         <Button
           type="button"
@@ -58,35 +65,61 @@ function InterestCard({ place }: { place: CuritibaInterest }) {
   )
 }
 
+function InterestsSkeleton() {
+  return (
+    <div className="page-interests__grid page-interests__grid--loading" aria-hidden>
+      {Array.from({ length: 4 }, (_, i) => (
+        <div key={i} className="page-interests__skeleton guest-content__card" />
+      ))}
+    </div>
+  )
+}
+
 export function InterestsPage() {
   const { t } = useTranslation()
-
-  const { essential, leisure } = useMemo(() => {
-    const essential = CURITIBA_INTERESTS.filter((p) => p.category === 'essential')
-    const leisure = CURITIBA_INTERESTS.filter((p) => p.category === 'leisure')
-    return { essential, leisure }
-  }, [])
+  const { essential, leisure, regionLabel, loading, error, source } = useNearbyInterests()
+  const isFallback = source === 'fallback'
 
   return (
     <div className="page-interests">
       <header className="guest-content__hero">
         <h2 className="guest-content__heading">{t('interests.title')}</h2>
-        <p className="guest-content__lead">{t('interests.lead')}</p>
+        <p className="guest-content__lead">
+          {loading
+            ? t('interests.leadLoading')
+            : t('interests.leadDynamic', { region: regionLabel || t('interests.regionFallback') })}
+        </p>
+        {error && isFallback ? (
+          <p className="page-interests__notice" role="status">
+            {t(error)}
+          </p>
+        ) : null}
+        {!loading && !isFallback ? (
+          <p className="page-interests__attribution">{t('interests.osmAttribution')}</p>
+        ) : null}
       </header>
 
       <h3 className="page-interests__section-title">{t('interests.sectionEssential')}</h3>
-      <div className="page-interests__grid">
-        {essential.map((place) => (
-          <InterestCard key={place.id} place={place} />
-        ))}
-      </div>
+      {loading ? (
+        <InterestsSkeleton />
+      ) : (
+        <div className="page-interests__grid">
+          {essential.map((place) => (
+            <InterestCard key={place.id} place={place} isFallback={isFallback} />
+          ))}
+        </div>
+      )}
 
       <h3 className="page-interests__section-title">{t('interests.sectionLeisure')}</h3>
-      <div className="page-interests__grid">
-        {leisure.map((place) => (
-          <InterestCard key={place.id} place={place} />
-        ))}
-      </div>
+      {loading ? (
+        <InterestsSkeleton />
+      ) : (
+        <div className="page-interests__grid">
+          {leisure.map((place) => (
+            <InterestCard key={place.id} place={place} isFallback={isFallback} />
+          ))}
+        </div>
+      )}
     </div>
   )
 }

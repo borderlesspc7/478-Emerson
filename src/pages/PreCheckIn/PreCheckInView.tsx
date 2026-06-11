@@ -2,7 +2,9 @@ import { useCallback, useMemo, useState } from 'react'
 import { Trans, useTranslation } from 'react-i18next'
 import { FiExternalLink } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
+import { GuestServicesCatalogGrid } from '../../components/GuestServicesCatalogGrid/GuestServicesCatalogGrid'
 import { Button } from '../../components/ui/Button/Button'
+import { formatServicePrice } from '../../lib/formatServicePrice'
 import { pickGuestPropertyImageUrl } from '../../lib/guestPropertyImage'
 import { formatStayDateTime } from '../../lib/formatStayDates'
 import { buildWhatsappRequestUrl } from '../../lib/whatsappUrl'
@@ -11,15 +13,6 @@ import { createServiceRequest } from '../../services/serviceRequestsFirestore'
 import type { GuestStay, ServiceOffer } from '../../types/guestStay'
 import '../shared/guestContent.css'
 import './PreCheckInPage.css'
-
-function formatPrice(locale: string, valueInCents: number): string {
-  const loc = locale === 'en' ? 'en-US' : 'pt-BR'
-  return new Intl.NumberFormat(loc, {
-    style: 'currency',
-    currency: 'BRL',
-    minimumFractionDigits: 2,
-  }).format(valueInCents / 100)
-}
 
 function getGoogleMapsSearchUrl(address: string): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`
@@ -96,7 +89,7 @@ export function PreCheckInView({
           reservationCode,
           propertyName,
         })
-        const price = formatPrice(locale, offer.priceInCents)
+        const price = formatServicePrice(locale, offer.priceInCents)
         const message = t('servicesPage.whatsappMessage', {
           name: userName,
           reservationCode,
@@ -201,36 +194,12 @@ export function PreCheckInView({
             </p>
           ) : null}
 
-          <ul className="page-pre-checkin__services-grid" aria-label={t('servicesPage.listAria')}>
-            {serviceOffers.map((offer) => {
-              const formattedPrice = formatPrice(locale, offer.priceInCents)
-              return (
-                <li key={offer.id} className="page-pre-checkin__service-card">
-                  <h3 className="page-pre-checkin__service-title">{offer.name}</h3>
-                  <p className="page-pre-checkin__service-desc">{offer.description}</p>
-                  <div className="page-pre-checkin__service-footer">
-                    <div className="page-pre-checkin__service-price-wrap">
-                      <span className="page-pre-checkin__service-price-label">
-                        {t('servicesPage.priceLabel')}
-                      </span>
-                      <strong className="page-pre-checkin__service-price">{formattedPrice}</strong>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="secondary"
-                      size="sm"
-                      fullWidth
-                      loading={offerLoadingId === offer.id}
-                      disabled={(!preview && !guestUid) || offerLoadingId !== null}
-                      onClick={() => void handleRequest(offer.id)}
-                    >
-                      {t('servicesPage.request')}
-                    </Button>
-                  </div>
-                </li>
-              )
-            })}
-          </ul>
+          <GuestServicesCatalogGrid
+            offers={serviceOffers}
+            offerLoadingId={offerLoadingId}
+            requestDisabled={!preview && !guestUid}
+            onRequest={(serviceId) => void handleRequest(serviceId)}
+          />
         </section>
       </main>
     </div>

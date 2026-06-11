@@ -8,6 +8,8 @@ export type GuestLoginFailureReason =
   | 'auth/invalid-reservation-format'
   | 'stays/reservation-canceled'
   | 'stay/access-expired'
+  | 'stay/check-out-expired'
+  | 'stay/before-check-in'
   | 'stays/not-found'
   | 'stays/unauthorized'
   | 'stays/forbidden'

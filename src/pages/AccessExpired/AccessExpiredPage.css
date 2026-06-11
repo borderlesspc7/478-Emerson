@@ -26,8 +26,15 @@
 }
 
 .access-expired__lead {
-  margin: 0 0 1.5rem;
+  margin: 0 0 1rem;
   font-size: 0.9375rem;
   line-height: 1.6;
   color: var(--text-secondary);
+}
+
+.access-expired__meta {
+  margin: 0 0 1.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--text-muted);
 }

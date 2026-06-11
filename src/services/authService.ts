@@ -7,7 +7,11 @@ import {
   browserLocalPersistence,
   type User,
 } from 'firebase/auth'
-import { isStayCheckOutExpired } from '../lib/auth'
+import {
+  getGuestLoginStayAccessError,
+  isGuestStayAccessError,
+  type GuestStayAccessErrorCode,
+} from '../lib/guestStayAccessError'
 import { parseStaysReservationUserInput } from '../lib/staysReservationInput'
 import type { AppUser } from '../types/user'
 import type { FirestoreUserDocument } from '../types/firestoreUser'
@@ -277,10 +281,15 @@ function guestLoginFailureReasonFromError(error: unknown): string {
     const m = error.message
     if (
       m === 'stay/access-expired' ||
+      m === 'stay/check-out-expired' ||
+      m === 'stay/before-check-in' ||
       m === 'stays/reservation-canceled' ||
       m.startsWith('auth/')
     ) {
       return m
+    }
+    if (isGuestStayAccessError(error)) {
+      return error.code
     }
   }
   return 'unknown'
@@ -334,12 +343,13 @@ export async function loginWithStaysReservation(
   const checkInAt = toStayIso(booking.checkInDate, booking.checkInTime, false)
   const checkOutAt = toStayCheckOutIso(booking.checkOutDate, booking.checkOutTime)
 
-  if (isStayCheckOutExpired({ checkInAt, checkOutAt })) {
+  const stayAccessError = getGuestLoginStayAccessError({ checkInAt, checkOutAt })
+  if (stayAccessError) {
     void logGuestLoginFailure({
       attemptedReservationCode: normalized,
-      reason: 'stay/access-expired',
+      reason: stayAccessError.code as GuestStayAccessErrorCode,
     })
-    throw new Error('stay/access-expired')
+    throw stayAccessError
   }
 
   const email = reservationCodeToGuestEmail(normalized)
@@ -442,7 +452,11 @@ export function firebaseErrorToMessage(code: string): string {
       'Integração Stays não configurada. Defina VITE_STAYS_* no ambiente.',
     'stays/reservation-canceled': 'Esta reserva está cancelada e não pode ser acessada.',
     'stay/access-expired':
-      'O acesso ao painel só é permitido durante o período da estadia (check-in a check-out).',
+      'A sua estadia já terminou ou o check-in ainda não está disponível. Confira as datas da reserva.',
+    'stay/check-out-expired':
+      'A sua estadia já terminou. O acesso ao painel encerrou após o check-out.',
+    'stay/before-check-in':
+      'Ainda não é hora do check-in. O acesso completo libera-se no horário de entrada da reserva.',
     'guest/wrong-default-password': 'Senha incorreta. Use a senha padrão informada pela equipe.',
   }
 
