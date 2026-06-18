@@ -1,3 +1,5 @@
+import type { ServicePaymentMethod } from './servicePayment'
+
 export type ServiceRequestStatus = 'pending' | 'in_progress' | 'completed'
 
 /** Pedido na coleção `serviceRequests` (campo `userId` separa por utilizador). */
@@ -12,7 +14,11 @@ export type ServiceRequestRecord = {
   reservationCode: string | null
   propertyName: string | null
   status: ServiceRequestStatus
+  paymentStatus?: 'paid' | null
+  paymentMethod?: ServicePaymentMethod | null
+  servicePaymentId?: string | null
   createdAt: Date | null
   updatedAt: Date | null
   completedAt: Date | null
+  paidAt?: Date | null
 }

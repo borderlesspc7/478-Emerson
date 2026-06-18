@@ -8,6 +8,8 @@
   },
   "scripts": {
     "dev": "vite",
+    "dev:api": "firebase emulators:start --only functions",
+    "dev:full": "concurrently -n api,web -c blue,green \"npm run dev:api\" \"npm run dev\"",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
@@ -17,6 +19,7 @@
     "firebase:deploy:storage-rules": "firebase deploy --only storage",
     "firebase:deploy:indexes": "firebase deploy --only firestore:indexes",
     "firebase:deploy:firestore": "firebase deploy --only firestore",
+    "firebase:deploy:functions": "firebase deploy --only functions",
     "firebase:deploy:hosting": "firebase deploy --only hosting",
     "firebase:deploy": "firebase deploy"
   },
@@ -41,6 +44,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^4.7.0",
+    "concurrently": "^9.2.1",
     "dotenv": "^17.4.2",
     "eslint": "^9.39.4",
     "eslint-plugin-react-hooks": "^7.0.1",

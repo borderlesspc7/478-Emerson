@@ -226,6 +226,15 @@ export function AdminOrdersPage() {
         header: t('adminOrders.colPrice'),
         cell: (info) => formatPrice(info.getValue(), loc),
       }),
+      columnHelper.accessor('paymentMethod', {
+        header: t('adminOrders.colPayment'),
+        cell: (info) => {
+          const method = info.getValue()
+          if (method === 'pix') return t('adminOrders.paymentPix')
+          if (method === 'credit_card') return t('adminOrders.paymentCard')
+          return '—'
+        },
+      }),
       columnHelper.accessor('status', {
         header: t('adminOrders.colStatus'),
         cell: (info) => {

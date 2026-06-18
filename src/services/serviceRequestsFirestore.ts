@@ -68,6 +68,10 @@ function mapDoc(
     typeof rawPriceInCents === 'number' && Number.isFinite(rawPriceInCents)
       ? Math.max(0, Math.round(rawPriceInCents))
       : 0
+  const paymentMethod = data.paymentMethod
+  const normalizedPaymentMethod =
+    paymentMethod === 'pix' || paymentMethod === 'credit_card' ? paymentMethod : null
+
   return {
     id,
     userId: uid,
@@ -78,9 +82,13 @@ function mapDoc(
     reservationCode: toNullableString(data.reservationCode),
     propertyName: toNullableString(data.propertyName),
     status: st,
+    paymentStatus: data.paymentStatus === 'paid' ? 'paid' : null,
+    paymentMethod: normalizedPaymentMethod,
+    servicePaymentId: toNullableString(data.servicePaymentId),
     createdAt: toDate(data.createdAt),
     updatedAt: toDate(data.updatedAt),
     completedAt: toDate(data.completedAt),
+    paidAt: toDate(data.paidAt),
   }
 }
 

@@ -10,3 +10,8 @@
   to = "/.netlify/functions/stays-proxy/:splat"
   status = 200
 
+[[redirects]]
+  from = "/api/pagarme/*"
+  to = "/.netlify/functions/pagarme-api/:splat"
+  status = 200
+

@@ -15,3 +15,9 @@ dist
 .cursor
 .vercel
 .respostaStays.txt
+
+# Local Netlify folder (legado — backend migrado para Firebase Functions)
+.netlify
+*-firebase-adminsdk-*.json
+functions/lib
+functions/.env

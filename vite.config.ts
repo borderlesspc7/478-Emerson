@@ -12,7 +12,31 @@ const STAYS_DEV_PREFIX = '/__stays'
 export default defineConfig(({ mode }) => {
   const rootEnv = loadEnv(mode, process.cwd(), '')
   const rawBase = rootEnv.VITE_STAYS_BASE_URL
-  const proxy: Record<string, { target: string; changeOrigin: boolean; secure: boolean; rewrite: (p: string) => string }> = {}
+  const proxy: Record<
+    string,
+    {
+      target: string
+      changeOrigin: boolean
+      secure: boolean
+      rewrite?: (p: string) => string
+    }
+  > = {}
+
+  const projectId = rootEnv.VITE_FIREBASE_PROJECT_ID || 'emerson-1e6d2'
+  const functionsRegion = rootEnv.VITE_FIREBASE_FUNCTIONS_REGION || 'southamerica-east1'
+  const functionsEmulatorHost =
+    rootEnv.VITE_FIREBASE_FUNCTIONS_EMULATOR_HOST || '127.0.0.1:5001'
+  const pagarmeFunctionTarget = `http://${functionsEmulatorHost}/${projectId}/${functionsRegion}/pagarmeApi`
+  proxy['/api/pagarme'] = {
+    target: pagarmeFunctionTarget,
+    changeOrigin: true,
+    secure: false,
+  }
+  proxy['/api/stays'] = {
+    target: `http://${functionsEmulatorHost}/${projectId}/${functionsRegion}/staysProxy`,
+    changeOrigin: true,
+    secure: false,
+  }
 
   if (rawBase) {
     try {

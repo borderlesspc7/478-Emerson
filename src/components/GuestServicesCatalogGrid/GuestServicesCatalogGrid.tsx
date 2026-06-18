@@ -60,7 +60,7 @@ export function GuestServicesCatalogGrid({
                 disabled={isDisabled}
                 onClick={() => onRequest(offer.id)}
               >
-                {t('servicesPage.request')}
+                {t('servicesPage.pay')}
               </Button>
             </div>
           </li>

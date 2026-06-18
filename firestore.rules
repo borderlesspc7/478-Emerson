@@ -99,29 +99,24 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // Pedidos de serviço: o dono vê o seu; admin vê e gere todos
+    // Pagamentos de serviços: criados no servidor (Pagar.me); hóspede só lê o seu
+    match /servicePayments/{paymentId} {
+      allow read: if request.auth != null
+        && resource.data.userId == request.auth.uid;
+      allow create, update, delete: if false;
+    }
+
+    // Pedidos de serviço: criados só após pagamento aprovado (servidor / webhook)
     match /serviceRequests/{requestId} {
       allow read: if request.auth != null
         && (resource.data.userId == request.auth.uid || isAdmin());
 
-      allow create: if request.auth != null
-        && request.resource.data.userId == request.auth.uid
-        && request.resource.data.serviceId is string
-        && request.resource.data.priceInCents is number
-        && request.resource.data.priceInCents >= 0
-        && request.resource.data.requesterName is string
-        && request.resource.data.reservationCode is string
-        && request.resource.data.propertyName is string
-        && (!('serviceName' in request.resource.data)
-          || request.resource.data.serviceName is string)
-        && request.resource.data.status == 'pending';
+      allow create: if false;
 
-      allow update: if request.auth != null
-        && (resource.data.userId == request.auth.uid || isAdmin())
+      allow update: if isAdmin()
         && request.resource.data.userId == resource.data.userId;
 
-      allow delete: if request.auth != null
-        && (resource.data.userId == request.auth.uid || isAdmin());
+      allow delete: if isAdmin();
     }
 
     match /{document=**} {

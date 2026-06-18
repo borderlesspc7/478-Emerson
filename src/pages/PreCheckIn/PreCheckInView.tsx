@@ -4,12 +4,10 @@ import { FiExternalLink } from 'react-icons/fi'
 import { Link } from 'react-router-dom'
 import { GuestServicesCatalogGrid } from '../../components/GuestServicesCatalogGrid/GuestServicesCatalogGrid'
 import { Button } from '../../components/ui/Button/Button'
-import { formatServicePrice } from '../../lib/formatServicePrice'
+import { ServicePaymentModal } from '../../components/ServicePaymentModal/ServicePaymentModal'
 import { pickGuestPropertyImageUrl } from '../../lib/guestPropertyImage'
 import { formatStayDateTime } from '../../lib/formatStayDates'
-import { buildWhatsappRequestUrl } from '../../lib/whatsappUrl'
 import { PATHS } from '../../routes/path'
-import { createServiceRequest } from '../../services/serviceRequestsFirestore'
 import type { GuestStay, ServiceOffer } from '../../types/guestStay'
 import '../shared/guestContent.css'
 import './PreCheckInPage.css'
@@ -43,8 +41,9 @@ export function PreCheckInView({
   onLogout,
 }: PreCheckInViewProps) {
   const { t, i18n } = useTranslation()
-  const [offerLoadingId, setOfferLoadingId] = useState<string | null>(null)
+  const [paymentOffer, setPaymentOffer] = useState<ServiceOffer | null>(null)
   const [mutateError, setMutateError] = useState<string | null>(null)
+  const [paymentSuccess, setPaymentSuccess] = useState<string | null>(null)
   const [logoutLoading, setLogoutLoading] = useState(false)
 
   const locale = i18n.language
@@ -72,40 +71,23 @@ export function PreCheckInView({
   }, [mutateError, catalogError, t])
 
   const handleRequest = useCallback(
-    async (serviceId: string) => {
+    (serviceId: string) => {
       if (preview) {
         setMutateError(t('preCheckIn.previewRequestDisabled'))
         return
       }
       if (!guestUid) return
       setMutateError(null)
-      setOfferLoadingId(serviceId)
-      try {
-        const offer = serviceOffers.find((o) => o.id === serviceId)
-        if (!offer) return
-        await createServiceRequest(guestUid, serviceId, offer.priceInCents, {
-          serviceName: offer.name,
-          requesterName: userName,
-          reservationCode,
-          propertyName,
-        })
-        const price = formatServicePrice(locale, offer.priceInCents)
-        const message = t('servicesPage.whatsappMessage', {
-          name: userName,
-          reservationCode,
-          property: propertyName,
-          service: offer.name,
-          price,
-        })
-        const whatsappUrl = buildWhatsappRequestUrl(offer.whatsappPhone, message)
-        window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
-      } catch {
-        setMutateError(t('servicesPage.errorCreate'))
-      } finally {
-        setOfferLoadingId(null)
+      setPaymentSuccess(null)
+      const offer = serviceOffers.find((o) => o.id === serviceId)
+      if (!offer) return
+      if (offer.priceInCents <= 0) {
+        setMutateError(t('servicesPage.errorFreeService'))
+        return
       }
+      setPaymentOffer(offer)
     },
-    [preview, guestUid, serviceOffers, userName, reservationCode, propertyName, locale, t],
+    [preview, guestUid, serviceOffers, t],
   )
 
   async function handleLogout() {
@@ -194,14 +176,35 @@ export function PreCheckInView({
             </p>
           ) : null}
 
+          {paymentSuccess ? (
+            <p className="page-pre-checkin__error" role="status" style={{ color: 'var(--color-primary)' }}>
+              {paymentSuccess}
+            </p>
+          ) : null}
+
           <GuestServicesCatalogGrid
             offers={serviceOffers}
-            offerLoadingId={offerLoadingId}
             requestDisabled={!preview && !guestUid}
-            onRequest={(serviceId) => void handleRequest(serviceId)}
+            onRequest={handleRequest}
           />
         </section>
       </main>
+
+      <ServicePaymentModal
+        offer={paymentOffer}
+        open={paymentOffer !== null}
+        uid={guestUid || ''}
+        context={{
+          userName,
+          reservationCode,
+          propertyName,
+        }}
+        onClose={() => setPaymentOffer(null)}
+        onPaid={() => {
+          setPaymentOffer(null)
+          setPaymentSuccess(t('servicesPage.paymentSuccess'))
+        }}
+      />
     </div>
   )
 }

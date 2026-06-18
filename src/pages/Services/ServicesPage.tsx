@@ -6,9 +6,9 @@ import { useAuth } from '../../hooks/useAuth'
 import { formatServicePrice } from '../../lib/formatServicePrice'
 import { useGuestStay } from '../../hooks/useGuestStay'
 import { useServiceRequests } from '../../hooks/useServiceRequests'
-import { buildWhatsappRequestUrl } from '../../lib/whatsappUrl'
+import { ServicePaymentModal } from '../../components/ServicePaymentModal/ServicePaymentModal'
 import { PATHS } from '../../routes/path'
-import { createServiceRequest } from '../../services/serviceRequestsFirestore'
+import type { ServiceOffer } from '../../types/guestStay'
 import '../shared/guestContent.css'
 import './ServicesPage.css'
 
@@ -29,8 +29,9 @@ export function ServicesPage() {
   const { stay, serviceOffers, catalogError } = useGuestStay()
   const { requests, loading: historyLoading, error: historyError } = useServiceRequests(uid)
 
-  const [offerLoadingId, setOfferLoadingId] = useState<string | null>(null)
+  const [paymentOffer, setPaymentOffer] = useState<ServiceOffer | null>(null)
   const [mutateError, setMutateError] = useState<string | null>(null)
+  const [paymentSuccess, setPaymentSuccess] = useState<string | null>(null)
 
   const locale = i18n.language
   const userName = user?.displayName || t('common.guest')
@@ -57,46 +58,20 @@ export function ServicesPage() {
   }, [mutateError, historyError, catalogError, t])
 
   const handleRequest = useCallback(
-    async (serviceId: string) => {
+    (serviceId: string) => {
       if (!uid) return
       setMutateError(null)
-      setOfferLoadingId(serviceId)
-      try {
-        const offer = serviceOffers.find((o) => o.id === serviceId)
-        if (!offer) return
-        const priceInCents = pricesByServiceId.get(serviceId) ?? 0
-        await createServiceRequest(uid, serviceId, priceInCents, {
-          serviceName: offer.name,
-          requesterName: userName,
-          reservationCode,
-          propertyName,
-        })
-        const price = formatServicePrice(locale, priceInCents)
-        const message = t('servicesPage.whatsappMessage', {
-          name: userName,
-          reservationCode,
-          property: propertyName,
-          service: offer.name,
-          price,
-        })
-        const whatsappUrl = buildWhatsappRequestUrl(offer.whatsappPhone, message)
-        window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
-      } catch {
-        setMutateError(t('servicesPage.errorCreate'))
-      } finally {
-        setOfferLoadingId(null)
+      setPaymentSuccess(null)
+      const offer = serviceOffers.find((o) => o.id === serviceId)
+      if (!offer) return
+      const priceInCents = pricesByServiceId.get(serviceId) ?? 0
+      if (priceInCents <= 0) {
+        setMutateError(t('servicesPage.errorFreeService'))
+        return
       }
+      setPaymentOffer({ ...offer, priceInCents })
     },
-    [
-      uid,
-      serviceOffers,
-      pricesByServiceId,
-      userName,
-      reservationCode,
-      propertyName,
-      locale,
-      t,
-    ]
+    [uid, serviceOffers, pricesByServiceId, t],
   )
 
   const historyHeadingId = 'services-history-heading'
@@ -127,10 +102,9 @@ export function ServicesPage() {
         </h3>
         <GuestServicesCatalogGrid
           offers={serviceOffers}
-          offerLoadingId={offerLoadingId}
           requestDisabled={!uid}
           columns={3}
-          onRequest={(serviceId) => void handleRequest(serviceId)}
+          onRequest={handleRequest}
         />
       </section>
 
@@ -266,7 +240,30 @@ export function ServicesPage() {
         ) : null}
       </section>
 
-      <p className="page-services__hint">{t('servicesPage.hint')}</p>
+      {paymentSuccess ? (
+        <p className="page-services__hint" role="status">
+          {paymentSuccess}
+        </p>
+      ) : (
+        <p className="page-services__hint">{t('servicesPage.hint')}</p>
+      )}
+
+      <ServicePaymentModal
+        offer={paymentOffer}
+        open={paymentOffer !== null}
+        uid={uid || ''}
+        context={{
+          userName,
+          userEmail: user?.email || undefined,
+          reservationCode,
+          propertyName,
+        }}
+        onClose={() => setPaymentOffer(null)}
+        onPaid={() => {
+          setPaymentOffer(null)
+          setPaymentSuccess(t('servicesPage.paymentSuccess'))
+        }}
+      />
     </div>
   )
 }

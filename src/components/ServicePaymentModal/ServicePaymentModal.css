@@ -1,0 +1,142 @@
+.service-payment-modal__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgb(15 23 42 / 0.55);
+}
+
+.service-payment-modal {
+  width: min(100%, 28rem);
+  max-height: min(92vh, 44rem);
+  overflow: auto;
+  border-radius: 1rem;
+  background: var(--color-surface, #fff);
+  box-shadow: 0 24px 48px rgb(15 23 42 / 0.18);
+}
+
+.service-payment-modal__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 1.25rem 1.25rem 0.5rem;
+}
+
+.service-payment-modal__title {
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.35;
+}
+
+.service-payment-modal__subtitle {
+  margin: 0.35rem 0 0;
+  color: var(--color-text-muted, #64748b);
+  font-size: 0.9rem;
+}
+
+.service-payment-modal__close {
+  flex-shrink: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.service-payment-modal__body {
+  padding: 0.75rem 1.25rem 1.25rem;
+}
+
+.service-payment-modal__tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.service-payment-modal__tab {
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.65rem;
+  padding: 0.65rem 0.75rem;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+}
+
+.service-payment-modal__tab--active {
+  border-color: var(--color-primary, #0f766e);
+  background: rgb(15 118 110 / 0.08);
+  font-weight: 600;
+}
+
+.service-payment-modal__field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.85rem;
+}
+
+.service-payment-modal__label {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.service-payment-modal__input {
+  width: 100%;
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  font: inherit;
+}
+
+.service-payment-modal__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.65rem;
+}
+
+.service-payment-modal__error {
+  margin: 0 0 0.75rem;
+  color: var(--color-danger, #b91c1c);
+  font-size: 0.9rem;
+}
+
+.service-payment-modal__pix {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  text-align: center;
+}
+
+.service-payment-modal__pix img {
+  width: min(100%, 14rem);
+  height: auto;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border, #e2e8f0);
+}
+
+.service-payment-modal__pix-code {
+  width: 100%;
+  word-break: break-all;
+  font-size: 0.78rem;
+  color: var(--color-text-muted, #64748b);
+}
+
+.service-payment-modal__success {
+  margin: 0;
+  text-align: center;
+  color: var(--color-primary, #0f766e);
+  font-weight: 600;
+}
+
+.service-payment-modal__hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.82rem;
+  color: var(--color-text-muted, #64748b);
+}
