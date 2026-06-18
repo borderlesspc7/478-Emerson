@@ -60,6 +60,7 @@ export const staysProxy = onRequest(
     region: 'southamerica-east1',
     timeoutSeconds: 30,
     memory: '256MiB',
+    invoker: 'public',
   },
   app,
 )

@@ -312,6 +312,8 @@ export const pagarmeApi = onRequest(
     region: 'southamerica-east1',
     timeoutSeconds: 60,
     memory: '256MiB',
+    /** Browser + Hosting reencaminham sem IAM Cloud Run; auth fica no Express (Bearer Firebase). */
+    invoker: 'public',
   },
   app,
 )
