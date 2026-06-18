@@ -1,4 +1,5 @@
-lib/
+# Saída compilada do tsc (não confundir com src/lib/)
+/lib/
 node_modules/
 .env
 .env.local
