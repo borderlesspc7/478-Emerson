@@ -101,20 +101,25 @@ async function fetchUserProfileWithGuestRetry(
 async function applyZenGuestCuration(
   stay: import('../types/guestStay').GuestStay,
   reservationCode: string
-): Promise<import('../types/guestStay').GuestStay> {
+): Promise<{ guestStay: import('../types/guestStay').GuestStay; earlyCheckInAccess: boolean }> {
   try {
     const link = await getGuestAccessLink(reservationCode)
-    if (!link?.accessActive) return stay
+    if (!link?.accessActive) {
+      return { guestStay: stay, earlyCheckInAccess: link?.earlyCheckInAccess === true }
+    }
     let next = stay
     if (link.customFieldVisibility && Object.keys(link.customFieldVisibility).length > 0) {
       next = filterGuestStayStaysCustomFields(next, link.customFieldVisibility)
     }
     const curation = await getPropertyCuration(link.propertyId)
-    return mergeGuestStayWithZenCuration(next, curation, {
-      accessActive: link.accessActive,
-    })
+    return {
+      guestStay: mergeGuestStayWithZenCuration(next, curation, {
+        accessActive: link.accessActive,
+      }),
+      earlyCheckInAccess: link.earlyCheckInAccess,
+    }
   } catch {
-    return stay
+    return { guestStay: stay, earlyCheckInAccess: false }
   }
 }
 
@@ -129,7 +134,10 @@ async function enrichGuestAppUser(
   const base = mapUser(u, profile)
   try {
     const bundle = await fetchGuestProfileFromStays(reservationCode)
-    const guestStay = await applyZenGuestCuration(bundle.guestStay, reservationCode)
+    const { guestStay, earlyCheckInAccess } = await applyZenGuestCuration(
+      bundle.guestStay,
+      reservationCode,
+    )
     const displayName =
       bundle.primaryGuest?.name?.trim() ||
       profile?.displayName ||
@@ -141,6 +149,7 @@ async function enrichGuestAppUser(
       displayName,
       email: u.email,
       reservationCode,
+      earlyCheckInAccess,
       stay: {
         checkInAt: guestStay.checkInAt,
         checkOutAt: guestStay.checkOutAt,
@@ -154,13 +163,17 @@ async function enrichGuestAppUser(
     try {
       const booking = await fetchReservation(reservationCode)
       const mini = mapStaysToGuestStayBundle(reservationCode, booking, null, null)
-      const guestStay = await applyZenGuestCuration(mini.guestStay, reservationCode)
+      const { guestStay, earlyCheckInAccess } = await applyZenGuestCuration(
+        mini.guestStay,
+        reservationCode,
+      )
       const primary = pickPrimaryStaysGuest(booking)
       return {
         ...base,
         role: 'guest',
         displayName: primary?.name ?? profile?.displayName ?? `Hóspede ${reservationCode}`,
         reservationCode,
+        earlyCheckInAccess,
         stay: {
           checkInAt: guestStay.checkInAt,
           checkOutAt: guestStay.checkOutAt,
@@ -172,11 +185,15 @@ async function enrichGuestAppUser(
       }
     } catch {
       const mini = mapStaysToGuestStayBundle(reservationCode, { id: reservationCode }, null, null)
-      const guestStay = await applyZenGuestCuration(mini.guestStay, reservationCode)
+      const { guestStay, earlyCheckInAccess } = await applyZenGuestCuration(
+        mini.guestStay,
+        reservationCode,
+      )
       return {
         ...base,
         role: 'guest',
         reservationCode,
+        earlyCheckInAccess,
         stay: {
           checkInAt: guestStay.checkInAt,
           checkOutAt: guestStay.checkOutAt,

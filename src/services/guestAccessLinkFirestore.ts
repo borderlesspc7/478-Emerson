@@ -74,6 +74,7 @@ export function mapGuestAccessLinkDoc(
   const propertyId = data.propertyId
   if (typeof propertyId !== 'string' || !propertyId.trim()) return null
   const accessActive = data.accessActive !== false
+  const earlyCheckInAccess = data.earlyCheckInAccess === true
   const accessCount = toNumber(data.accessCount) ?? 0
   const deviceInfo =
     typeof data.deviceInfo === 'string' && data.deviceInfo.trim()
@@ -83,6 +84,7 @@ export function mapGuestAccessLinkDoc(
     reservationCode,
     propertyId: propertyId.trim(),
     accessActive,
+    earlyCheckInAccess,
     customFieldVisibility: parseCustomFieldVisibility(data.customFieldVisibility),
     createdAt: toDate(data.createdAt),
     updatedAt: toDate(data.updatedAt),
@@ -109,6 +111,7 @@ export async function upsertGuestAccessLink(input: {
   reservationCode: string
   propertyId: string
   accessActive?: boolean
+  earlyCheckInAccess?: boolean
   customFieldVisibility?: Record<string, boolean> | null
 }): Promise<void> {
   const db = getFirebaseFirestore()
@@ -134,6 +137,7 @@ export async function upsertGuestAccessLink(input: {
     reservationCode: id,
     propertyId: pid,
     accessActive: input.accessActive !== false,
+    earlyCheckInAccess: input.earlyCheckInAccess === true,
     updatedAt: serverTimestamp(),
     ...(existing.exists() ? {} : { createdAt: serverTimestamp() }),
     ...(visibility !== undefined ? { customFieldVisibility: visibility } : {}),
@@ -177,6 +181,7 @@ export async function updateGuestAccessLinkFields(
   patch: {
     propertyId?: string
     accessActive?: boolean
+    earlyCheckInAccess?: boolean
   },
 ): Promise<void> {
   const db = getFirebaseFirestore()
@@ -197,6 +202,10 @@ export async function updateGuestAccessLinkFields(
 
   if (patch.accessActive !== undefined) {
     payload.accessActive = patch.accessActive
+  }
+
+  if (patch.earlyCheckInAccess !== undefined) {
+    payload.earlyCheckInAccess = patch.earlyCheckInAccess
   }
 
   await updateDoc(doc(db, GUEST_ACCESS_LINKS_COLLECTION, id), payload)
@@ -230,6 +239,34 @@ export async function renameGuestAccessLinkReservationCode(
     updatedAt: serverTimestamp(),
   })
   await deleteDoc(oldRef)
+}
+
+export function subscribeGuestAccessLink(
+  reservationCode: string,
+  onNext: (link: GuestAccessLinkRecord | null) => void,
+  onError?: (e: Error) => void,
+): Unsubscribe {
+  const db = getFirebaseFirestore()
+  if (!db) {
+    onNext(null)
+    return () => {}
+  }
+  const id = normalizeGuestAccessReservationCode(reservationCode)
+  if (!id) {
+    onNext(null)
+    return () => {}
+  }
+  return onSnapshot(
+    doc(db, GUEST_ACCESS_LINKS_COLLECTION, id),
+    (snap) => {
+      if (!snap.exists()) {
+        onNext(null)
+        return
+      }
+      onNext(mapGuestAccessLinkDoc(id, snap.data() as Record<string, unknown>))
+    },
+    (err) => onError?.(err),
+  )
 }
 
 export function subscribeGuestAccessLinks(

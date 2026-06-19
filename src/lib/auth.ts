@@ -23,6 +23,16 @@ export function isBeforeCheckInTime(stay: StayWindow, now = new Date()): boolean
   return now < checkIn
 }
 
+/** Hóspede deve ficar na página de pré-check-in (aguardar horário da Stays). */
+export function isGuestPreCheckInLocked(
+  stay: StayWindow,
+  options?: { earlyCheckInAccess?: boolean },
+  now = new Date(),
+): boolean {
+  if (options?.earlyCheckInAccess) return false
+  return isBeforeCheckInTime(stay, now)
+}
+
 /**
  * Janela completa da plataforma: a partir do horário de check-in até ao check-out.
  */

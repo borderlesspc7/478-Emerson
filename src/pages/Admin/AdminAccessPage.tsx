@@ -148,6 +148,23 @@ export function AdminAccessPage() {
     [showToast, t],
   )
 
+  const handleToggleEarlyCheckIn = useCallback(
+    async (reservationCode: string, earlyCheckInAccess: boolean) => {
+      try {
+        await updateGuestAccessLinkFields(reservationCode, { earlyCheckInAccess })
+        showToast(
+          earlyCheckInAccess
+            ? t('adminAccess.editEarlyCheckInOn')
+            : t('adminAccess.editEarlyCheckInOff'),
+          'success',
+        )
+      } catch {
+        showToast(t('adminAccess.editError'), 'error')
+      }
+    },
+    [showToast, t],
+  )
+
   const handleToggleActive = useCallback(
     async (reservationCode: string, accessActive: boolean) => {
       try {
@@ -206,6 +223,26 @@ export function AdminAccessPage() {
             monospace
             onSave={(next) => handleSavePropertyId(info.row.original.reservationCode, next)}
           />
+        ),
+      }),
+      columnHelper.accessor('earlyCheckInAccess', {
+        header: t('adminAccess.colEarlyCheckIn'),
+        cell: (info) => (
+          <select
+            className="admin-access__active-select"
+            value={info.getValue() ? 'yes' : 'no'}
+            aria-label={t('adminAccess.colEarlyCheckIn')}
+            disabled={!info.row.original.accessActive}
+            onChange={(e) => {
+              void handleToggleEarlyCheckIn(
+                info.row.original.reservationCode,
+                e.target.value === 'yes',
+              )
+            }}
+          >
+            <option value="yes">{t('adminAccess.yes')}</option>
+            <option value="no">{t('adminAccess.no')}</option>
+          </select>
         ),
       }),
       columnHelper.accessor('accessActive', {
@@ -281,7 +318,7 @@ export function AdminAccessPage() {
         },
       }),
     ],
-    [t, locale, showToast, handleSaveReservationCode, handleSavePropertyId, handleToggleActive],
+    [t, locale, showToast, handleSaveReservationCode, handleSavePropertyId, handleToggleEarlyCheckIn, handleToggleActive],
   )
 
   const table = useReactTable({

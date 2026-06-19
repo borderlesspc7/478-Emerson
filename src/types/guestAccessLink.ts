@@ -4,6 +4,11 @@ export type GuestAccessLinkRecord = {
   propertyId: string
   accessActive: boolean
   /**
+   * Quando `true`, o hóspede acede ao painel completo antes do horário de check-in.
+   * Por omissão (`false`), fica na página de aguardar check-in até à hora da Stays.
+   */
+  earlyCheckInAccess: boolean
+  /**
    * Visibilidade por campo personalizado Stays (`id` do campo como string).
    * Ausente ou vazio: o hóspede vê todos os campos devolvidos pela API.
    */

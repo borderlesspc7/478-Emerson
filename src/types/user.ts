@@ -7,6 +7,8 @@ export interface AppUser {
   displayName: string | null
   photoURL: string | null
   reservationCode?: string | null
+  /** Vínculo `guestAccessLinks`: painel completo antes do check-in (definido pelo admin). */
+  earlyCheckInAccess?: boolean
   stay?: {
     checkInAt?: string | null
     checkOutAt?: string | null

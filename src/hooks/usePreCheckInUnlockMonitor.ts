@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { isBeforeCheckInTime } from '../lib/auth'
 import { useAuth } from './useAuth'
+import { useGuestEarlyCheckInAccess } from './useGuestEarlyCheckInAccess'
 import { PATHS } from '../routes/path'
 
 const POLL_MS = 15_000
@@ -12,10 +13,12 @@ const POLL_MS = 15_000
 export function usePreCheckInUnlockMonitor(): void {
   const { user, authReady } = useAuth()
   const navigate = useNavigate()
+  const earlyCheckInAccess = useGuestEarlyCheckInAccess(user)
 
   useEffect(() => {
     if (!authReady) return
     if (user?.role !== 'guest') return
+    if (earlyCheckInAccess) return
     const stay = user.stay
     if (!stay?.checkInAt || !stay?.checkOutAt) return
     if (!isBeforeCheckInTime(stay)) return
@@ -29,5 +32,5 @@ export function usePreCheckInUnlockMonitor(): void {
     unlock()
     const id = window.setInterval(unlock, POLL_MS)
     return () => window.clearInterval(id)
-  }, [authReady, user, navigate])
+  }, [authReady, user, navigate, earlyCheckInAccess])
 }
