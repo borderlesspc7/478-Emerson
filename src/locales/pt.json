@@ -35,9 +35,14 @@
   },
   "pwa": {
     "installBannerMessage": "Instale o Guia da Zen no seu telemóvel para acesso mais rápido",
-    "installButton": "Instalar",
+    "toastMessage": "Instale o Guia da Zen no telemóvel para acesso rápido à sua estadia.",
+    "toastIosHint": "No iPhone: partilhar → Adicionar ao Ecrã Principal.",
+    "toastAndroidHint": "No Android: menu do Chrome → Instalar app.",
+    "installButton": "Instalar app",
     "iosHint": "Para instalar no iPhone, toque em",
     "iosHintSuffix": "e depois em \"Adicionar ao Ecrã Principal\"",
+    "androidHint": "Para instalar no Android, toque em",
+    "androidHintSuffix": "no Chrome e escolha \"Instalar app\" ou \"Adicionar à tela inicial\"",
     "dismiss": "Agora não",
     "installBannerAria": "Instalar aplicação no telemóvel"
   },
@@ -774,6 +779,12 @@
     "themeLight": "Light Mode",
     "themeSystem": "Padrão do Sistema",
     "pt": "Português",
-    "en": "English"
+    "en": "English",
+    "pushNotifications": "Notificações push",
+    "pushEnabledHint": "Receberá lembretes de check-in, checkout e pedidos concluídos.",
+    "pushDisabledHint": "Ative para receber alertas importantes da sua estadia.",
+    "pushNotSupported": "Notificações push não estão disponíveis neste navegador ou dispositivo.",
+    "pushPermissionDenied": "Permissão negada. Ative notificações nas definições do browser.",
+    "pushError": "Não foi possível ativar as notificações. Tente novamente."
   }
 }

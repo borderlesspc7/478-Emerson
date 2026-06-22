@@ -1,0 +1,98 @@
+.install-pwa-toast-stack {
+  position: fixed;
+  left: 1rem;
+  right: 1rem;
+  bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  z-index: 10000;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.install-pwa-toast-stack--above-nav {
+  bottom: calc(5.25rem + env(safe-area-inset-bottom, 0px));
+}
+
+.install-pwa-toast {
+  pointer-events: auto;
+  width: min(100%, 28rem);
+  padding: 1rem 1rem 0.875rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid color-mix(in srgb, var(--color-primary) 35%, var(--border-default));
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--surface-elevated));
+  box-shadow: var(--shadow-lg);
+  animation: install-pwa-toast-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.install-pwa-toast__message {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  line-height: 1.45;
+  color: var(--text-primary);
+}
+
+.install-pwa-toast__hint {
+  margin: 0.45rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.install-pwa-toast__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.install-pwa-toast__dismiss {
+  margin-left: auto;
+  padding: 0.35rem 0.5rem;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.install-pwa-toast__dismiss:hover {
+  color: var(--text-secondary);
+}
+
+.install-pwa-toast__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.install-pwa-toast__close:hover {
+  background: var(--surface-hover);
+  color: var(--text-secondary);
+}
+
+@keyframes install-pwa-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (min-width: 1024px) {
+  .install-pwa-toast-stack {
+    display: none;
+  }
+}

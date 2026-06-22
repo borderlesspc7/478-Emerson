@@ -25,6 +25,7 @@ import {
 import {
   ensureGuestProfileDocument,
   fetchUserProfileFromFirestore,
+  syncGuestStayToFirestore,
   syncUserProfileToFirestore,
 } from './userProfileFirestore'
 import { filterGuestStayStaysCustomFields } from '../lib/staysCustomFields'
@@ -409,6 +410,13 @@ export async function loginWithStaysReservation(
     displayName,
     email: credUser.email ?? email,
   })
+
+  await syncGuestStayToFirestore(credUser.uid, {
+    checkInAt,
+    checkOutAt,
+    propertyName: displayName,
+  })
+
   await recordGuestAccessLinkUsage(normalized)
 }
 

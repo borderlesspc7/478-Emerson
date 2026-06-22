@@ -1,6 +1,7 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from 'firebase/app'
 import { getAuth, type Auth } from 'firebase/auth'
 import { getFirestore, type Firestore } from 'firebase/firestore'
+import { getMessaging, isSupported, type Messaging } from 'firebase/messaging'
 import { getStorage, type FirebaseStorage } from 'firebase/storage'
 
 /** Configuração do app web Firebase (projeto emerson-1e6d2) — Console → Definições do projeto. */
@@ -52,6 +53,24 @@ export function getFirebaseStorage(): FirebaseStorage | null {
   const a = getFirebaseApp()
   if (!a) return null
   return getStorage(a)
+}
+
+let messagingInstance: Messaging | null | undefined
+
+export async function getFirebaseMessaging(): Promise<Messaging | null> {
+  if (messagingInstance !== undefined) return messagingInstance
+  const supported = await isSupported()
+  if (!supported) {
+    messagingInstance = null
+    return null
+  }
+  const app = getFirebaseApp()
+  if (!app) {
+    messagingInstance = null
+    return null
+  }
+  messagingInstance = getMessaging(app)
+  return messagingInstance
 }
 
 export { isConfigValid as isFirebaseConfigured }

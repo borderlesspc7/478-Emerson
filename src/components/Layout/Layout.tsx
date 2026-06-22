@@ -7,7 +7,6 @@ import { PATHS } from '../../routes/path'
 import { BottomBar } from '../BottomBar/BottomBar'
 import { GuestNotificationCenter } from '../GuestNotificationCenter/GuestNotificationCenter'
 import { Header } from '../Header/Header'
-import { PWAInstallBanner } from '../PWAInstallBanner/PWAInstallBanner'
 import { Sidebar } from '../Sidebar/Sidebar'
 import './Layout.css'
 
@@ -102,7 +101,6 @@ export function AppLayout() {
           logoutLabel={t('header.logout')}
         />
         <main className="app-layout__content" id="main-content">
-          {user?.role === 'guest' ? <PWAInstallBanner /> : null}
           <Outlet />
         </main>
       </div>

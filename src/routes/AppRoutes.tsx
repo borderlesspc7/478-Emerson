@@ -1,10 +1,7 @@
-import { useTranslation } from 'react-i18next'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { getDefaultPathForUser } from '../lib/defaultRoute'
 import { AppLayout } from '../components/Layout/Layout'
-import { LocaleSwitcher } from '../components/LocaleSwitcher/LocaleSwitcher'
-import { ThemeSwitcher } from '../components/ThemeSwitcher/ThemeSwitcher'
 import { LoginPage } from '../pages/Login/Login'
 import { GuestMagicLoginPage } from '../pages/GuestMagicLogin/GuestMagicLoginPage'
 import { DashboardPage } from '../pages/Dashboard/DashboardPage'
@@ -22,7 +19,7 @@ import { AboutPropertyPage } from '../pages/AboutProperty/AboutPropertyPage'
 import { ServicesPage } from '../pages/Services/ServicesPage'
 import { InterestsPage } from '../pages/Interests/InterestsPage'
 import { ExtrasPage } from '../pages/Extras/ExtrasPage'
-import { PlaceholderPage } from '../pages/PlaceholderPage'
+import { GuestSettingsPage } from '../pages/Settings/GuestSettingsPage'
 import { PATHS } from './path'
 import { AccessExpiredGate } from './AccessExpiredGate'
 import { ProtectedRoute } from './ProtectedRoute'
@@ -33,8 +30,6 @@ function DefaultRedirect() {
 }
 
 export function AppRoutes() {
-  const { t } = useTranslation()
-
   return (
     <Routes>
       {import.meta.env.DEV ? (
@@ -63,18 +58,7 @@ export function AppRoutes() {
           <Route path={PATHS.interests} element={<InterestsPage />} />
           <Route path={PATHS.extras} element={<ExtrasPage />} />
           <Route path={PATHS.services} element={<ServicesPage />} />
-          <Route
-            path={PATHS.settings}
-            element={
-              <PlaceholderPage
-                title={t('placeholders.settingsTitle')}
-                description={t('placeholders.settingsDesc')}
-              >
-                <ThemeSwitcher />
-                <LocaleSwitcher />
-              </PlaceholderPage>
-            }
-          />
+          <Route path={PATHS.settings} element={<GuestSettingsPage />} />
         </Route>
       </Route>
       <Route path="*" element={<DefaultRedirect />} />

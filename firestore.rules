@@ -66,11 +66,46 @@ service cloud.firestore {
         && d.createdAt is timestamp;
     }
 
+    function fcmTokenWriteValid() {
+      let d = request.resource.data;
+      return d.keys().hasAll(['userId', 'token', 'platform', 'active', 'updatedAt'])
+        && d.userId is string
+        && d.userId == request.auth.uid
+        && d.token is string
+        && d.token.size() > 0
+        && d.token.size() <= 4096
+        && d.platform == 'web'
+        && d.active is bool
+        && d.updatedAt is timestamp
+        && (!('userAgent' in d) || (d.userAgent is string && d.userAgent.size() <= 400))
+        && (!('createdAt' in d) || d.createdAt is timestamp);
+    }
+
     // Perfil do utilizador autenticado (sincronizado com Firebase Auth)
     match /users/{userId} {
       allow read, create, update: if request.auth != null
         && request.auth.uid == userId;
       allow delete: if false;
+    }
+
+    // Tokens FCM web — o hóspede gere os seus dispositivos
+    match /fcmTokens/{tokenId} {
+      allow read: if request.auth != null
+        && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null
+        && fcmTokenWriteValid();
+      allow update: if request.auth != null
+        && resource.data.userId == request.auth.uid
+        && fcmTokenWriteValid();
+      allow delete: if request.auth != null
+        && resource.data.userId == request.auth.uid;
+    }
+
+    // Histórico de notificações push enviadas (escrita só servidor)
+    match /notifications/{notificationId} {
+      allow read: if request.auth != null
+        && resource.data.userId == request.auth.uid;
+      allow create, update, delete: if false;
     }
 
     // Catálogo de serviços: leitura para autenticados; escrita só admin

@@ -3,7 +3,8 @@ import {
   getDocFromServer,
   serverTimestamp,
   setDoc,
-  type Timestamp,
+  Timestamp,
+  type Timestamp as FirestoreTimestamp,
 } from 'firebase/firestore'
 import type { User } from 'firebase/auth'
 import { getFirebaseFirestore, isFirebaseConfigured } from '../lib/firebase'
@@ -128,6 +129,66 @@ export async function fetchUserProfileFromFirestore(
       updatedAt: (d.updatedAt as Timestamp | undefined) ?? null,
       reservationCode: (d.reservationCode as string | null | undefined) ?? null,
       role: (d.role as FirestoreUserDocument['role'] | undefined) ?? null,
+      checkInAt: (d.checkInAt as FirestoreTimestamp | undefined) ?? null,
+      checkOutAt: (d.checkOutAt as FirestoreTimestamp | undefined) ?? null,
+      propertyName: (d.propertyName as string | null | undefined) ?? null,
+      pushNotificationsEnabled:
+        typeof d.pushNotificationsEnabled === 'boolean' ? d.pushNotificationsEnabled : null,
     }
   })
+}
+
+export async function syncGuestStayToFirestore(
+  uid: string,
+  data: {
+    checkInAt: string
+    checkOutAt: string
+    propertyName?: string | null
+  },
+): Promise<void> {
+  if (!isFirebaseConfigured()) return
+  const ref = userDocRef(uid)
+  if (!ref) return
+
+  const checkInDate = new Date(data.checkInAt)
+  const checkOutDate = new Date(data.checkOutAt)
+  if (Number.isNaN(checkInDate.getTime()) || Number.isNaN(checkOutDate.getTime())) return
+
+  await runSerializedUserDocOperation(uid, async () => {
+    await setDoc(
+      ref,
+      {
+        checkInAt: Timestamp.fromDate(checkInDate),
+        checkOutAt: Timestamp.fromDate(checkOutDate),
+        propertyName: data.propertyName?.trim() || null,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true },
+    )
+  })
+}
+
+export async function setPushNotificationsEnabled(
+  uid: string,
+  enabled: boolean,
+): Promise<void> {
+  if (!isFirebaseConfigured()) return
+  const ref = userDocRef(uid)
+  if (!ref) return
+
+  await runSerializedUserDocOperation(uid, async () => {
+    await setDoc(
+      ref,
+      {
+        pushNotificationsEnabled: enabled,
+        updatedAt: serverTimestamp(),
+      },
+      { merge: true },
+    )
+  })
+}
+
+export async function fetchPushNotificationsEnabled(uid: string): Promise<boolean> {
+  const profile = await fetchUserProfileFromFirestore(uid)
+  return profile?.pushNotificationsEnabled === true
 }

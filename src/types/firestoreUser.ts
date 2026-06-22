@@ -13,4 +13,10 @@ export type FirestoreUserDocument = {
   /** Preenchido depois pela API / admin */
   reservationCode?: string | null
   role?: 'guest' | 'admin' | null
+  /** Janela da estadia (para lembretes push agendados). */
+  checkInAt?: Timestamp | null
+  checkOutAt?: Timestamp | null
+  propertyName?: string | null
+  /** Preferência do hóspede para notificações push. */
+  pushNotificationsEnabled?: boolean | null
 }
