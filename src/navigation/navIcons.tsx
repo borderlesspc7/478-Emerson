@@ -7,6 +7,7 @@ import {
   FiKey,
   FiMapPin,
   FiPhone,
+  FiPieChart,
   FiStar,
 } from 'react-icons/fi'
 
@@ -97,6 +98,7 @@ export const GUEST_NAV_ICONS = {
 
 export const ADMIN_NAV_ICONS = {
   dashboard: FiBarChart2,
+  analytics: FiPieChart,
   orders: FiClipboard,
   services: FiPhone,
   properties: FiHome,

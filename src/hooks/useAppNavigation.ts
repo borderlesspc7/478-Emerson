@@ -40,6 +40,12 @@ export function useAppNavigation() {
           matchEnd: true,
         },
         {
+          to: PATHS.adminAnalytics,
+          labelKey: 'adminNav.analytics',
+          icon: ADMIN_NAV_ICONS.analytics,
+          matchEnd: true,
+        },
+        {
           to: PATHS.adminOrders,
           labelKey: 'adminNav.orders',
           icon: ADMIN_NAV_ICONS.orders,

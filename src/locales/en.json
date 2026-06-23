@@ -545,6 +545,7 @@
   "adminNav": {
     "aria": "Admin area sections",
     "dashboard": "Dashboard",
+    "analytics": "Analytics",
     "orders": "Orders",
     "services": "Services",
     "properties": "Properties",
@@ -585,6 +586,73 @@
     "urgentLead": "Oldest pending requests (up to 5).",
     "urgentEmpty": "No pending requests.",
     "unknownService": "Service"
+  },
+  "adminAnalytics": {
+    "title": "Analytics",
+    "lead": "Advanced metrics for revenue, guests, properties, and engagement. Daily snapshots at 2am; today includes live data.",
+    "refresh": "Refresh",
+    "empty": "No data for the selected period.",
+    "emptyReviews": "No NPS reviews in this period yet.",
+    "mentions": "mentions",
+    "reviews": "reviews",
+    "liveFallback": "{{count}} historical snapshot(s) + live data for today.",
+    "snapshots": "{{count}} snapshot(s) · {{range}}",
+    "period": {
+      "label": "Period",
+      "today": "Today",
+      "last7": "Last 7 days",
+      "last30": "Last 30 days",
+      "last90": "Last 90 days",
+      "thisMonth": "Current month",
+      "custom": "Custom",
+      "from": "Start date",
+      "to": "End date"
+    },
+    "tabs": {
+      "aria": "Analytics sections",
+      "overview": "Overview",
+      "revenue": "Revenue",
+      "guests": "Guests",
+      "properties": "Properties",
+      "engagement": "Engagement"
+    },
+    "kpi": {
+      "totalRevenue": "Total revenue",
+      "avgTicket": "Average ticket",
+      "avgTicketHint": "Per reservation with an extra service purchase.",
+      "monthProjection": "Month projection",
+      "monthProjectionHint": "Current trend + simple seasonality factor (5%).",
+      "topServiceRevenue": "Top service by revenue",
+      "conversion": "Conversion",
+      "conversionHint": "Accesses that led to a service purchase.",
+      "avgSession": "Avg. session",
+      "returnRate": "Return rate",
+      "npsMoving": "NPS (moving avg.)",
+      "npsReviews": "{{count}} review(s)",
+      "occupancy": "Occupancy rate",
+      "curationComplete": "Curation complete",
+      "curationHint": "{{complete}} of {{total}} properties",
+      "recurringIssues": "Top issue tag",
+      "pwaInstall": "PWA install rate",
+      "pushOptIn": "Push opt-in",
+      "magicLink": "Magic link",
+      "manualLogin": "Manual login"
+    },
+    "charts": {
+      "revenueTrend": "Revenue trend",
+      "revenueByProperty": "Revenue by property",
+      "npsTrend": "NPS trend",
+      "topPages": "Top pages",
+      "satisfactionRank": "Satisfaction ranking",
+      "issueTags": "Recurring issues",
+      "peakHours": "Peak usage hours",
+      "locale": "Preferred language"
+    },
+    "table": {
+      "property": "Property",
+      "revenue": "Revenue",
+      "rankingTitle": "Revenue ranking"
+    }
   },
   "adminServices": {
     "title": "Services area",

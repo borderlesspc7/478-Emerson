@@ -30,6 +30,7 @@
   "dependencies": {
     "@tanstack/react-table": "^8.21.3",
     "axios": "^1.15.1",
+    "date-fns": "^4.4.0",
     "firebase": "^12.13.0",
     "firebase-admin": "^13.7.0",
     "i18next": "^26.0.2",

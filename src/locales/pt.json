@@ -545,6 +545,7 @@
   "adminNav": {
     "aria": "Secções da área administrativa",
     "dashboard": "Painel",
+    "analytics": "Analytics",
     "orders": "Pedidos",
     "services": "Serviços",
     "properties": "Imóveis",
@@ -585,6 +586,73 @@
     "urgentLead": "Pedidos pendentes mais antigos (máximo 5).",
     "urgentEmpty": "Nenhum pedido pendente.",
     "unknownService": "Serviço"
+  },
+  "adminAnalytics": {
+    "title": "Analytics",
+    "lead": "Métricas avançadas de receita, hóspedes, imóveis e engajamento. Snapshots diários gerados às 2h; o dia atual inclui dados em tempo real.",
+    "refresh": "Atualizar",
+    "empty": "Sem dados no período selecionado.",
+    "emptyReviews": "Ainda não há avaliações NPS no período.",
+    "mentions": "menções",
+    "reviews": "avaliações",
+    "liveFallback": "{{count}} snapshot(s) histórico(s) + dados ao vivo de hoje.",
+    "snapshots": "{{count}} snapshot(s) · {{range}}",
+    "period": {
+      "label": "Período",
+      "today": "Hoje",
+      "last7": "Últimos 7 dias",
+      "last30": "Últimos 30 dias",
+      "last90": "Últimos 90 dias",
+      "thisMonth": "Mês atual",
+      "custom": "Personalizado",
+      "from": "Data inicial",
+      "to": "Data final"
+    },
+    "tabs": {
+      "aria": "Secções de analytics",
+      "overview": "Visão Geral",
+      "revenue": "Receita",
+      "guests": "Hóspedes",
+      "properties": "Imóveis",
+      "engagement": "Engajamento"
+    },
+    "kpi": {
+      "totalRevenue": "Receita total",
+      "avgTicket": "Ticket médio",
+      "avgTicketHint": "Por reserva com compra de serviço extra.",
+      "monthProjection": "Projeção do mês",
+      "monthProjectionHint": "Tendência atual + fator sazonal simples (5%).",
+      "topServiceRevenue": "Serviço mais rentável",
+      "conversion": "Conversão",
+      "conversionHint": "Acessos com compra de serviço no período.",
+      "avgSession": "Sessão média",
+      "returnRate": "Taxa de retorno",
+      "npsMoving": "NPS (média móvel)",
+      "npsReviews": "{{count}} avaliação(ões)",
+      "occupancy": "Taxa de ocupação",
+      "curationComplete": "Curadoria completa",
+      "curationHint": "{{complete}} de {{total}} imóveis",
+      "recurringIssues": "Tag mais frequente",
+      "pwaInstall": "Instalação PWA",
+      "pushOptIn": "Opt-in push",
+      "magicLink": "Magic Link",
+      "manualLogin": "Login manual"
+    },
+    "charts": {
+      "revenueTrend": "Tendência de receita",
+      "revenueByProperty": "Receita por imóvel",
+      "npsTrend": "Tendência NPS",
+      "topPages": "Páginas mais acessadas",
+      "satisfactionRank": "Ranking por satisfação",
+      "issueTags": "Problemas recorrentes",
+      "peakHours": "Horários de pico",
+      "locale": "Idioma preferido"
+    },
+    "table": {
+      "property": "Imóvel",
+      "revenue": "Receita",
+      "rankingTitle": "Ranking por receita"
+    }
   },
   "adminServices": {
     "title": "Área de serviços",

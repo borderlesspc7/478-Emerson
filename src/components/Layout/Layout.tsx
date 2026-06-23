@@ -29,6 +29,9 @@ export function AppLayout() {
       if (pathname === PATHS.admin || pathname === `${PATHS.admin}/`) {
         return t('adminDashboard.title')
       }
+      if (pathname === PATHS.adminAnalytics) {
+        return t('adminAnalytics.title')
+      }
       if (pathname === PATHS.adminOrders) {
         return t('adminOrders.title')
       }

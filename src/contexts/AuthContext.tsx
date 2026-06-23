@@ -8,6 +8,8 @@ import {
 } from 'react'
 import i18n from '../i18n/i18n'
 import { clearGuestSession } from '../lib/guestAccess'
+import { getFirebaseAuth } from '../lib/firebase'
+import { trackGuestLoginMethod } from '../services/analyticsEventsFirestore'
 import { resolveAuthErrorMessage } from '../lib/resolveAuthErrorMessage'
 import {
   firebaseErrorToMessage,
@@ -26,7 +28,10 @@ type AuthContextValue = {
   status: 'idle' | 'loading' | 'authenticated' | 'unauthenticated'
   authReady: boolean
   /** Hóspede: código da reserva Stays (a senha JIT é aplicada internamente). */
-  loginGuest: (reservationCode: string) => Promise<void>
+  loginGuest: (
+    reservationCode: string,
+    options?: { loginMethod?: 'magic' | 'manual' },
+  ) => Promise<void>
   /** Admin: e-mail e senha corporativos. */
   loginAdmin: (email: string, password: string) => Promise<void>
   register: (email: string, password: string) => Promise<void>
@@ -59,10 +64,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsub
   }, [])
 
-  const handleGuestLogin = useCallback(async (reservationCode: string) => {
+  const handleGuestLogin = useCallback(
+    async (reservationCode: string, options?: { loginMethod?: 'magic' | 'manual' }) => {
     setLastError(null)
     try {
       await loginWithStaysReservation(reservationCode, GUEST_APP_DEFAULT_PASSWORD)
+      const uid = getFirebaseAuth()?.currentUser?.uid
+      if (uid && options?.loginMethod) {
+        void trackGuestLoginMethod(uid, options.loginMethod, reservationCode)
+      }
     } catch (e: unknown) {
       if (e instanceof StaysApiError) {
         const msg =

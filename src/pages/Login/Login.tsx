@@ -57,7 +57,7 @@ export function LoginPage() {
       }
       setSubmitting(true)
       try {
-        await loginGuest(reservationCode)
+        await loginGuest(reservationCode, { loginMethod: 'manual' })
       } catch {
         /* erro já em lastError */
       } finally {

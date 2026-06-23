@@ -42,7 +42,7 @@ export function GuestMagicLoginPage() {
     if (started.current) return
     started.current = true
     const decoded = decodeURIComponent(code)
-    void loginGuest(decoded).catch(() => {
+    void loginGuest(decoded, { loginMethod: 'magic' }).catch(() => {
       /* lastError preenchido no AuthContext */
     })
   }, [authReady, user, rawParam, loginGuest])

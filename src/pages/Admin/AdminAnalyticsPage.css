@@ -1,0 +1,224 @@
+.admin-analytics {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.25rem 2.5rem;
+}
+
+.admin-analytics__header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-gap-md);
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .admin-analytics__header {
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+  }
+}
+
+.admin-analytics__title {
+  margin: 0;
+}
+
+.admin-analytics__meta {
+  margin: 0.35rem 0 0;
+}
+
+.admin-analytics__error {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin: 0 0 1rem;
+}
+
+.admin-analytics__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.admin-analytics__tab {
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-premium);
+}
+
+.admin-analytics__tab:hover {
+  color: var(--text-primary);
+  background: var(--surface-subtle);
+}
+
+.admin-analytics__tab.is-active {
+  color: var(--color-primary);
+  border-color: color-mix(in srgb, var(--color-primary) 40%, var(--border-default));
+  background: color-mix(in srgb, var(--color-primary) 8%, var(--surface-elevated));
+}
+
+.admin-analytics__grid {
+  display: grid;
+  gap: var(--spacing-gap-md);
+  margin-bottom: 1.25rem;
+}
+
+.admin-analytics__grid--3 {
+  grid-template-columns: 1fr;
+}
+
+.admin-analytics__grid--4 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .admin-analytics__grid--3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .admin-analytics__grid--4 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .admin-analytics__grid--4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.admin-analytics__chart-card {
+  padding: 1rem 1.1rem 1.25rem;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-default);
+  background: var(--surface-elevated);
+}
+
+.admin-analytics__chart-card--wide {
+  grid-column: 1 / -1;
+}
+
+.admin-analytics__chart-wrap {
+  width: 100%;
+  min-height: 260px;
+}
+
+.admin-analytics__chart-wrap--tall {
+  min-height: 320px;
+}
+
+.admin-analytics__grid-stroke {
+  stroke: var(--border-subtle);
+}
+
+.admin-analytics__split {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 1024px) {
+  .admin-analytics__split {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+.admin-analytics__highlight {
+  margin: 0.5rem 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--color-primary) 10%, var(--surface-subtle));
+  border: 1px solid color-mix(in srgb, var(--color-primary) 25%, var(--border-subtle));
+}
+
+.admin-analytics__highlight-name {
+  margin: 0;
+  font-weight: 700;
+  font-size: 0.9375rem;
+}
+
+.admin-analytics__highlight-value {
+  margin: 0.25rem 0 0;
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.admin-analytics__subheading {
+  margin-top: 1.25rem;
+}
+
+.admin-analytics__rank-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.admin-analytics__rank-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.55rem 0.65rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-subtle);
+  font-size: 0.8125rem;
+}
+
+.admin-analytics__rank-path {
+  font-weight: 600;
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-analytics__rank-meta {
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.admin-analytics__table-wrap {
+  overflow-x: auto;
+  margin-top: 0.5rem;
+}
+
+.admin-analytics__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.admin-analytics__table th,
+.admin-analytics__table td {
+  padding: 0.55rem 0.65rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.admin-analytics__table th {
+  font-weight: 700;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.admin-analytics__loading {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 2rem;
+  color: var(--text-muted);
+}

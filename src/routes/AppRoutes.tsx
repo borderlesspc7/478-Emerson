@@ -7,6 +7,7 @@ import { GuestMagicLoginPage } from '../pages/GuestMagicLogin/GuestMagicLoginPag
 import { DashboardPage } from '../pages/Dashboard/DashboardPage'
 import { AdminLayout } from '../components/AdminLayout/AdminLayout'
 import { AdminDashboardPage } from '../pages/Admin/AdminDashboardPage'
+import { AdminAnalyticsPage } from '../pages/Admin/AdminAnalyticsPage'
 import { AdminOrdersPage } from '../pages/Admin/AdminOrdersPage'
 import { AdminPropertiesPage } from '../pages/Admin/AdminPropertiesPage'
 import { AdminPropertyEditPage } from '../pages/Admin/AdminPropertyEditPage'
@@ -47,6 +48,7 @@ export function AppRoutes() {
           <Route path={PATHS.dashboard} element={<DashboardPage />} />
           <Route path="admin" element={<AdminLayout />}>
             <Route index element={<AdminDashboardPage />} />
+            <Route path="analytics" element={<AdminAnalyticsPage />} />
             <Route path="pedidos" element={<AdminOrdersPage />} />
             <Route path="servicos" element={<AdminServicesPage />} />
             <Route path="imoveis" element={<AdminPropertiesPage />} />

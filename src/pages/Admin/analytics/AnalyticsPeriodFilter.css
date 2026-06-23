@@ -1,0 +1,36 @@
+.analytics-period-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.analytics-period-filter__select {
+  min-width: 11rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+.analytics-period-filter__custom {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.analytics-period-filter__date {
+  padding: 0.45rem 0.55rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  font-size: 0.8125rem;
+}
+
+.analytics-period-filter__sep {
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+}
