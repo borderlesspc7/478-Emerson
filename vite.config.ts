@@ -12,6 +12,16 @@ const STAYS_DEV_PREFIX = '/__stays'
 export default defineConfig(({ mode }) => {
   const rootEnv = loadEnv(mode, process.cwd(), '')
   const rawBase = rootEnv.VITE_STAYS_BASE_URL
+  const brandName = rootEnv.VITE_BRAND_NAME?.trim() || 'Guia da Zen'
+  const brandFullName =
+    rootEnv.VITE_BRAND_FULL_NAME?.trim() || `${brandName} - Concierge Digital`
+  const brandDescription =
+    rootEnv.VITE_BRAND_DESCRIPTION?.trim() ||
+    'O seu guia completo e serviços durante a estadia.'
+  const configuredBrandColor = rootEnv.VITE_BRAND_PRIMARY_COLOR?.trim() || ''
+  const brandPrimaryColor = /^#[0-9a-f]{6}$/i.test(configuredBrandColor)
+    ? configuredBrandColor
+    : '#2563eb'
   const proxy: Record<
     string,
     {
@@ -72,16 +82,16 @@ export default defineConfig(({ mode }) => {
         },
         manifest: {
           id: '/',
-          name: 'Guia da Zen - Concierge Digital',
-          short_name: 'Guia da Zen',
-          description: 'O seu guia completo e serviços durante a estadia.',
+          name: brandFullName,
+          short_name: brandName,
+          description: brandDescription,
           lang: 'pt-BR',
           dir: 'ltr',
           start_url: '/',
           scope: '/',
           display: 'standalone',
           orientation: 'portrait-primary',
-          theme_color: '#0d6b5c',
+          theme_color: brandPrimaryColor,
           background_color: '#ffffff',
           categories: ['travel', 'lifestyle'],
           icons: [

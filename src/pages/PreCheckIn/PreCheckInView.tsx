@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { GuestServicesCatalogGrid } from '../../components/GuestServicesCatalogGrid/GuestServicesCatalogGrid'
 import { Button } from '../../components/ui/Button/Button'
 import { ServicePaymentModal } from '../../components/ServicePaymentModal/ServicePaymentModal'
+import { BRAND } from '../../config/brand'
 import { pickGuestPropertyImageUrl } from '../../lib/guestPropertyImage'
 import { formatStayDateTime } from '../../lib/formatStayDates'
 import { PATHS } from '../../routes/path'
@@ -110,7 +111,7 @@ export function PreCheckInView({
       ) : null}
 
       <header className="page-pre-checkin__header">
-        <p className="page-pre-checkin__brand">{t('nav.brand')}</p>
+        <p className="page-pre-checkin__brand">{BRAND.name}</p>
         {preview ? (
           <span className="page-pre-checkin__preview-pill">{t('preCheckIn.previewPill')}</span>
         ) : (

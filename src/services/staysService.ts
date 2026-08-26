@@ -20,6 +20,13 @@ import {
   serviceOffersForGuest,
   type StaysGuestStayBundle,
 } from "./staysMapper";
+import {
+  parseStaysBookingPayload,
+  parseStaysExtraServicesPayload,
+  parseStaysHouseRulesPayload,
+  parseStaysListingPayload,
+  requireReservationListingId,
+} from "./staysValidation";
 
 /**
  * Campos adicionais (Wi‑Fi, andar, vaga) vêm do `mapStaysToGuestStayBundle` em `staysMapper.ts`
@@ -34,11 +41,28 @@ export function clearStaysClientCache(): void {
   cache.clear();
 }
 
-/** Apenas em dev — ajuda a mapear respostas da API Stays; evitar em produção (dados sensíveis). */
-function devLogStays(label: string, ...args: unknown[]) {
-  if (import.meta.env.DEV) {
-    console.log(`[Stays] ${label}`, ...args);
+/** Logs seguros (sem payload/credenciais). Em DEV vai ao console; em PROD só erros. */
+function logStays(
+  level: "info" | "warn" | "error",
+  label: string,
+  context: Record<string, unknown>,
+) {
+  const entry = { scope: "stays", label, ...context };
+  if (level === "error") {
+    console.error("[Stays]", entry);
+    return;
   }
+  if (import.meta.env.DEV) {
+    if (level === "warn") console.warn("[Stays]", entry);
+    else console.info("[Stays]", entry);
+  }
+}
+
+function staysErrorSummary(error: unknown): Record<string, unknown> {
+  if (error instanceof StaysApiError) {
+    return { code: error.code ?? "stays/unknown", status: error.status ?? null };
+  }
+  return { code: "stays/unknown", status: null };
 }
 
 function requireStaysAxios(): AxiosInstance {
@@ -95,7 +119,9 @@ export async function fetchReservation(
   const getOne = (id: string) => {
     const path = `booking/reservations/${segment(id)}`;
     return cached(`GET:${path}`, () =>
-      withStaysRetry(() => client.get<StaysBooking>(path).then((r) => r.data)),
+      withStaysRetry(() =>
+        client.get<unknown>(path).then((r) => parseStaysBookingPayload(r.data)),
+      ),
     );
   };
   try {
@@ -122,9 +148,25 @@ export async function fetchListingById(
   const path = `content/listings/${segment(listingId)}`;
   return cached(`GET:${path}`, () =>
     withStaysRetry(() =>
-      client.get<StaysPropertyListing>(path).then((r) => r.data),
+      client.get<unknown>(path).then((r) => parseStaysListingPayload(r.data)),
     ),
   );
+}
+
+export type StaysReservationProperty = {
+  booking: StaysBooking;
+  listingId: string;
+  listing: StaysPropertyListing;
+};
+
+/** Resolve e valida o vínculo reserva → imóvel usado na criação de acesso. */
+export async function fetchReservationProperty(
+  reservationCode: string,
+): Promise<StaysReservationProperty> {
+  const booking = await fetchReservation(reservationCode);
+  const listingId = requireReservationListingId(booking);
+  const listing = await fetchListingById(listingId);
+  return { booking, listingId, listing };
 }
 
 /**
@@ -261,8 +303,9 @@ export async function fetchListings(): Promise<StaysPropertyListing[]> {
     }
 
     return Array.from(byId.values());
-  } catch {
-    return [];
+  } catch (error) {
+    logStays("error", "listing-list-failed", staysErrorSummary(error));
+    throw error;
   }
 }
 
@@ -275,7 +318,11 @@ export async function fetchListingHouseRules(
   const client = requireStaysAxios();
   const path = `settings/listing/${segment(listingId)}/house-rules`;
   return cached(`GET:${path}`, () =>
-    withStaysRetry(() => client.get<StaysHouseRules>(path).then((r) => r.data)),
+    withStaysRetry(() =>
+      client
+        .get<unknown>(path)
+        .then((r) => parseStaysHouseRulesPayload(r.data)),
+    ),
   );
 }
 
@@ -289,7 +336,9 @@ export async function fetchReservationExtraServices(
   const path = `booking/reservations/${segment(reservationCode)}/extra-services`;
   return cached(`GET:${path}`, () =>
     withStaysRetry(() =>
-      client.get<StaysExtraService[]>(path).then((r) => r.data),
+      client
+        .get<unknown>(path)
+        .then((r) => parseStaysExtraServicesPayload(r.data)),
     ),
   );
 }
@@ -308,15 +357,7 @@ export async function fetchGuestProfileFromStays(
   const normalized = normalizeStaysReservationId(reservationCode);
   const booking = await fetchReservation(normalized);
 
-  if (booking.type === "canceled") {
-    throw new StaysApiError(
-      "Esta reserva está cancelada na Stays.",
-      undefined,
-      "stays/reservation-canceled",
-    );
-  }
-
-  const listingRef = booking._idlisting;
+  const listingRef = requireReservationListingId(booking);
   let listing: StaysPropertyListing | null = null;
   let houseRules: StaysHouseRules | null = null;
   let customFieldLabelById: ReadonlyMap<string, string> = new Map<
@@ -324,58 +365,45 @@ export async function fetchGuestProfileFromStays(
     string
   >();
 
-  if (listingRef) {
-    const [listingResult, labelsResult] = await Promise.allSettled([
-      fetchListingById(listingRef),
-      fetchListingCustomFieldLabelMap(),
-    ]);
-    listing =
-      listingResult.status === "fulfilled" ? listingResult.value : null;
-    customFieldLabelById =
-      labelsResult.status === "fulfilled"
-        ? labelsResult.value
-        : new Map<string, string>();
+  const [listingResult, labelsResult] = await Promise.allSettled([
+    fetchListingById(listingRef),
+    fetchListingCustomFieldLabelMap(),
+  ]);
+  listing =
+    listingResult.status === "fulfilled" ? listingResult.value : null;
+  customFieldLabelById =
+    labelsResult.status === "fulfilled"
+      ? labelsResult.value
+      : new Map<string, string>();
 
-    if (listing) {
-      const listingRouteId = listing.id?.trim() || listingRef;
-      try {
-        houseRules = await fetchListingHouseRules(listingRouteId);
-      } catch {
-        houseRules = null;
-      }
+  if (listing) {
+    const listingRouteId = listing.id?.trim() || listingRef;
+    try {
+      houseRules = await fetchListingHouseRules(listingRouteId);
+    } catch (error) {
+      logStays("warn", "house-rules-unavailable", {
+        ...staysErrorSummary(error),
+        hasListingRouteId: Boolean(listingRouteId),
+      });
+      houseRules = null;
     }
+  } else if (listingResult.status === "rejected") {
+    logStays("warn", "listing-unavailable", staysErrorSummary(listingResult.reason));
   }
 
   let extras: StaysExtraService[] = [];
   try {
     extras = await fetchReservationExtraServices(normalized);
-  } catch {
+  } catch (error) {
+    logStays("warn", "extra-services-unavailable", staysErrorSummary(error));
     extras = [];
   }
 
-  /**
-   * Resumo do que a Stays devolve (payloads tal como vêm da API, antes de `mapStaysToGuestStayBundle`).
-   * Na consola (DEV), filtre por "API Stays" e expanda o objeto.
-   */
-  devLogStays("API Stays — respostas brutas (expandir objeto no DevTools)", {
-    oQueE:
-      "booking = reserva; listing = ficha do imóvel (content/listings); houseRules = regras do imóvel; extraServices = extras da reserva. Valores null = não pedido, erro ou inexistente.",
-    codigoReserva: normalized,
-    listingIdNaReserva: listingRef ?? null,
-    rotas: {
-      reserva: `GET …/external/v1/booking/reservations/${encodeURIComponent(normalized)}`,
-      imovel: listingRef
-        ? `GET …/external/v1/content/listings/${encodeURIComponent(String(listingRef))}`
-        : "(reserva sem _idlisting — listing não pedido)",
-      regrasCasa: listingRef
-        ? `GET …/external/v1/settings/listing/${encodeURIComponent(String(listing?.id?.trim() || listingRef))}/house-rules`
-        : "(sem _idlisting na reserva — houseRules não pedido)",
-      extrasReserva: `GET …/external/v1/booking/reservations/${encodeURIComponent(normalized)}/extra-services`,
-    },
-    booking,
-    listing,
-    houseRules,
-    extraServices: extras,
+  logStays("info", "guest-profile-fetched", {
+    reservationCodeLength: normalized.length,
+    hasListing: listing !== null,
+    hasHouseRules: houseRules !== null,
+    extraServicesCount: extras.length,
   });
 
   const bundle = mapStaysToGuestStayBundle(
@@ -391,10 +419,11 @@ export async function fetchGuestProfileFromStays(
     ...bundle,
     serviceOffers,
   };
-  devLogStays("App — após mapeamento (GuestStay + ofertas)", {
-    guestStay: profile.guestStay,
-    primaryGuest: profile.primaryGuest,
-    serviceOffers: profile.serviceOffers,
+  logStays("info", "guest-profile-mapped", {
+    hasPrimaryGuest: profile.primaryGuest !== null,
+    serviceOffersCount: profile.serviceOffers.length,
+    hasCheckIn: Boolean(profile.guestStay.checkInAt),
+    hasCheckOut: Boolean(profile.guestStay.checkOutAt),
   });
 
   return profile;

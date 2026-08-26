@@ -6,6 +6,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { usePWAInstall } from '../../hooks/usePWAInstall'
 import { PATHS } from '../../routes/path'
+import { BRAND } from '../../config/brand'
 import { Button } from '../ui/Button/Button'
 import './InstallPwaToast.css'
 
@@ -47,7 +48,9 @@ export function InstallPwaToast() {
   return (
     <div className={stackClassName} role="region" aria-label={t('pwa.installBannerAria')}>
       <div className="install-pwa-toast">
-        <p className="install-pwa-toast__message">{t('pwa.toastMessage')}</p>
+        <p className="install-pwa-toast__message">
+          {t('pwa.toastMessage', { brandName: BRAND.name })}
+        </p>
 
         {isIOS && !isInstallAvailable ? (
           <p className="install-pwa-toast__hint">{t('pwa.toastIosHint')}</p>

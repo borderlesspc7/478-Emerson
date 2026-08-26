@@ -43,11 +43,23 @@ app.get(/^\/api\/stays\/(.*)$/, async (req, res) => {
     })
 
     const bodyText = await response.text()
+    if (!response.ok) {
+      console.error('[staysProxy]', {
+        status: response.status,
+        path: splat,
+        bodyLength: bodyText.length,
+      })
+    }
     res.status(response.status)
     res.setHeader('Content-Type', response.headers.get('content-type') || 'application/json')
     res.setHeader('Cache-Control', 'no-store')
     res.send(bodyText)
   } catch (e) {
+    console.error('[staysProxy] failure', {
+      message: e instanceof Error ? e.message : 'Unknown error',
+      missingEnv:
+        e instanceof Error && e.message.startsWith('Missing required env var'),
+    })
     sendJson(res, 500, {
       error: 'Stays proxy failure',
       message: e instanceof Error ? e.message : 'Unknown error',

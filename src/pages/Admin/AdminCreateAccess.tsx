@@ -11,6 +11,7 @@ import { FiImage } from 'react-icons/fi'
 import { Button } from '../../components/ui/Button/Button'
 import { useToast } from '../../contexts/ToastContext'
 import { guestDirectEntryAbsUrl } from '../../lib/guestDirectLink'
+import { resolveReservationPropertyDisplay } from '../../lib/staysReservationProperty'
 import { normalizeStaysCustomFields } from '../../lib/staysCustomFields'
 import type { StaysCustomFieldGuest } from '../../types/staysCustomField'
 import { getFirebaseAuth } from '../../lib/firebase'
@@ -22,7 +23,9 @@ import { syncUserProfileToFirestore } from '../../services/userProfileFirestore'
 import {
   fetchListingById,
   fetchListingCustomFieldLabelMap,
+  fetchReservationProperty,
 } from '../../services/staysService'
+import { StaysApiError } from '../../services/staysClient'
 import './AdminCreateAccess.css'
 
 const PICKER_PAGE_SIZE = 12
@@ -56,6 +59,12 @@ export function AdminCreateAccess({
   const [fieldDefs, setFieldDefs] = useState<StaysCustomFieldGuest[]>([])
   const [loadingCustomFields, setLoadingCustomFields] = useState(false)
   const [visibility, setVisibility] = useState<Record<string, boolean>>({})
+  const [propertySource, setPropertySource] = useState<'stays' | 'manual' | null>(null)
+  const [reservationLookupLoading, setReservationLookupLoading] = useState(false)
+  const [reservationLookupMessage, setReservationLookupMessage] = useState<{
+    type: 'success' | 'error'
+    text: string
+  } | null>(null)
 
   const closePicker = useCallback(() => setPickerOpen(false), [])
 
@@ -155,6 +164,7 @@ export function AdminCreateAccess({
 
   function selectProperty(item: AdminPropertyPickerItem) {
     setPropertyId(item.propertyId)
+    setPropertySource('manual')
     const codePart = item.shortCode
       ? `${item.shortCode} · ${item.propertyId}`
       : item.propertyId
@@ -162,10 +172,89 @@ export function AdminCreateAccess({
     closePicker()
   }
 
+  function handleReservationCodeChange(nextCode: string) {
+    setCode(nextCode)
+    setReservationLookupMessage(null)
+    if (propertySource === 'stays') {
+      setPropertyId('')
+      setPropertySummary('')
+      setPropertySource(null)
+    }
+  }
+
+  async function resolvePropertyFromReservation(options?: {
+    silentEmpty?: boolean
+  }): Promise<string | null> {
+    const trimmed = code.trim()
+    if (!trimmed) {
+      if (!options?.silentEmpty) {
+        setReservationLookupMessage({
+          type: 'error',
+          text: t('adminCreateAccess.lookupEmpty'),
+        })
+      }
+      return null
+    }
+
+    setReservationLookupLoading(true)
+    setReservationLookupMessage(null)
+    try {
+      const { listingId, listing } = await fetchReservationProperty(trimmed)
+      const resolved = resolveReservationPropertyDisplay(
+        listingId,
+        listing,
+        propertyPickerItems,
+      )
+      setPropertyId(resolved.propertyId)
+      setPropertySummary(resolved.summary)
+      setPropertySource('stays')
+      setReservationLookupMessage({
+        type: 'success',
+        text: t('adminCreateAccess.lookupSuccess'),
+      })
+      return resolved.propertyId
+    } catch (error) {
+      if (propertySource === 'stays') {
+        setPropertyId('')
+        setPropertySummary('')
+        setPropertySource(null)
+      }
+      const errorKey =
+        error instanceof StaysApiError
+          ? {
+              'stays/not-found': 'lookupNotFound',
+              'stays/reservation-canceled': 'lookupCanceled',
+              'stays/reservation-without-listing': 'lookupWithoutProperty',
+              'stays/unauthorized': 'lookupUnauthorized',
+              'stays/not-configured': 'lookupNotConfigured',
+              'stays/invalid-response': 'lookupInvalidResponse',
+            }[error.code ?? '']
+          : undefined
+      setReservationLookupMessage({
+        type: 'error',
+        text: t(`adminCreateAccess.${errorKey ?? 'lookupError'}`),
+      })
+      return null
+    } finally {
+      setReservationLookupLoading(false)
+    }
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     const trimmed = code.trim()
-    if (!trimmed || !propertyId.trim()) {
+    if (!trimmed) {
+      showToast(t('adminCreateAccess.validation'), 'error')
+      return
+    }
+
+    let resolvedPropertyId = propertyId.trim()
+    if (!resolvedPropertyId) {
+      const fromStays = await resolvePropertyFromReservation()
+      resolvedPropertyId = fromStays?.trim() ?? ''
+    }
+
+    if (!resolvedPropertyId) {
       showToast(t('adminCreateAccess.validation'), 'error')
       return
     }
@@ -177,7 +266,7 @@ export function AdminCreateAccess({
       }
       await upsertGuestAccessLink({
         reservationCode: trimmed,
-        propertyId: propertyId.trim(),
+        propertyId: resolvedPropertyId,
         accessActive: true,
         customFieldVisibility:
           Object.keys(visibility).length > 0 ? visibility : undefined,
@@ -189,6 +278,8 @@ export function AdminCreateAccess({
       setCode('')
       setPropertyId('')
       setPropertySummary('')
+      setPropertySource(null)
+      setReservationLookupMessage(null)
       setFieldDefs([])
       setVisibility({})
     } catch (err: unknown) {
@@ -388,13 +479,42 @@ export function AdminCreateAccess({
 
         <label>
           <span>{t('adminCreateAccess.fieldReservation')}</span>
-          <input
-            value={code}
-            onChange={(ev) => setCode(ev.target.value)}
-            placeholder={t('adminCreateAccess.placeholderReservation')}
-            autoComplete="off"
-          />
+          <div className="admin-create-access__reservation-row">
+            <input
+              value={code}
+              onChange={(ev) => handleReservationCodeChange(ev.target.value)}
+              onBlur={() => {
+                if (!code.trim() || propertyId.trim() || reservationLookupLoading) return
+                void resolvePropertyFromReservation({ silentEmpty: true })
+              }}
+              onKeyDown={(ev) => {
+                if (ev.key !== 'Enter') return
+                ev.preventDefault()
+                void resolvePropertyFromReservation()
+              }}
+              placeholder={t('adminCreateAccess.placeholderReservation')}
+              autoComplete="off"
+            />
+            <Button
+              type="button"
+              variant="secondary"
+              loading={reservationLookupLoading}
+              disabled={!code.trim()}
+              onClick={() => void resolvePropertyFromReservation()}
+            >
+              {t('adminCreateAccess.lookupReservation')}
+            </Button>
+          </div>
         </label>
+
+        {reservationLookupMessage ? (
+          <p
+            className={`admin-create-access__lookup-message admin-create-access__lookup-message--${reservationLookupMessage.type}`}
+            role={reservationLookupMessage.type === 'error' ? 'alert' : 'status'}
+          >
+            {reservationLookupMessage.text}
+          </p>
+        ) : null}
 
         <div className="admin-create-access__property-field">
           <span className="admin-create-access__field-label">{t('adminCreateAccess.fieldProperty')}</span>

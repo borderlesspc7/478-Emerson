@@ -5,6 +5,7 @@ import {
 } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
 import { NavLink } from 'react-router-dom'
+import { BRAND } from '../../config/brand'
 import { useAppNavigation } from '../../hooks/useAppNavigation'
 import './Sidebar.css'
 
@@ -26,7 +27,7 @@ export function Sidebar({ collapsed, onToggleSidebar }: SidebarProps) {
         <span className="app-sidebar__logo" aria-hidden>
           <GiLotusFlower className="app-sidebar__logo-icon" aria-hidden />
         </span>
-        <span className="app-sidebar__name">{t('nav.brand')}</span>
+        <span className="app-sidebar__name">{BRAND.name}</span>
       </div>
 
       <nav className="app-sidebar__nav" aria-label={t('nav.pagesAria')}>

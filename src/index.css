@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap');
 
 :root {
-  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-sans: 'Manrope', system-ui, -apple-system, sans-serif;
   --font-weight-caption: 300;
   --font-weight-body: 400;
   --font-weight-heading: 600;
@@ -30,10 +30,12 @@
   --border-strong: #d1d8e3;
   --border-subtle: #f0f2f5;
 
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
-  --color-primary-muted: #e8f0fe;
-  --color-ring: #2563eb;
+  --color-primary: #0d6b5c;
+  --color-primary-hover: #0a5549;
+  --color-primary-muted: #e6f4f1;
+  --color-ring: #0d6b5c;
+  --accent-primary: var(--color-primary);
+  --surface-base: var(--surface-page);
   --color-danger: #dc2626;
   --color-danger-hover: #b91c1c;
   --color-success: #059669;
@@ -90,10 +92,12 @@
     --border-strong: #3d4654;
     --border-subtle: #1e2228;
 
-    --color-primary: #3b82f6;
-    --color-primary-hover: #60a5fa;
-    --color-primary-muted: #1a2d4a;
-    --color-ring: #60a5fa;
+    --color-primary: #2dd4bf;
+    --color-primary-hover: #5eead4;
+    --color-primary-muted: #12352f;
+    --color-ring: #5eead4;
+    --accent-primary: var(--color-primary);
+    --surface-base: var(--surface-page);
     --color-danger: #f87171;
     --color-danger-hover: #fca5a5;
     --color-success: #34d399;
@@ -118,10 +122,12 @@
   --border-strong: #3d4654;
   --border-subtle: #1e2228;
 
-  --color-primary: #3b82f6;
-  --color-primary-hover: #60a5fa;
-  --color-primary-muted: #1a2d4a;
-  --color-ring: #60a5fa;
+  --color-primary: #2dd4bf;
+  --color-primary-hover: #5eead4;
+  --color-primary-muted: #12352f;
+  --color-ring: #5eead4;
+  --accent-primary: var(--color-primary);
+  --surface-base: var(--surface-page);
   --color-danger: #f87171;
   --color-danger-hover: #fca5a5;
   --color-success: #34d399;
@@ -145,10 +151,12 @@
   --border-strong: #d1d8e3;
   --border-subtle: #f0f2f5;
 
-  --color-primary: #2563eb;
-  --color-primary-hover: #1d4ed8;
-  --color-primary-muted: #e8f0fe;
-  --color-ring: #2563eb;
+  --color-primary: #0d6b5c;
+  --color-primary-hover: #0a5549;
+  --color-primary-muted: #e6f4f1;
+  --color-ring: #0d6b5c;
+  --accent-primary: var(--color-primary);
+  --surface-base: var(--surface-page);
   --color-danger: #dc2626;
   --color-danger-hover: #b91c1c;
   --color-success: #059669;

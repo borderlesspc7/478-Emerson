@@ -9,6 +9,27 @@ function toDate(value?: string | Date | null): Date | null {
   return Number.isNaN(parsed.getTime()) ? null : parsed
 }
 
+export type StayAccessState =
+  | 'invalid'
+  | 'pre-check-in'
+  | 'active'
+  | 'expired'
+
+/** Estado canônico da janela, incluindo datas ausentes/invertidas. */
+export function getStayAccessState(
+  stay: StayWindow,
+  now = new Date(),
+): StayAccessState {
+  const checkIn = toDate(stay.checkInAt)
+  const checkOut = toDate(stay.checkOutAt)
+  if (!checkIn || !checkOut || checkOut.getTime() < checkIn.getTime()) {
+    return 'invalid'
+  }
+  if (now < checkIn) return 'pre-check-in'
+  if (now > checkOut) return 'expired'
+  return 'active'
+}
+
 /** Após o horário de check-out da Stays. */
 export function isStayCheckOutExpired(stay: StayWindow, now = new Date()): boolean {
   const checkOut = toDate(stay.checkOutAt)
@@ -37,16 +58,10 @@ export function isGuestPreCheckInLocked(
  * Janela completa da plataforma: a partir do horário de check-in até ao check-out.
  */
 export function isStayAccessActive(stay: StayWindow, now = new Date()): boolean {
-  const checkIn = toDate(stay.checkInAt)
-  const checkOut = toDate(stay.checkOutAt)
-  if (!checkIn || !checkOut) return true
-  return now >= checkIn && now <= checkOut
+  return getStayAccessState(stay, now) === 'active'
 }
 
 /** Hóspede autenticado antes do check-in, mas ainda dentro da reserva (antes do check-out). */
 export function isStayPreCheckIn(stay: StayWindow, now = new Date()): boolean {
-  const checkIn = toDate(stay.checkInAt)
-  const checkOut = toDate(stay.checkOutAt)
-  if (!checkIn || !checkOut) return false
-  return now < checkIn && now <= checkOut
+  return getStayAccessState(stay, now) === 'pre-check-in'
 }
