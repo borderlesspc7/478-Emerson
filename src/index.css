@@ -79,9 +79,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text-primary: #eceef2;
-    --text-secondary: #9aa5b4;
-    --text-muted: #6b7a8f;
+    --text-primary: #f2f4f7;
+    --text-secondary: #c4ccd8;
+    --text-muted: #a8b4c4;
 
     --surface-page: #121212;
     --surface-elevated: #1e1e24;
@@ -109,9 +109,9 @@
 }
 
 :root[data-theme='dark'] {
-  --text-primary: #eceef2;
-  --text-secondary: #9aa5b4;
-  --text-muted: #6b7a8f;
+  --text-primary: #f2f4f7;
+  --text-secondary: #c4ccd8;
+  --text-muted: #a8b4c4;
 
   --surface-page: #121212;
   --surface-elevated: #1e1e24;

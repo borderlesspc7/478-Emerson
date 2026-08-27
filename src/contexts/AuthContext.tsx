@@ -76,9 +76,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (e: unknown) {
       if (e instanceof StaysApiError) {
         const msg =
-          e.code === 'stays/not-configured'
-            ? firebaseErrorToMessage('stays/not-configured')
-            : e.message
+          e.code === 'stays/not-configured' || e.code === 'stays/not-found'
+            ? firebaseErrorToMessage(e.code)
+            : e.code
+              ? firebaseErrorToMessage(e.code)
+              : e.message
         setLastError(msg)
         throw e
       }

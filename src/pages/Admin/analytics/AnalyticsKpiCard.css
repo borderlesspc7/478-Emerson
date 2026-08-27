@@ -11,7 +11,7 @@
 .analytics-kpi__label {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.02em;
 }
@@ -26,6 +26,6 @@
 
 .analytics-kpi__hint {
   font-size: 0.75rem;
-  color: var(--text-muted);
+  color: var(--text-secondary);
   line-height: 1.35;
 }

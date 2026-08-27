@@ -1,5 +1,14 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState, type ReactNode } from 'react'
 import { ErrorCode, useDropzone, type FileRejection } from 'react-dropzone'
+import {
+  FiArrowLeft,
+  FiCornerUpRight,
+  FiEdit3,
+  FiHome,
+  FiImage,
+  FiUploadCloud,
+  FiVideo,
+} from 'react-icons/fi'
 import { useTranslation } from 'react-i18next'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { Button } from '../../components/ui/Button/Button'
@@ -16,8 +25,8 @@ import {
 import type { StaysPropertyListing } from '../../types/staysApi'
 import { isEmbeddableVideoUrl } from '../../lib/mediaUrl'
 import { PATHS } from '../../routes/path'
-import '../../components/AdminLayout/AdminLayout.css'
 import '../shared/guestContent.css'
+import './AdminPropertyEditPage.css'
 
 const DROP_ACCEPT = {
   'image/jpeg': ['.jpg', '.jpeg'],
@@ -43,6 +52,42 @@ function listingTitle(l: StaysPropertyListing | null): string {
 
 function isUploadErrorCode(msg: string, code: string): boolean {
   return msg === code
+}
+
+type EditSectionProps = {
+  icon: ReactNode
+  title: string
+  description: string
+  countLabel?: string
+  children: ReactNode
+}
+
+function EditSection({
+  icon,
+  title,
+  description,
+  countLabel,
+  children,
+}: EditSectionProps) {
+  return (
+    <section className="admin-property-edit__section">
+      <header className="admin-property-edit__section-head">
+        <div className="admin-property-edit__section-title-row">
+          <span className="admin-property-edit__section-icon" aria-hidden>
+            {icon}
+          </span>
+          <div>
+            <h4 className="admin-property-edit__section-title">{title}</h4>
+            <p className="admin-property-edit__section-desc">{description}</p>
+          </div>
+        </div>
+        {countLabel ? (
+          <span className="admin-property-edit__count">{countLabel}</span>
+        ) : null}
+      </header>
+      {children}
+    </section>
+  )
 }
 
 export function AdminPropertyEditPage() {
@@ -105,7 +150,10 @@ export function AdminPropertyEditPage() {
         showToast(t('adminPropertyEdit.uploadUnsupported'), 'error')
         return
       }
-      if (isUploadErrorCode(msg, 'storage/not-configured') || isUploadErrorCode(msg, 'storage/invalid-property-id')) {
+      if (
+        isUploadErrorCode(msg, 'storage/not-configured') ||
+        isUploadErrorCode(msg, 'storage/invalid-property-id')
+      ) {
         showToast(t('adminPropertyEdit.uploadFail'), 'error')
         return
       }
@@ -256,6 +304,8 @@ export function AdminPropertyEditPage() {
     disabled: uploadingG || !propertyId,
     multiple: true,
     maxSize: MAX_IMAGE_BYTES,
+    noClick: true,
+    noKeyboard: true,
   })
   const elevatorDropzone = useDropzone({
     onDrop: onDropElevator,
@@ -264,6 +314,8 @@ export function AdminPropertyEditPage() {
     disabled: uploadingE || !propertyId,
     multiple: true,
     maxSize: MAX_IMAGE_BYTES,
+    noClick: true,
+    noKeyboard: true,
   })
 
   async function handleSave(e: React.FormEvent) {
@@ -298,77 +350,130 @@ export function AdminPropertyEditPage() {
   }
 
   return (
-    <section>
-      <p style={{ marginBottom: '1rem' }}>
-        <Link to={PATHS.adminProperties} className="guest-content__card-meta">
-          ← {t('adminPropertyEdit.back')}
-        </Link>
-      </p>
-      <h3 className="guest-content__section">{title || propertyId}</h3>
-      <p className="admin-property-card__meta" style={{ marginBottom: '1.25rem' }}>
-        {propertyId}
-      </p>
+    <section className="admin-property-edit-page">
+      <Link to={PATHS.adminProperties} className="admin-property-edit-page__back">
+        <FiArrowLeft aria-hidden />
+        {t('adminPropertyEdit.back')}
+      </Link>
+
+      <header className="admin-property-edit-page__header">
+        <p className="admin-property-edit-page__eyebrow">{t('adminPropertyEdit.pageTitle')}</p>
+        <h3 className="admin-property-edit-page__title">{title || propertyId}</h3>
+        <p className="admin-property-edit-page__id">{propertyId}</p>
+        <p className="admin-property-edit-page__lead">{t('adminPropertyEdit.pageLead')}</p>
+      </header>
 
       {loading ? (
-        <p className="guest-content__card-meta">{t('adminPropertyEdit.loading')}</p>
+        <div className="admin-property-edit-page__loading" role="status" aria-live="polite">
+          <span className="app-shell-loading__spinner" aria-hidden />
+          <span className="guest-content__card-meta">{t('adminPropertyEdit.loading')}</span>
+        </div>
       ) : (
-        <form className="admin-form admin-property-edit" onSubmit={handleSave}>
-          <label>
-            <span>{t('adminPropertyEdit.displayName')}</span>
-            <input value={title} onChange={(e) => setTitle(e.target.value)} />
-          </label>
+        <form className="admin-form admin-property-edit-page__form" onSubmit={handleSave}>
+          <EditSection
+            icon={<FiHome />}
+            title={t('adminPropertyEdit.sectionIdentity')}
+            description={t('adminPropertyEdit.sectionIdentityDesc')}
+          >
+            <label className="admin-property-edit__field">
+              <span>{t('adminPropertyEdit.displayName')}</span>
+              <input
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+                autoComplete="off"
+              />
+            </label>
+          </EditSection>
 
-          <div>
-            <span className="guest-content__card-title" style={{ display: 'block', marginBottom: '0.5rem' }}>
-              {t('adminPropertyEdit.garagePhotos')}
-            </span>
-            <div className="admin-property-edit__drop-actions">
+          <EditSection
+            icon={<FiImage />}
+            title={t('adminPropertyEdit.garagePhotos')}
+            description={t('adminPropertyEdit.sectionGarageDesc')}
+            countLabel={t('adminPropertyEdit.photoCount', { count: garageUrls.length })}
+          >
+            <div className="admin-property-edit__media-toolbar">
               <Button
                 type="button"
                 variant="secondary"
                 size="sm"
                 disabled={uploadingG || !propertyId}
                 onClick={garageDropzone.open}
+                leftIcon={<FiUploadCloud aria-hidden />}
               >
                 {t('adminPropertyEdit.attachImagesGarage')}
               </Button>
+              {garageUrls.length ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => void clearGarage()}
+                >
+                  {t('adminPropertyEdit.clearGarage')}
+                </Button>
+              ) : null}
             </div>
+
             <div
               {...garageDropzone.getRootProps()}
-              className={`dropzone ${garageDropzone.isDragActive ? 'is-focused' : ''}`}
+              className={[
+                'admin-property-edit__dropzone',
+                garageDropzone.isDragActive ? 'is-focused' : '',
+                uploadingG || !propertyId ? 'is-disabled' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              onClick={garageDropzone.open}
             >
               <input {...garageDropzone.getInputProps()} />
-              <p>{t('adminPropertyEdit.dropHint')}</p>
+              <span className="admin-property-edit__dropzone-icon" aria-hidden>
+                <FiUploadCloud />
+              </span>
+              <p className="admin-property-edit__dropzone-title">
+                {t('adminPropertyEdit.dropTitle')}
+              </p>
+              <p className="admin-property-edit__dropzone-hint">
+                {t('adminPropertyEdit.dropHintShort')}
+              </p>
             </div>
+
             {uploadingG ? (
               <div className="admin-property-edit__upload-status" role="status" aria-live="polite">
                 <span className="app-shell-loading__spinner" aria-hidden />
-                <span className="guest-content__card-meta">{t('adminPropertyEdit.uploading')}</span>
+                <span className="guest-content__card-meta">
+                  {t('adminPropertyEdit.uploading')}
+                </span>
               </div>
             ) : null}
-            <div className="thumb-row">
-              {garageUrls.map((url) => (
-                <div key={url} className="thumb-slot">
-                  <img src={url} alt="" />
-                  <button
-                    type="button"
-                    className="thumb-slot__remove"
-                    onClick={() => void removeGarageAt(url)}
-                    aria-label={t('adminPropertyEdit.removePhoto')}
-                    title={t('adminPropertyEdit.removePhoto')}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
+
             {garageUrls.length ? (
-              <Button type="button" variant="ghost" size="sm" onClick={() => void clearGarage()} style={{ marginTop: '0.5rem' }}>
-                {t('adminPropertyEdit.clearGarage')}
-              </Button>
-            ) : null}
-            <label style={{ marginTop: '1rem' }}>
-              <span>{t('adminPropertyEdit.garageVideo')}</span>
+              <div className="admin-property-edit__thumbs">
+                {garageUrls.map((url) => (
+                  <div key={url} className="admin-property-edit__thumb">
+                    <img src={url} alt="" />
+                    <button
+                      type="button"
+                      className="admin-property-edit__thumb-remove"
+                      onClick={() => void removeGarageAt(url)}
+                      aria-label={t('adminPropertyEdit.removePhoto')}
+                      title={t('adminPropertyEdit.removePhoto')}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="admin-property-edit__empty-thumbs">
+                {t('adminPropertyEdit.noPhotosYet')}
+              </p>
+            )}
+
+            <label className="admin-property-edit__field">
+              <span className="admin-property-edit__field-label admin-property-edit__field-label--with-icon">
+                <FiVideo aria-hidden />
+                {t('adminPropertyEdit.garageVideo')}
+              </span>
               <input
                 type="url"
                 inputMode="url"
@@ -379,81 +484,130 @@ export function AdminPropertyEditPage() {
                 spellCheck={false}
               />
             </label>
-            <p className="guest-content__card-meta" style={{ marginTop: '0.35rem' }}>
-              {t('adminPropertyEdit.garageVideoHint')}
-            </p>
-          </div>
+            <p className="admin-property-edit__hint">{t('adminPropertyEdit.garageVideoHint')}</p>
+          </EditSection>
 
-          <div>
-            <span className="guest-content__card-title" style={{ display: 'block', marginBottom: '0.5rem' }}>
-              {t('adminPropertyEdit.elevatorPhotos')}
-            </span>
-            <div className="admin-property-edit__drop-actions">
+          <EditSection
+            icon={<FiCornerUpRight />}
+            title={t('adminPropertyEdit.elevatorPhotos')}
+            description={t('adminPropertyEdit.sectionElevatorDesc')}
+            countLabel={t('adminPropertyEdit.photoCount', { count: elevatorUrls.length })}
+          >
+            <div className="admin-property-edit__media-toolbar">
               <Button
                 type="button"
                 variant="secondary"
                 size="sm"
                 disabled={uploadingE || !propertyId}
                 onClick={elevatorDropzone.open}
+                leftIcon={<FiUploadCloud aria-hidden />}
               >
                 {t('adminPropertyEdit.attachImagesElevator')}
               </Button>
+              {elevatorUrls.length ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => void clearElevator()}
+                >
+                  {t('adminPropertyEdit.clearElevator')}
+                </Button>
+              ) : null}
             </div>
+
             <div
               {...elevatorDropzone.getRootProps()}
-              className={`dropzone ${elevatorDropzone.isDragActive ? 'is-focused' : ''}`}
+              className={[
+                'admin-property-edit__dropzone',
+                elevatorDropzone.isDragActive ? 'is-focused' : '',
+                uploadingE || !propertyId ? 'is-disabled' : '',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              onClick={elevatorDropzone.open}
             >
               <input {...elevatorDropzone.getInputProps()} />
-              <p>{t('adminPropertyEdit.dropHint')}</p>
+              <span className="admin-property-edit__dropzone-icon" aria-hidden>
+                <FiUploadCloud />
+              </span>
+              <p className="admin-property-edit__dropzone-title">
+                {t('adminPropertyEdit.dropTitle')}
+              </p>
+              <p className="admin-property-edit__dropzone-hint">
+                {t('adminPropertyEdit.dropHintShort')}
+              </p>
             </div>
+
             {uploadingE ? (
               <div className="admin-property-edit__upload-status" role="status" aria-live="polite">
                 <span className="app-shell-loading__spinner" aria-hidden />
-                <span className="guest-content__card-meta">{t('adminPropertyEdit.uploading')}</span>
+                <span className="guest-content__card-meta">
+                  {t('adminPropertyEdit.uploading')}
+                </span>
               </div>
             ) : null}
-            <div className="thumb-row">
-              {elevatorUrls.map((url) => (
-                <div key={url} className="thumb-slot">
-                  <img src={url} alt="" />
-                  <button
-                    type="button"
-                    className="thumb-slot__remove"
-                    onClick={() => void removeElevatorAt(url)}
-                    aria-label={t('adminPropertyEdit.removePhoto')}
-                    title={t('adminPropertyEdit.removePhoto')}
-                  >
-                    ×
-                  </button>
-                </div>
-              ))}
-            </div>
+
             {elevatorUrls.length ? (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={() => void clearElevator()}
-                style={{ marginTop: '0.5rem' }}
-              >
-                {t('adminPropertyEdit.clearElevator')}
-              </Button>
-            ) : null}
+              <div className="admin-property-edit__thumbs">
+                {elevatorUrls.map((url) => (
+                  <div key={url} className="admin-property-edit__thumb">
+                    <img src={url} alt="" />
+                    <button
+                      type="button"
+                      className="admin-property-edit__thumb-remove"
+                      onClick={() => void removeElevatorAt(url)}
+                      aria-label={t('adminPropertyEdit.removePhoto')}
+                      title={t('adminPropertyEdit.removePhoto')}
+                    >
+                      ×
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="admin-property-edit__empty-thumbs">
+                {t('adminPropertyEdit.noPhotosYet')}
+              </p>
+            )}
+          </EditSection>
+
+          <EditSection
+            icon={<FiEdit3 />}
+            title={t('adminPropertyEdit.sectionTips')}
+            description={t('adminPropertyEdit.sectionTipsDesc')}
+          >
+            <label className="admin-property-edit__field">
+              <span>{t('adminPropertyEdit.manualAccess')}</span>
+              <textarea
+                value={manualAccess}
+                onChange={(e) => setManualAccess(e.target.value)}
+                rows={5}
+              />
+            </label>
+
+            <label className="admin-property-edit__field">
+              <span>{t('adminPropertyEdit.manualProperty')}</span>
+              <textarea
+                value={manualProperty}
+                onChange={(e) => setManualProperty(e.target.value)}
+                rows={5}
+              />
+            </label>
+          </EditSection>
+
+          <div className="admin-property-edit__actions">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => navigate(PATHS.adminProperties)}
+            >
+              {t('adminPropertyEdit.cancel')}
+            </Button>
+            <Button type="submit" variant="primary" loading={saving}>
+              {t('adminPropertyEdit.save')}
+            </Button>
           </div>
-
-          <label>
-            <span>{t('adminPropertyEdit.manualAccess')}</span>
-            <textarea value={manualAccess} onChange={(e) => setManualAccess(e.target.value)} />
-          </label>
-
-          <label>
-            <span>{t('adminPropertyEdit.manualProperty')}</span>
-            <textarea value={manualProperty} onChange={(e) => setManualProperty(e.target.value)} />
-          </label>
-
-          <Button type="submit" variant="primary" loading={saving}>
-            {t('adminPropertyEdit.save')}
-          </Button>
         </form>
       )}
     </section>

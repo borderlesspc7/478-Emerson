@@ -466,7 +466,9 @@ export function firebaseErrorToMessage(code: string): string {
     'auth/user-missing': 'Sessão inválida após o login. Tente novamente.',
     'auth/invalid-reservation-format': 'Código da reserva inválido.',
     'reservation/not-found':
-      'Reserva não encontrada na Stays. Confira o código e tente novamente.',
+      'Reserva não encontrada na Stays. Use o código da reserva (ex. IZ07J), não o código do imóvel do site (ex. dn11).',
+    'stays/not-found':
+      'Reserva não encontrada. Digite o código da reserva Stays (ex. IZ07J / IU08J). Códigos de imóvel do site Zen (ex. dn11) não funcionam aqui.',
     'stays/unauthorized':
       'Não autorizado (401) na Stays. Verifique VITE_STAYS_LOGIN (client id), VITE_STAYS_PASSWORD (client secret) e a URL …/external/v1, sem espaços no .env; reinicie o npm run dev após alterar.',
     'stays/forbidden': 'Acesso negado à API Stays para esta operação.',
