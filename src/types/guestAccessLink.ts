@@ -8,6 +8,8 @@ export type GuestAccessLinkRecord = {
    * Por omissão (`false`), fica na página de aguardar check-in até à hora da Stays.
    */
   earlyCheckInAccess: boolean
+  /** Horário local (HH:mm) que substitui o horário de check-in apenas para liberar o painel. */
+  accessReleaseTime: string | null
   /**
    * Visibilidade por campo personalizado Stays (`id` do campo como string).
    * Ausente ou vazio: o hóspede vê todos os campos devolvidos pela API.

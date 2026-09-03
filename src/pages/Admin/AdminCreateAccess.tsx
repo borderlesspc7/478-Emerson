@@ -12,6 +12,7 @@ import { Button } from '../../components/ui/Button/Button'
 import { useToast } from '../../contexts/ToastContext'
 import { guestDirectEntryAbsUrl } from '../../lib/guestDirectLink'
 import { resolveReservationPropertyDisplay } from '../../lib/staysReservationProperty'
+import { resolveGuestReservationCode } from '../../lib/staysReservationCode'
 import { normalizeStaysCustomFields } from '../../lib/staysCustomFields'
 import type { StaysCustomFieldGuest } from '../../types/staysCustomField'
 import { getFirebaseAuth } from '../../lib/firebase'
@@ -184,7 +185,7 @@ export function AdminCreateAccess({
 
   async function resolvePropertyFromReservation(options?: {
     silentEmpty?: boolean
-  }): Promise<string | null> {
+  }): Promise<{ propertyId: string; reservationCode: string } | null> {
     const trimmed = code.trim()
     if (!trimmed) {
       if (!options?.silentEmpty) {
@@ -199,12 +200,14 @@ export function AdminCreateAccess({
     setReservationLookupLoading(true)
     setReservationLookupMessage(null)
     try {
-      const { listingId, listing } = await fetchReservationProperty(trimmed)
+      const { booking, listingId, listing } = await fetchReservationProperty(trimmed)
       const resolved = resolveReservationPropertyDisplay(
         listingId,
         listing,
         propertyPickerItems,
       )
+      const guestReservationCode = resolveGuestReservationCode(booking, trimmed)
+      setCode(guestReservationCode)
       setPropertyId(resolved.propertyId)
       setPropertySummary(resolved.summary)
       setPropertySource('stays')
@@ -212,7 +215,10 @@ export function AdminCreateAccess({
         type: 'success',
         text: t('adminCreateAccess.lookupSuccess'),
       })
-      return resolved.propertyId
+      return {
+        propertyId: resolved.propertyId,
+        reservationCode: guestReservationCode,
+      }
     } catch (error) {
       if (propertySource === 'stays') {
         setPropertyId('')
@@ -248,10 +254,12 @@ export function AdminCreateAccess({
       return
     }
 
+    let reservationCode = trimmed
     let resolvedPropertyId = propertyId.trim()
     if (!resolvedPropertyId) {
       const fromStays = await resolvePropertyFromReservation()
-      resolvedPropertyId = fromStays?.trim() ?? ''
+      resolvedPropertyId = fromStays?.propertyId.trim() ?? ''
+      reservationCode = fromStays?.reservationCode ?? reservationCode
     }
 
     if (!resolvedPropertyId) {
@@ -265,14 +273,14 @@ export function AdminCreateAccess({
         await syncUserProfileToFirestore(authUser)
       }
       await upsertGuestAccessLink({
-        reservationCode: trimmed,
+        reservationCode,
         propertyId: resolvedPropertyId,
         accessActive: true,
         customFieldVisibility:
           Object.keys(visibility).length > 0 ? visibility : undefined,
       })
       setLastGuestDirectUrl(
-        guestDirectEntryAbsUrl(normalizeGuestAccessReservationCode(trimmed)),
+        guestDirectEntryAbsUrl(normalizeGuestAccessReservationCode(reservationCode)),
       )
       showToast(t('adminCreateAccess.success'), 'success')
       setCode('')

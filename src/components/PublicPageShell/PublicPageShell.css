@@ -1,0 +1,40 @@
+.public-page-shell {
+  min-height: 100dvh;
+  background: var(--surface-base);
+}
+
+.public-page-shell__header {
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
+  background: var(--surface-elevated);
+}
+
+.public-page-shell__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.public-page-shell__logo {
+  color: var(--accent-primary);
+  font-size: 1.25rem;
+}
+
+.public-page-shell__main {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem 2.5rem;
+}
+
+@media (max-width: 640px) {
+  .public-page-shell__header {
+    padding: 0.85rem 1rem;
+  }
+
+  .public-page-shell__main {
+    padding: 1rem 1rem 2rem;
+  }
+}

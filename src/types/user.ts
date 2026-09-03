@@ -9,6 +9,8 @@ export interface AppUser {
   reservationCode?: string | null
   /** Vínculo `guestAccessLinks`: painel completo antes do check-in (definido pelo admin). */
   earlyCheckInAccess?: boolean
+  /** Horário local (HH:mm) de liberação configurado no vínculo da reserva. */
+  accessReleaseTime?: string | null
   stay?: {
     checkInAt?: string | null
     checkOutAt?: string | null

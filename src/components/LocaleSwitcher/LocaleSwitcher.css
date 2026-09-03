@@ -41,3 +41,16 @@
   background: var(--color-primary-muted);
   border-color: color-mix(in srgb, var(--color-primary) 35%, var(--border-default));
 }
+
+@media (max-width: 640px) {
+  .locale-switcher__buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+  }
+
+  .locale-switcher__btn {
+    width: 100%;
+    min-height: 2.75rem;
+  }
+}

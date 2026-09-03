@@ -11,6 +11,8 @@ import type {
   StaysLocalizedString,
   StaysPropertyListing,
 } from '../types/staysApi'
+import { resolveBookingPortalName } from '../lib/staysReservationCode'
+import { findApartmentPassword, findBuildingName } from '../lib/guestApartment'
 
 const DEFAULT_TZ = '-03:00'
 
@@ -451,11 +453,19 @@ export function mapStaysToGuestStayBundle(
 
   const primaryGuest = pickPrimaryStaysGuest(booking)
 
+  const staysCustomFields = normalizeStaysCustomFields(
+    listing?.customFields,
+    customFieldLabelById ?? undefined,
+  )
+
   const guestStay: GuestStay = {
     reservationCode,
+    bookingPortal: resolveBookingPortalName(booking),
     property: {
       name: propertyName,
       unit,
+      buildingName: findBuildingName(staysCustomFields),
+      listingCode: listing?.id?.trim() || null,
       subtype: listing?.subtype?.trim() || null,
       floor: addr?.additional?.trim() || null,
       addressLine,
@@ -471,16 +481,14 @@ export function mapStaysToGuestStayBundle(
       summary: summaryText,
       instructions: instructionsJoined,
       doorPassword: doorFromBlob,
+      apartmentPassword: findApartmentPassword(staysCustomFields),
       floor: addr?.additional?.trim() || null,
       garageSpot: garageFromBlob,
     },
     notes: internalNote || null,
     party: partyFromBooking(booking),
     totalPrice: priceFromBooking(booking),
-    staysCustomFields: normalizeStaysCustomFields(
-      listing?.customFields,
-      customFieldLabelById ?? undefined,
-    ),
+    staysCustomFields,
   }
 
   return {
@@ -520,8 +528,22 @@ export function mergeGuestStayWithZenCuration(
     zenCurated.manualAccessNotes ||
     zenCurated.manualPropertyNotes
 
+  const buildingName =
+    curation.showBuildingName === false
+      ? null
+      : curation.buildingName?.trim() || stay.property.buildingName || null
+  const apartmentPassword =
+    curation.showApartmentPassword === false
+      ? null
+      : curation.apartmentPassword?.trim() || stay.access.apartmentPassword || null
+
   if (!hasExtras) {
-    return { ...stay, zenCurated: null }
+    return {
+      ...stay,
+      property: { ...stay.property, buildingName },
+      access: { ...stay.access, apartmentPassword },
+      zenCurated: null,
+    }
   }
 
   const block = [
@@ -537,9 +559,11 @@ export function mergeGuestStayWithZenCuration(
 
   return {
     ...stay,
+    property: { ...stay.property, buildingName },
     zenCurated,
     access: {
       ...stay.access,
+      apartmentPassword,
       instructions: block
         ? `${block}\n\n---\n\n${stay.access.instructions}`
         : stay.access.instructions,

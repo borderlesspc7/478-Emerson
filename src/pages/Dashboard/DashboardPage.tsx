@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
+import { FiCopy } from 'react-icons/fi'
 import { Button } from '../../components/ui/Button/Button'
 import { useAuth } from '../../hooks/useAuth'
 import { useGuestStay } from '../../hooks/useGuestStay'
@@ -19,6 +21,18 @@ export function DashboardPage() {
     user?.displayName || user?.email?.split('@')[0] || t('common.guest')
 
   const { property, wifi, access, party } = stay
+  const [wifiCopied, setWifiCopied] = useState(false)
+
+  async function copyWifiPassword() {
+    if (!wifi.password) return
+    try {
+      await navigator.clipboard.writeText(wifi.password)
+      setWifiCopied(true)
+      window.setTimeout(() => setWifiCopied(false), 2000)
+    } catch {
+      /* clipboard unavailable */
+    }
+  }
 
   return (
     <div className="page-dashboard">
@@ -93,6 +107,18 @@ export function DashboardPage() {
           <p className="guest-content__card-meta">
             {t('dashboard.cardWifiMeta', { password: wifi.password })}
           </p>
+          {wifi.password ? (
+            <Button
+              type="button"
+              variant="secondary"
+              size="sm"
+              leftIcon={<FiCopy aria-hidden />}
+              className="page-dashboard__copy-wifi"
+              onClick={() => void copyWifiPassword()}
+            >
+              {wifiCopied ? t('dashboard.copyWifiPasswordDone') : t('dashboard.copyWifiPassword')}
+            </Button>
+          ) : null}
         </article>
 
         <article className="guest-content__card">

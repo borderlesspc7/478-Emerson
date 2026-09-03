@@ -40,6 +40,11 @@ export function mapPropertyCurationDoc(
     elevatorPhotoUrls: toStringArray(data.elevatorPhotoUrls),
     manualAccessTips: typeof data.manualAccessTips === 'string' ? data.manualAccessTips : '',
     manualPropertyTips: typeof data.manualPropertyTips === 'string' ? data.manualPropertyTips : '',
+    buildingName: typeof data.buildingName === 'string' ? data.buildingName : null,
+    apartmentPassword:
+      typeof data.apartmentPassword === 'string' ? data.apartmentPassword : null,
+    showBuildingName: data.showBuildingName !== false,
+    showApartmentPassword: data.showApartmentPassword !== false,
     displayName: typeof data.displayName === 'string' ? data.displayName : null,
     updatedAt: toDate(data.updatedAt),
   }
@@ -64,6 +69,10 @@ export async function savePropertyCuration(
     elevatorPhotoUrls: string[]
     manualAccessTips: string
     manualPropertyTips: string
+    buildingName?: string | null
+    apartmentPassword?: string | null
+    showBuildingName?: boolean
+    showApartmentPassword?: boolean
     displayName?: string | null
   }
 ): Promise<void> {
@@ -77,6 +86,10 @@ export async function savePropertyCuration(
       elevatorPhotoUrls: input.elevatorPhotoUrls,
       manualAccessTips: input.manualAccessTips,
       manualPropertyTips: input.manualPropertyTips,
+      buildingName: input.buildingName?.trim() || null,
+      apartmentPassword: input.apartmentPassword?.trim() || null,
+      showBuildingName: input.showBuildingName !== false,
+      showApartmentPassword: input.showApartmentPassword !== false,
       displayName: input.displayName ?? null,
       updatedAt: serverTimestamp(),
     },

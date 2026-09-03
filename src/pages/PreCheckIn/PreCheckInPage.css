@@ -123,6 +123,38 @@
   color: var(--text-primary);
 }
 
+.page-pre-checkin__booking-meta {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0 0 0.75rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.page-pre-checkin__booking-meta div {
+  display: flex;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.page-pre-checkin__booking-meta dt {
+  flex-shrink: 0;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.page-pre-checkin__booking-meta dt::after {
+  content: ':';
+}
+
+.page-pre-checkin__booking-meta dd {
+  min-width: 0;
+  margin: 0;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
 .page-pre-checkin__address {
   margin: 0 0 1.75rem;
   font-size: 0.9375rem;

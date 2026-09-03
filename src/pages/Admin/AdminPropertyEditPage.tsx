@@ -4,6 +4,7 @@ import {
   FiArrowLeft,
   FiCornerUpRight,
   FiEdit3,
+  FiEye,
   FiHome,
   FiImage,
   FiUploadCloud,
@@ -17,13 +18,18 @@ import {
   getPropertyCuration,
   savePropertyCuration,
 } from '../../services/propertyCurationFirestore'
-import { fetchListingById } from '../../services/staysService'
+import {
+  fetchListingById,
+  fetchListingCustomFieldLabelMap,
+} from '../../services/staysService'
 import {
   tryDeletePropertyImageByUrl,
   uploadPropertyImage,
 } from '../../services/storageService'
 import type { StaysPropertyListing } from '../../types/staysApi'
 import { isEmbeddableVideoUrl } from '../../lib/mediaUrl'
+import { findApartmentPassword, findBuildingName } from '../../lib/guestApartment'
+import { normalizeStaysCustomFields } from '../../lib/staysCustomFields'
 import { PATHS } from '../../routes/path'
 import '../shared/guestContent.css'
 import './AdminPropertyEditPage.css'
@@ -103,6 +109,10 @@ export function AdminPropertyEditPage() {
   const [elevatorUrls, setElevatorUrls] = useState<string[]>([])
   const [manualAccess, setManualAccess] = useState('')
   const [manualProperty, setManualProperty] = useState('')
+  const [buildingName, setBuildingName] = useState('')
+  const [apartmentPassword, setApartmentPassword] = useState('')
+  const [showBuildingName, setShowBuildingName] = useState(true)
+  const [showApartmentPassword, setShowApartmentPassword] = useState(true)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploadingG, setUploadingG] = useState(false)
@@ -116,10 +126,24 @@ export function AdminPropertyEditPage() {
         elevatorPhotoUrls: nextElevator,
         manualAccessTips: manualAccess,
         manualPropertyTips: manualProperty,
+        buildingName,
+        apartmentPassword,
+        showBuildingName,
+        showApartmentPassword,
         displayName: title || null,
       })
     },
-    [propertyId, manualAccess, manualProperty, title, garageVideoUrl],
+    [
+      propertyId,
+      manualAccess,
+      manualProperty,
+      buildingName,
+      apartmentPassword,
+      showBuildingName,
+      showApartmentPassword,
+      title,
+      garageVideoUrl,
+    ],
   )
 
   const toastDropRejected = useCallback(
@@ -168,9 +192,10 @@ export function AdminPropertyEditPage() {
     ;(async () => {
       setLoading(true)
       try {
-        const [listing, cur] = await Promise.all([
+        const [listing, cur, customFieldLabelById] = await Promise.all([
           fetchListingById(propertyId).catch(() => null),
           getPropertyCuration(propertyId),
+          fetchListingCustomFieldLabelMap().catch(() => new Map<string, string>()),
         ])
         if (cancelled) return
         const listTitle = listingTitle(listing)
@@ -180,6 +205,16 @@ export function AdminPropertyEditPage() {
         setElevatorUrls(cur?.elevatorPhotoUrls ?? [])
         setManualAccess(cur?.manualAccessTips ?? '')
         setManualProperty(cur?.manualPropertyTips ?? '')
+        const staysFields = normalizeStaysCustomFields(
+          listing?.customFields,
+          customFieldLabelById,
+        )
+        setBuildingName(cur?.buildingName ?? findBuildingName(staysFields) ?? '')
+        setApartmentPassword(
+          cur?.apartmentPassword ?? findApartmentPassword(staysFields) ?? '',
+        )
+        setShowBuildingName(cur?.showBuildingName ?? true)
+        setShowApartmentPassword(cur?.showApartmentPassword ?? true)
       } catch {
         if (!cancelled) showToast(t('adminPropertyEdit.loadError'), 'error')
       } finally {
@@ -202,12 +237,22 @@ export function AdminPropertyEditPage() {
         }
         const nextGarage = [...garageUrls, ...urls]
         setGarageUrls(nextGarage)
-        await persistCuration(nextGarage, elevatorUrls)
+        try {
+          await persistCuration(nextGarage, elevatorUrls)
+        } catch (persistErr) {
+          setGarageUrls(garageUrls)
+          throw persistErr
+        }
         showToast(
           urls.length > 1 ? t('adminPropertyEdit.uploadOkPlural') : t('adminPropertyEdit.uploadOk'),
           'success',
         )
       } catch (e) {
+        const msg = e instanceof Error ? e.message : ''
+        if (msg.includes('permission') || msg.includes('PERMISSION_DENIED')) {
+          showToast(t('adminPropertyEdit.savePermissionFail'), 'error')
+          return
+        }
         toastUploadError(e)
       } finally {
         setUploadingG(false)
@@ -227,12 +272,22 @@ export function AdminPropertyEditPage() {
         }
         const nextElevator = [...elevatorUrls, ...urls]
         setElevatorUrls(nextElevator)
-        await persistCuration(garageUrls, nextElevator)
+        try {
+          await persistCuration(garageUrls, nextElevator)
+        } catch (persistErr) {
+          setElevatorUrls(elevatorUrls)
+          throw persistErr
+        }
         showToast(
           urls.length > 1 ? t('adminPropertyEdit.uploadOkPlural') : t('adminPropertyEdit.uploadOk'),
           'success',
         )
       } catch (e) {
+        const msg = e instanceof Error ? e.message : ''
+        if (msg.includes('permission') || msg.includes('PERMISSION_DENIED')) {
+          showToast(t('adminPropertyEdit.savePermissionFail'), 'error')
+          return
+        }
         toastUploadError(e)
       } finally {
         setUploadingE(false)
@@ -334,6 +389,10 @@ export function AdminPropertyEditPage() {
         elevatorPhotoUrls: elevatorUrls,
         manualAccessTips: manualAccess,
         manualPropertyTips: manualProperty,
+        buildingName,
+        apartmentPassword,
+        showBuildingName,
+        showApartmentPassword,
         displayName: title || null,
       })
       showToast(t('adminPropertyEdit.saveOk'), 'success')
@@ -383,6 +442,58 @@ export function AdminPropertyEditPage() {
                 autoComplete="off"
               />
             </label>
+          </EditSection>
+
+          <EditSection
+            icon={<FiEye />}
+            title={t('adminPropertyEdit.sectionGuestCards')}
+            description={t('adminPropertyEdit.sectionGuestCardsDesc')}
+          >
+            <div className="admin-property-edit__guest-card-editor">
+              <div className="admin-property-edit__guest-card-head">
+                <strong>{t('adminPropertyEdit.buildingName')}</strong>
+                <label className="admin-property-edit__visibility">
+                  <input
+                    type="checkbox"
+                    checked={showBuildingName}
+                    onChange={(e) => setShowBuildingName(e.target.checked)}
+                  />
+                  <span>{t('adminPropertyEdit.showForGuest')}</span>
+                </label>
+              </div>
+              <label className="admin-property-edit__field">
+                <span>{t('adminPropertyEdit.cardContent')}</span>
+                <input
+                  value={buildingName}
+                  onChange={(e) => setBuildingName(e.target.value)}
+                  disabled={!showBuildingName}
+                  autoComplete="off"
+                />
+              </label>
+            </div>
+
+            <div className="admin-property-edit__guest-card-editor">
+              <div className="admin-property-edit__guest-card-head">
+                <strong>{t('adminPropertyEdit.apartmentPassword')}</strong>
+                <label className="admin-property-edit__visibility">
+                  <input
+                    type="checkbox"
+                    checked={showApartmentPassword}
+                    onChange={(e) => setShowApartmentPassword(e.target.checked)}
+                  />
+                  <span>{t('adminPropertyEdit.showForGuest')}</span>
+                </label>
+              </div>
+              <label className="admin-property-edit__field">
+                <span>{t('adminPropertyEdit.cardContent')}</span>
+                <input
+                  value={apartmentPassword}
+                  onChange={(e) => setApartmentPassword(e.target.value)}
+                  disabled={!showApartmentPassword}
+                  autoComplete="off"
+                />
+              </label>
+            </div>
           </EditSection>
 
           <EditSection

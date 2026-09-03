@@ -18,6 +18,7 @@ import {
   loginWithStaysReservation,
   logout,
   registerWithEmail,
+  sendAdminPasswordResetEmail,
   subscribeAuth,
 } from '../services/authService'
 import { StaysApiError } from '../services/staysClient'
@@ -34,6 +35,8 @@ type AuthContextValue = {
   ) => Promise<void>
   /** Admin: e-mail e senha corporativos. */
   loginAdmin: (email: string, password: string) => Promise<void>
+  /** Admin: envia e-mail de redefinição de senha (Firebase Auth). */
+  resetAdminPassword: (email: string) => Promise<void>
   register: (email: string, password: string) => Promise<void>
   logout: () => Promise<void>
   lastError: string | null
@@ -105,6 +108,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
+  const handleResetAdminPassword = useCallback(async (email: string) => {
+    setLastError(null)
+    if (!email.trim()) {
+      setLastError(i18n.t('login.errorEmailRequired'))
+      throw new Error('login/errorEmailRequired')
+    }
+    try {
+      await sendAdminPasswordResetEmail(email)
+    } catch (e: unknown) {
+      const code =
+        e && typeof e === 'object' && 'code' in e
+          ? String((e as { code: string }).code)
+          : e instanceof Error
+          ? e.message
+          : 'unknown'
+      setLastError(firebaseErrorToMessage(code))
+      throw e
+    }
+  }, [])
+
   const handleRegister = useCallback(async (email: string, password: string) => {
     setLastError(null)
     try {
@@ -142,6 +165,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       authReady,
       loginGuest: handleGuestLogin,
       loginAdmin: handleAdminLogin,
+      resetAdminPassword: handleResetAdminPassword,
       register: handleRegister,
       logout: handleLogout,
       lastError,
@@ -153,6 +177,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       authReady,
       handleGuestLogin,
       handleAdminLogin,
+      handleResetAdminPassword,
       handleRegister,
       handleLogout,
       lastError,

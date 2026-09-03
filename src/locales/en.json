@@ -62,7 +62,10 @@
     "beforeCheckInGeneric": "It is not check-in time yet. Open the link again at your reservation check-in time."
   },
   "preCheckIn": {
-    "notice": "You cannot check in yet. Complete your check-in on <strong>{{checkInTime}}</strong> to unlock full platform access.",
+    "notice": "Full platform access will be unlocked on <strong>{{checkInTime}}</strong>.",
+    "reservationCode": "Reservation code",
+    "bookingPortal": "Portal",
+    "internalBookingPortal": "Stays (internal booking)",
     "servicesTitle": "Our services",
     "servicesLead": "Need something before you arrive? Request a service and our team will handle it.",
     "servicesSection": "Services available before check-in",
@@ -152,7 +155,8 @@
       "title": "Zen support",
       "lead": "Message us on WhatsApp for questions about the property or your stay.",
       "ctaWhatsapp": "Open WhatsApp",
-      "missingNumber": "Set VITE_ZEN_SUPPORT_WHATSAPP in your environment (digits only, e.g. 5541999999999)."
+      "missingNumber": "Set VITE_ZEN_SUPPORT_WHATSAPP in your environment (digits only, e.g. 5541999999999).",
+      "unavailableGuest": "Support WhatsApp is not available in this version yet. Check your booking confirmation or use the emergency numbers above."
     },
     "zenWhatsappMessage": "Hello, I am the guest on reservation {{code}} and I need help with the property {{property}}"
   },
@@ -162,18 +166,20 @@
     "titleGuest": "Guest access",
     "subtitleCorp": "Access the dashboard with your work email.",
     "subtitleSignUp": "Create your account with email and password to access the dashboard.",
-    "subtitleGuest": "Use the Stays reservation code (e.g. IZ07J), not the property code from the Zen website (e.g. dn11). You can also paste a URL with ?reserve=.",
+    "subtitleGuest": "Use the external ID shown on the booking confirmation. For internal bookings, use the Stays ID.",
     "modeAria": "Authentication mode",
     "modeGuest": "Guest",
     "modeAdmin": "Admin",
-    "reservationCode": "Reservation code (Stays)",
-    "reservationPlaceholder": "e.g. IZ07J",
-    "reservationStaysHint": "Do not use the listing code (dn11, etc.). In the Stays panel, open the booking and copy the short id, or paste a URL with ?reserve=IU08J.",
+    "reservationCode": "Reservation ID",
+    "reservationPlaceholder": "e.g. 5574901098",
+    "reservationStaysHint": "Prefer the external ID from the booking confirmation. If an internal booking has no external ID, use the Stays ID.",
+    "reservationDevDemoHint": "In development: type demo to sign in with sample data (no Stays reservation).",
     "email": "Email",
     "password": "Password",
     "emailPlaceholder": "you@company.com",
     "passwordPlaceholder": "••••••••",
     "forgotPassword": "Forgot password?",
+    "passwordResetSent": "We sent a password reset email. Check your inbox.",
     "submitGuest": "Sign in with reservation",
     "submitSignIn": "Sign in",
     "submitSignUp": "Create account and sign in",
@@ -209,6 +215,8 @@
     "cardPropertyAddress": "Address",
     "cardWifi": "Wi‑Fi",
     "cardWifiMeta": "Password: {{password}}",
+    "copyWifiPassword": "Copy password",
+    "copyWifiPasswordDone": "Password copied",
     "cardAccess": "Access",
     "cardAccessMeta": "Valid during your stay",
     "cardProperty": "Property",
@@ -223,10 +231,16 @@
     "title": "Your reservation",
     "lead": "Address, unit, dates, Wi‑Fi and access instructions — everything you need for your stay.",
     "sectionStay": "Stay",
-    "cardCode": "Access code (Stays)",
-    "cardCodeMeta": "Same id/access code you used to sign in to the app (Stays back office).",
+    "cardCode": "Confirmation code",
     "cardProperty": "Property",
+    "cardApartmentLabel": "Apartment",
+    "cardApartmentUnknown": "not provided",
+    "cardApartmentPassword": "Password",
+    "cardApartmentPasswordMissing": "not provided",
+    "cardBuilding": "Building",
     "cardAddress": "Address",
+    "copyAddress": "Copy address",
+    "addressCopied": "Address copied",
     "cardCheckIn": "Check-in",
     "cardCheckOut": "Check-out",
     "sectionWifi": "Wi‑Fi",
@@ -509,7 +523,11 @@
       "confirmDeleteLead": "Are you sure you want to remove this service from the catalog?",
       "confirmDeleteHint": "Existing requests in history keep the name stored on the request.",
       "editing": "Editing: {{name}}",
+      "listTitle": "Registered services",
+      "listLead": "Review the details and keep the guest catalog organized.",
+      "listCount": "{{count}} service(s)",
       "listAria": "Current catalog items",
+      "whatsappNotConfigured": "Not configured",
       "catalogLoading": "Loading catalog…",
       "catalogEmpty": "The catalog is empty. Add the first service above.",
       "errorNameRequired": "Enter a service name.",
@@ -713,6 +731,12 @@
     "loadError": "Could not load curation data.",
     "sectionIdentity": "Identity",
     "sectionIdentityDesc": "Name shown in the admin panel and internal curation references.",
+    "sectionGuestCards": "Guest information",
+    "sectionGuestCardsDesc": "Edit content recognized from Stays or uncheck an item to remove it from the guest app.",
+    "buildingName": "Building name",
+    "apartmentPassword": "Apartment password",
+    "cardContent": "Displayed content",
+    "showForGuest": "Show in app",
     "sectionGarageDesc": "Parking photos and an optional video. Shown on the garage card for guests.",
     "sectionElevatorDesc": "Elevator or route-to-unit photos.",
     "sectionTips": "Instructions and tips",
@@ -745,13 +769,14 @@
     "cancel": "Cancel",
     "save": "Save curation",
     "saveOk": "Curation saved.",
-    "saveFail": "Could not save."
+    "saveFail": "Could not save.",
+    "savePermissionFail": "No permission to save. Confirm you are signed in as admin and try again."
   },
   "adminAccess": {
     "title": "Reservation ↔ property links",
-    "pageLead": "Associate the Stays reservation code with the correct property ID and keep this list up to date.",
+    "pageLead": "Associate the external reservation ID with the correct property ID. Internal bookings use the Stays ID.",
     "listTitle": "Manual access links",
-    "listLead": "Stays reservation codes linked to a property so the guest app loads Zen curation for that unit. Use «Before check-in» to unlock the full guest app ahead of the reservation check-in time.",
+    "listLead": "Reservation IDs linked to a property so the guest app loads Zen curation. Set a release time or use “Before check-in” to unlock it immediately.",
     "colReservation": "Reservation code",
     "colDirectLink": "Direct link",
     "copyDirectLink": "Copy link",
@@ -759,6 +784,10 @@
     "directLinkCopyFailed": "Could not copy. Copy manually.",
     "colProperty": "Property ID",
     "colEarlyCheckIn": "Before check-in",
+    "colReleaseTime": "Release time",
+    "releaseTimeAria": "Release time for reservation {{code}}",
+    "releaseTimeCustom": "Custom time",
+    "releaseTimeStays": "Stays default",
     "colActive": "Active",
     "colLastAccess": "Last access",
     "colDevice": "Device",
@@ -775,18 +804,19 @@
     "editActiveOn": "Access enabled.",
     "editActiveOff": "Access disabled.",
     "editEarlyCheckInOn": "Full guest app unlocked before check-in.",
-    "editEarlyCheckInOff": "Early access disabled — guest waits until check-in time.",
+    "editEarlyCheckInOff": "Early access disabled — guest waits until the release time.",
+    "editReleaseTimeSuccess": "Release time updated.",
     "editError": "Could not save the change.",
     "empty": "No links yet. Create one above."
   },
   "adminCreateAccess": {
     "title": "Create access",
-    "lead": "Enter the code to auto-link the reservation property (on blur, lookup, or save). Manual selection remains available as a fallback.",
-    "fieldReservation": "Reservation code",
-    "placeholderReservation": "e.g. IZ07J",
+    "lead": "Enter the external ID to auto-link the property. If you look up a Stays ID, it is replaced by the external ID when available.",
+    "fieldReservation": "Reservation ID",
+    "placeholderReservation": "e.g. 5574901098",
     "lookupReservation": "Search Stays",
     "lookupEmpty": "Enter the reservation code before searching.",
-    "lookupSuccess": "Reservation validated and property linked automatically.",
+    "lookupSuccess": "Reservation validated, preferred ID confirmed, and property linked automatically.",
     "lookupNotFound": "Reservation not found in Stays. Check the code and try again.",
     "lookupCanceled": "This reservation is canceled in Stays and cannot receive access.",
     "lookupWithoutProperty": "The reservation exists but has no property linked in Stays.",
@@ -829,9 +859,91 @@
     "directLinkCopyFailed": "Could not copy the link.",
     "dismissDirectLink": "Dismiss"
   },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The address you opened does not exist or was moved.",
+    "backHome": "Go to dashboard",
+    "backLogin": "Go to login",
+    "goLogin": "Login"
+  },
+  "settings": {
+    "title": "Settings",
+    "desc": "Language, theme and account preferences.",
+    "account": "Account",
+    "accountGuest": "Guest — reservation {{code}}",
+    "accountAdmin": "Administrator — {{email}}",
+    "preferences": "Preferences",
+    "legal": "Legal",
+    "termsLink": "Terms of use",
+    "privacyLink": "Privacy policy",
+    "logout": "Log out",
+    "language": "Language",
+    "theme": "Theme",
+    "themeDark": "Dark Mode",
+    "themeLight": "Light Mode",
+    "themeSystem": "System Default",
+    "pt": "Português",
+    "en": "English",
+    "pushNotifications": "Push notifications",
+    "pushEnabledHint": "You will receive check-in, checkout and completed order reminders.",
+    "pushDisabledHint": "Turn on to get important alerts during your stay.",
+    "pushNotSupported": "Push notifications are not available on this browser or device.",
+    "pushPermissionDenied": "Permission denied. Enable notifications in browser settings.",
+    "pushError": "Could not enable notifications. Try again."
+  },
   "placeholders": {
     "settingsTitle": "Settings",
-    "settingsDesc": "Language, theme and basic guest preferences."
+    "settingsDesc": "Language, theme and basic guest preferences.",
+    "accountLabel": "Account",
+    "accountGuest": "Guest — reservation {{code}}",
+    "accountAdmin": "Administrator — {{email}}",
+    "legalTitle": "Legal",
+    "termsLink": "Terms of use",
+    "privacyLink": "Privacy policy"
+  },
+  "legal": {
+    "termsTitle": "Terms of use",
+    "privacyTitle": "Privacy policy",
+    "back": "Back",
+    "lastUpdated": "Last updated: August 2026",
+    "termsIntro": "By using Guia da Zen you agree to these terms. The service is a digital guide for your stay, provided by Zen.",
+    "termsSections": [
+      {
+        "title": "1. Access",
+        "body": "Guest access is tied to the reservation period confirmed in Stays. After check-out, access may end automatically."
+      },
+      {
+        "title": "2. Appropriate use",
+        "body": "Information (Wi-Fi, property access, instructions) is for personal use during your stay. Do not share credentials beyond what is necessary."
+      },
+      {
+        "title": "3. Additional services",
+        "body": "Extra service requests may require payment and confirmation by Zen operations. Prices and availability may vary."
+      },
+      {
+        "title": "4. Limitation",
+        "body": "The guide complements but does not replace contact with the Zen team in emergencies or urgent situations."
+      }
+    ],
+    "privacyIntro": "This policy describes how we handle data in Guia da Zen.",
+    "privacySections": [
+      {
+        "title": "1. Data we use",
+        "body": "Reservation code, stay data (dates, property), Firebase profile, service requests and preferences (language, theme, notifications)."
+      },
+      {
+        "title": "2. Purpose",
+        "body": "Display stay information, enable service requests, improve experience and support Zen operations."
+      },
+      {
+        "title": "3. Sharing",
+        "body": "Reservation data is fetched from the Stays API. Payments may be processed by partners (e.g. Pagar.me). We do not sell personal data."
+      },
+      {
+        "title": "4. Your rights",
+        "body": "For data questions or account deletion, contact the Zen team through the support channel in the app."
+      }
+    ]
   },
   "servicePayment": {
     "title": "Service payment",
@@ -861,20 +973,5 @@
     "errorPublicKey": "Card payment unavailable: Pagar.me public key not configured.",
     "errorCardDeclined": "Payment declined. Check card details or try PIX.",
     "errorCreate": "Could not start payment. Please try again."
-  },
-  "settings": {
-    "language": "Language",
-    "theme": "Theme",
-    "themeDark": "Dark Mode",
-    "themeLight": "Light Mode",
-    "themeSystem": "System Default",
-    "pt": "Português",
-    "en": "English",
-    "pushNotifications": "Push notifications",
-    "pushEnabledHint": "You will receive check-in, checkout and completed order reminders.",
-    "pushDisabledHint": "Turn on to get important alerts during your stay.",
-    "pushNotSupported": "Push notifications are not available on this browser or device.",
-    "pushPermissionDenied": "Permission denied. Enable notifications in your browser settings.",
-    "pushError": "Could not enable notifications. Please try again."
   }
 }

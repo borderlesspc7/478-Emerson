@@ -19,6 +19,7 @@ function getGoogleMapsSearchUrl(address: string): string {
 
 export type PreCheckInViewProps = {
   stay: GuestStay
+  accessReleaseAt?: string
   serviceOffers: ServiceOffer[]
   propertyName: string
   userName?: string
@@ -32,6 +33,7 @@ export type PreCheckInViewProps = {
 
 export function PreCheckInView({
   stay,
+  accessReleaseAt,
   serviceOffers,
   propertyName,
   userName: userNameProp,
@@ -61,7 +63,7 @@ export function PreCheckInView({
   )
 
   const propertyImageUrl = useMemo(() => pickGuestPropertyImageUrl(stay), [stay])
-  const checkInLabel = formatStayDateTime(stay.checkInAt, loc)
+  const checkInLabel = formatStayDateTime(accessReleaseAt ?? stay.checkInAt, loc)
 
   const errorMessage = useMemo(() => {
     if (mutateError) return mutateError
@@ -150,6 +152,16 @@ export function PreCheckInView({
         )}
 
         <h1 className="page-pre-checkin__property-name">{propertyName}</h1>
+        <dl className="page-pre-checkin__booking-meta">
+          <div>
+            <dt>{t('preCheckIn.reservationCode')}</dt>
+            <dd>{reservationCode}</dd>
+          </div>
+          <div>
+            <dt>{t('preCheckIn.bookingPortal')}</dt>
+            <dd>{stay.bookingPortal || t('preCheckIn.internalBookingPortal')}</dd>
+          </div>
+        </dl>
         <p className="page-pre-checkin__address">{addressFull}</p>
         <div className="guest-content__actions" style={{ marginBottom: '1.75rem' }}>
           <Button

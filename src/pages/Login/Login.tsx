@@ -1,17 +1,20 @@
 import { useEffect, useId, useState } from 'react'
 import { GiLotusFlower } from 'react-icons/gi'
 import { useTranslation } from 'react-i18next'
-import { Link, Navigate, useLocation } from 'react-router-dom'
+import { Link, Navigate, useLocation, useSearchParams } from 'react-router-dom'
 import { Button } from '../../components/ui/Button/Button'
 import { ErrorMessage } from '../../components/ui/ErrorMessage'
 import { useAuth } from '../../hooks/useAuth'
 import { getDefaultPathForUser } from '../../lib/defaultRoute'
+import { parseStaysReservationUserInput } from '../../lib/staysReservationInput'
+import { PATHS } from '../../routes/path'
 import './Login.css'
 
 export function LoginPage() {
   const { t } = useTranslation()
-  const { user, authReady, loginGuest, loginAdmin, lastError, clearError } = useAuth()
+  const { user, authReady, loginGuest, loginAdmin, resetAdminPassword, lastError, clearError } = useAuth()
   const location = useLocation()
+  const [searchParams] = useSearchParams()
   const fromState = (location.state as { from?: string } | null)?.from
 
   const reservationId = useId()
@@ -25,9 +28,22 @@ export function LoginPage() {
   const [password, setPassword] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [fieldError, setFieldError] = useState<string | null>(null)
+  const [resetSent, setResetSent] = useState(false)
+
+  useEffect(() => {
+    const reserve = searchParams.get('reserve') ?? searchParams.get('Reserve')
+    if (reserve?.trim()) {
+      setAuthMode('guest')
+      setReservationCode(parseStaysReservationUserInput(reserve))
+    }
+    if (searchParams.get('mode') === 'admin') {
+      setAuthMode('admin')
+    }
+  }, [searchParams])
 
   useEffect(() => {
     clearError()
+    setResetSent(false)
   }, [reservationCode, email, password, authMode, clearError, t])
 
   if (authReady && user) {
@@ -87,6 +103,28 @@ export function LoginPage() {
   const showError = fieldError || lastError
   const invalid = Boolean(showError)
 
+  function normalizeReservation(value: string) {
+    return parseStaysReservationUserInput(value)
+  }
+
+  async function handleForgotPassword() {
+    setFieldError(null)
+    setResetSent(false)
+    if (!email.trim()) {
+      setFieldError(t('login.errorEmailRequired'))
+      return
+    }
+    setSubmitting(true)
+    try {
+      await resetAdminPassword(email)
+      setResetSent(true)
+    } catch {
+      /* erro já em lastError */
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return (
     <div className="login-page">
       <main className="login-page__main">
@@ -141,6 +179,12 @@ export function LoginPage() {
               message={fieldError || lastError}
             />
 
+            {resetSent ? (
+              <p className="login-form__success" role="status">
+                {t('login.passwordResetSent')}
+              </p>
+            ) : null}
+
             {authMode === 'guest' ? (
               <>
                 <div className="login-form__field">
@@ -152,13 +196,28 @@ export function LoginPage() {
                     name="reservationCode"
                     type="text"
                     autoComplete="off"
+                    autoCapitalize="characters"
+                    spellCheck={false}
                     className="login-form__input"
                     placeholder={t('login.reservationPlaceholder')}
                     value={reservationCode}
                     onChange={(e) => setReservationCode(e.target.value)}
+                    onBlur={() =>
+                      setReservationCode((prev) => normalizeReservation(prev))
+                    }
+                    onPaste={(e) => {
+                      const pasted = e.clipboardData.getData('text')
+                      e.preventDefault()
+                      setReservationCode(normalizeReservation(pasted))
+                    }}
                     disabled={submitting}
                   />
                   <p className="login-form__hint">{t('login.reservationStaysHint')}</p>
+                  {import.meta.env.DEV ? (
+                    <p className="login-form__hint login-form__hint--demo">
+                      {t('login.reservationDevDemoHint')}
+                    </p>
+                  ) : null}
                 </div>
               </>
             ) : (
@@ -182,19 +241,9 @@ export function LoginPage() {
                 </div>
 
                 <div className="login-form__field">
-                  <div className="login-form__row">
-                    <label className="login-form__label" htmlFor={passwordAdminId}>
-                      {t('login.password')}
-                    </label>
-                    <Link
-                      to="#"
-                      className="login-form__link"
-                      onClick={(e) => e.preventDefault()}
-                      tabIndex={-1}
-                    >
-                      {t('login.forgotPassword')}
-                    </Link>
-                  </div>
+                  <label className="login-form__label" htmlFor={passwordAdminId}>
+                    {t('login.password')}
+                  </label>
                   <input
                     id={passwordAdminId}
                     name="password"
@@ -206,6 +255,14 @@ export function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={submitting}
                   />
+                  <button
+                    type="button"
+                    className="login-form__link login-form__forgot-password"
+                    disabled={submitting}
+                    onClick={() => void handleForgotPassword()}
+                  >
+                    {t('login.forgotPassword')}
+                  </button>
                 </div>
               </>
             )}
@@ -223,6 +280,12 @@ export function LoginPage() {
                 : t('login.submitSignIn')}
             </Button>
           </form>
+
+          <footer className="login-card__footer">
+            <Link to={PATHS.terms}>{t('settings.termsLink')}</Link>
+            <span aria-hidden> · </span>
+            <Link to={PATHS.privacy}>{t('settings.privacyLink')}</Link>
+          </footer>
         </div>
       </main>
     </div>

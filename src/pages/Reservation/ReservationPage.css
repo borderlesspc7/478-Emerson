@@ -6,6 +6,11 @@
   grid-column: 1 / -1;
 }
 
+.page-reservation__copy-address {
+  width: fit-content;
+  margin-top: 0.85rem;
+}
+
 @media (min-width: 640px) {
   .page-reservation__span-2 {
     grid-column: span 2;

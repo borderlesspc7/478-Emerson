@@ -57,6 +57,8 @@ export function AppLayout() {
       [PATHS.extras]: t('nav.extras'),
       [PATHS.services]: t('nav.services'),
       [PATHS.settings]: t('nav.settings'),
+      [PATHS.terms]: t('legal.termsTitle'),
+      [PATHS.privacy]: t('legal.privacyTitle'),
     }
     return map[pathname] ?? t('layout.panel')
   }, [pathname, t])

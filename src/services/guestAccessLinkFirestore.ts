@@ -14,6 +14,7 @@ import type { Timestamp } from 'firebase/firestore'
 import { getFirebaseFirestore, isFirebaseConfigured } from '../lib/firebase'
 import { buildSimplifiedDeviceInfo } from '../lib/deviceInfo'
 import type { GuestAccessLinkRecord } from '../types/guestAccessLink'
+import { normalizeAccessReleaseTime } from '../lib/guestAccessRelease'
 
 export const GUEST_ACCESS_LINKS_COLLECTION = 'guestAccessLinks'
 
@@ -23,6 +24,7 @@ export function normalizeGuestAccessReservationCode(raw: string): string {
     .toUpperCase()
     .replace(/\//g, '-')
     .replace(/\\/g, '-')
+    // eslint-disable-next-line no-control-regex -- remove caracteres de controlo de IDs Firestore
     .replace(/[\u0000-\u001F\u007F]/g, '')
     .slice(0, 800)
   if (!s) return ''
@@ -75,6 +77,7 @@ export function mapGuestAccessLinkDoc(
   if (typeof propertyId !== 'string' || !propertyId.trim()) return null
   const accessActive = data.accessActive !== false
   const earlyCheckInAccess = data.earlyCheckInAccess === true
+  const accessReleaseTime = normalizeAccessReleaseTime(data.accessReleaseTime)
   const accessCount = toNumber(data.accessCount) ?? 0
   const deviceInfo =
     typeof data.deviceInfo === 'string' && data.deviceInfo.trim()
@@ -85,6 +88,7 @@ export function mapGuestAccessLinkDoc(
     propertyId: propertyId.trim(),
     accessActive,
     earlyCheckInAccess,
+    accessReleaseTime,
     customFieldVisibility: parseCustomFieldVisibility(data.customFieldVisibility),
     createdAt: toDate(data.createdAt),
     updatedAt: toDate(data.updatedAt),
@@ -112,6 +116,7 @@ export async function upsertGuestAccessLink(input: {
   propertyId: string
   accessActive?: boolean
   earlyCheckInAccess?: boolean
+  accessReleaseTime?: string | null
   customFieldVisibility?: Record<string, boolean> | null
 }): Promise<void> {
   const db = getFirebaseFirestore()
@@ -138,6 +143,7 @@ export async function upsertGuestAccessLink(input: {
     propertyId: pid,
     accessActive: input.accessActive !== false,
     earlyCheckInAccess: input.earlyCheckInAccess === true,
+    accessReleaseTime: normalizeAccessReleaseTime(input.accessReleaseTime),
     updatedAt: serverTimestamp(),
     ...(existing.exists() ? {} : { createdAt: serverTimestamp() }),
     ...(visibility !== undefined ? { customFieldVisibility: visibility } : {}),
@@ -182,6 +188,7 @@ export async function updateGuestAccessLinkFields(
     propertyId?: string
     accessActive?: boolean
     earlyCheckInAccess?: boolean
+    accessReleaseTime?: string | null
   },
 ): Promise<void> {
   const db = getFirebaseFirestore()
@@ -206,6 +213,14 @@ export async function updateGuestAccessLinkFields(
 
   if (patch.earlyCheckInAccess !== undefined) {
     payload.earlyCheckInAccess = patch.earlyCheckInAccess
+  }
+
+  if (patch.accessReleaseTime !== undefined) {
+    const normalized = normalizeAccessReleaseTime(patch.accessReleaseTime)
+    if (patch.accessReleaseTime !== null && !normalized) {
+      throw new Error('guest-access/invalid-release-time')
+    }
+    payload.accessReleaseTime = normalized
   }
 
   await updateDoc(doc(db, GUEST_ACCESS_LINKS_COLLECTION, id), payload)

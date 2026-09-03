@@ -27,7 +27,8 @@
     "firebase:deploy:firestore": "node scripts/firebase-cli.cjs deploy --only firestore",
     "firebase:deploy:functions": "node scripts/firebase-cli.cjs deploy --only functions",
     "firebase:deploy:hosting": "node scripts/firebase-cli.cjs deploy --only hosting",
-    "firebase:deploy": "node scripts/firebase-cli.cjs deploy"
+    "firebase:deploy": "node scripts/firebase-cli.cjs deploy",
+    "firebase:deploy:prod": "node scripts/deploy-prod.cjs"
   },
   "dependencies": {
     "@tanstack/react-table": "^8.21.3",

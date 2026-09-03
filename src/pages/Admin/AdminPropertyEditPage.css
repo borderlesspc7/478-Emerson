@@ -204,6 +204,47 @@
   color: var(--text-muted);
 }
 
+.admin-property-edit__guest-card-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  background: color-mix(in srgb, var(--surface-subtle) 62%, transparent);
+}
+
+.admin-property-edit__guest-card-head,
+.admin-property-edit__visibility {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.admin-property-edit__guest-card-head {
+  justify-content: space-between;
+  flex-wrap: wrap;
+  color: var(--text-primary);
+}
+
+.admin-property-edit__visibility {
+  cursor: pointer;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.admin-property-edit__visibility input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--color-primary);
+}
+
+.admin-property-edit__guest-card-editor input:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .admin-property-edit__media-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -364,11 +405,17 @@
   }
 
   .admin-property-edit__actions {
-    bottom: 0.5rem;
+    bottom: max(0.5rem, env(safe-area-inset-bottom, 0px));
+    left: 0.75rem;
+    right: 0.75rem;
+    flex-direction: column-reverse;
     justify-content: stretch;
+    gap: 0.5rem;
+    padding: 0.75rem;
   }
 
   .admin-property-edit__actions .ui-button {
     flex: 1 1 auto;
+    width: 100%;
   }
 }

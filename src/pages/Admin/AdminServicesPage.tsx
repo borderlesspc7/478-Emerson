@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom'
 
 import { useTranslation } from 'react-i18next'
 
-import { FiAlertTriangle, FiEdit2, FiTrash2 } from 'react-icons/fi'
+import { FiAlertTriangle, FiEdit2, FiPhone, FiTrash2 } from 'react-icons/fi'
 
 import { Button } from '../../components/ui/Button/Button'
 
@@ -1000,6 +1000,36 @@ export function AdminServicesPage() {
 
           <div className="page-services__admin-list-panel">
 
+            <header className="page-services__admin-list-head">
+
+              <div>
+
+                <h4 className="page-services__admin-list-title">
+
+                  {t('servicesPage.admin.listTitle')}
+
+                </h4>
+
+                <p className="page-services__admin-list-lead">
+
+                  {t('servicesPage.admin.listLead')}
+
+                </p>
+
+              </div>
+
+              {catalogReady ? (
+
+                <span className="page-services__admin-list-count">
+
+                  {t('servicesPage.admin.listCount', { count: catalogItems.length })}
+
+                </span>
+
+              ) : null}
+
+            </header>
+
             {!catalogReady ? (
 
               <p className="page-services__catalog-loading" role="status">
@@ -1022,41 +1052,71 @@ export function AdminServicesPage() {
 
               >
 
-                {catalogItems.map((item) => (
+                {catalogItems.map((item, index) => (
 
                   <li key={item.id} className="page-services__admin-row">
 
                     <div className="page-services__admin-row-body">
 
-                      <strong className="page-services__admin-name">{item.name}</strong>
+                      <div className="page-services__admin-row-main">
 
-                      <p className="page-services__admin-desc">{item.description || '—'}</p>
+                        <span className="page-services__admin-index" aria-hidden>
 
-                      <p className="page-services__admin-price">
-
-                        {formatPrice(locale, item.priceInCents)}
-
-                      </p>
-
-                      <p className="page-services__admin-wa">
-
-                        <span className="page-services__admin-wa-label">
-
-                          {t('servicesPage.admin.colWhatsapp')}:{' '}
+                          {String(index + 1).padStart(2, '0')}
 
                         </span>
 
-                        {item.whatsappPhone ? (
+                        <div className="page-services__admin-copy">
 
-                          <span className="page-services__admin-wa-value">{item.whatsappPhone}</span>
+                          <strong className="page-services__admin-name">{item.name}</strong>
 
-                        ) : (
+                          <p className="page-services__admin-desc">{item.description || '—'}</p>
 
-                          <span className="page-services__admin-wa-empty">—</span>
+                        </div>
 
-                        )}
+                      </div>
 
-                      </p>
+                      <dl className="page-services__admin-meta">
+
+                        <div className="page-services__admin-meta-item page-services__admin-meta-item--price">
+
+                          <dt>{t('servicesPage.priceLabel')}</dt>
+
+                          <dd>{formatPrice(locale, item.priceInCents)}</dd>
+
+                        </div>
+
+                        <div className="page-services__admin-meta-item">
+
+                          <dt>
+
+                            <FiPhone aria-hidden />
+
+                            {t('servicesPage.admin.colWhatsapp')}
+
+                          </dt>
+
+                          <dd>
+
+                            {item.whatsappPhone ? (
+
+                              <span className="page-services__admin-wa-value">{item.whatsappPhone}</span>
+
+                            ) : (
+
+                              <span className="page-services__admin-wa-empty">
+
+                                {t('servicesPage.admin.whatsappNotConfigured')}
+
+                              </span>
+
+                            )}
+
+                          </dd>
+
+                        </div>
+
+                      </dl>
 
                     </div>
 
@@ -1069,6 +1129,8 @@ export function AdminServicesPage() {
                         variant="secondary"
 
                         size="sm"
+
+                        className="page-services__admin-action-button"
 
                         leftIcon={<FiEdit2 aria-hidden />}
 
@@ -1089,6 +1151,8 @@ export function AdminServicesPage() {
                         variant="danger"
 
                         size="sm"
+
+                        className="page-services__admin-action-button"
 
                         leftIcon={<FiTrash2 aria-hidden />}
 

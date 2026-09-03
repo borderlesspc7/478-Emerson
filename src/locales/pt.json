@@ -62,7 +62,10 @@
     "beforeCheckInGeneric": "Ainda não é hora do check-in. Volte a abrir o link no horário de entrada da reserva."
   },
   "preCheckIn": {
-    "notice": "Você ainda não pode fazer check-in. Faça o seu check-in em <strong>{{checkInTime}}</strong> para liberar o acesso à plataforma.",
+    "notice": "O acesso completo à plataforma será liberado em <strong>{{checkInTime}}</strong>.",
+    "reservationCode": "Código da reserva",
+    "bookingPortal": "Portal",
+    "internalBookingPortal": "Stays (reserva interna)",
     "servicesTitle": "Nossos serviços",
     "servicesLead": "Precisa de algo antes de entrar? Solicite um serviço e a nossa equipa trata do pedido.",
     "servicesSection": "Catálogo de serviços disponíveis antes do check-in",
@@ -152,7 +155,8 @@
       "title": "Suporte Zen",
       "lead": "Fale connosco pelo WhatsApp para dúvidas sobre o imóvel ou a estadia.",
       "ctaWhatsapp": "Abrir WhatsApp",
-      "missingNumber": "Configure VITE_ZEN_SUPPORT_WHATSAPP no ambiente (apenas dígitos, ex.: 5541999999999)."
+      "missingNumber": "Configure VITE_ZEN_SUPPORT_WHATSAPP no ambiente (apenas dígitos, ex.: 5541999999999).",
+      "unavailableGuest": "O WhatsApp de suporte ainda não está disponível nesta versão. Consulte a confirmação da sua reserva ou ligue para os números de emergência acima."
     },
     "zenWhatsappMessage": "Olá, sou o hóspede da reserva {{code}} e preciso de ajuda com o imóvel {{property}}"
   },
@@ -162,18 +166,20 @@
     "titleGuest": "Acesso do hóspede",
     "subtitleCorp": "Acesse o painel com seu e-mail corporativo.",
     "subtitleSignUp": "Crie a sua conta com e-mail e senha para aceder ao painel.",
-    "subtitleGuest": "Use o código da reserva Stays (ex. IZ07J), não o código do imóvel do site Zen (ex. dn11). Também pode colar o link com ?reserve=.",
+    "subtitleGuest": "Use o ID externo que aparece no comprovante da reserva. Em reservas internas, use o ID da Stays.",
     "modeAria": "Modo de autenticação",
     "modeGuest": "Hóspede",
     "modeAdmin": "Admin",
-    "reservationCode": "Código da reserva (Stays)",
-    "reservationPlaceholder": "Ex.: IZ07J",
-    "reservationStaysHint": "Não use o código do anúncio (dn11, etc.). No painel Stays, abra a reserva e copie o id curto, ou cole a URL com ?reserve=IU08J.",
+    "reservationCode": "ID da reserva",
+    "reservationPlaceholder": "Ex.: 5574901098",
+    "reservationStaysHint": "Use de preferência o ID externo do comprovante. Se a reserva for interna e não tiver ID externo, use o ID da Stays.",
+    "reservationDevDemoHint": "Em desenvolvimento: digite demo para entrar com dados de exemplo (sem reserva Stays).",
     "email": "E-mail",
     "password": "Senha",
     "emailPlaceholder": "voce@empresa.com",
     "passwordPlaceholder": "••••••••",
     "forgotPassword": "Esqueceu a senha?",
+    "passwordResetSent": "Enviamos um e-mail para redefinir a sua senha. Verifique a caixa de entrada.",
     "submitGuest": "Entrar com reserva",
     "submitSignIn": "Entrar na plataforma",
     "submitSignUp": "Criar conta e entrar",
@@ -209,6 +215,8 @@
     "cardPropertyAddress": "Endereço",
     "cardWifi": "Wi-Fi",
     "cardWifiMeta": "Senha: {{password}}",
+    "copyWifiPassword": "Copiar senha",
+    "copyWifiPasswordDone": "Senha copiada",
     "cardAccess": "Acesso",
     "cardAccessMeta": "Válido durante a estadia",
     "cardProperty": "Imóvel",
@@ -223,10 +231,16 @@
     "title": "Sua reserva",
     "lead": "Endereço, unidade, datas, Wi-Fi e instruções de acesso — tudo o que precisa para a estadia.",
     "sectionStay": "Estadia",
-    "cardCode": "Código de acesso (Stays)",
-    "cardCodeMeta": "O mesmo id/código de acesso de quando entrou no app (painel Stays).",
+    "cardCode": "Código de confirmação",
     "cardProperty": "Imóvel",
+    "cardApartmentLabel": "Apto",
+    "cardApartmentUnknown": "não informado",
+    "cardApartmentPassword": "Senha",
+    "cardApartmentPasswordMissing": "não informada",
+    "cardBuilding": "Empreendimento",
     "cardAddress": "Endereço",
+    "copyAddress": "Copiar endereço",
+    "addressCopied": "Endereço copiado",
     "cardCheckIn": "Check-in",
     "cardCheckOut": "Check-out",
     "sectionWifi": "Wi-Fi",
@@ -509,7 +523,11 @@
       "confirmDeleteLead": "Tem a certeza que deseja remover este serviço do catálogo?",
       "confirmDeleteHint": "Pedidos antigos no histórico mantêm o nome gravado no pedido.",
       "editing": "A editar: {{name}}",
+      "listTitle": "Serviços cadastrados",
+      "listLead": "Revise os dados e mantenha o catálogo organizado para os hóspedes.",
+      "listCount": "{{count}} serviço(s)",
       "listAria": "Itens atuais do catálogo",
+      "whatsappNotConfigured": "Não configurado",
       "catalogLoading": "A carregar o catálogo…",
       "catalogEmpty": "Ainda não há serviços no catálogo. Adicione o primeiro acima.",
       "errorNameRequired": "Indique o nome do serviço.",
@@ -713,6 +731,12 @@
     "loadError": "Não foi possível carregar a curadoria.",
     "sectionIdentity": "Identidade",
     "sectionIdentityDesc": "Nome mostrado no painel e nas referências internas da curadoria.",
+    "sectionGuestCards": "Informações para o hóspede",
+    "sectionGuestCardsDesc": "Edite o conteúdo reconhecido na Stays ou desmarque uma informação para removê-la do app do hóspede.",
+    "buildingName": "Nome do empreendimento",
+    "apartmentPassword": "Senha do apartamento",
+    "cardContent": "Conteúdo exibido",
+    "showForGuest": "Exibir no app",
     "sectionGarageDesc": "Fotos e vídeo opcional da vaga. Aparecem no card de garagem para o hóspede.",
     "sectionElevatorDesc": "Fotos do elevador ou caminho até o apartamento.",
     "sectionTips": "Instruções e dicas",
@@ -745,13 +769,14 @@
     "cancel": "Cancelar",
     "save": "Guardar curadoria",
     "saveOk": "Curadoria guardada.",
-    "saveFail": "Não foi possível guardar."
+    "saveFail": "Não foi possível guardar.",
+    "savePermissionFail": "Sem permissão para guardar. Confirme que entrou como admin e tente de novo."
   },
   "adminAccess": {
     "title": "Vínculos reserva ↔ imóvel",
-    "pageLead": "Associe o código da reserva Stays ao property ID correto e mantenha a lista de vínculos atualizada.",
+    "pageLead": "Associe o ID externo da reserva ao property ID correto. Reservas internas usam o ID da Stays.",
     "listTitle": "Acessos manuais",
-    "listLead": "Códigos de reserva (Stays) associados a um imóvel para carregar curadoria Zen no app do hóspede. Em «Antes do check-in», libere o painel completo antes do horário da reserva.",
+    "listLead": "IDs de reserva associados a um imóvel para carregar a curadoria Zen. Defina o horário de liberação ou use «Antes do check-in» para liberar imediatamente.",
     "colReservation": "Código da reserva",
     "colDirectLink": "Link direto",
     "copyDirectLink": "Copiar link",
@@ -759,6 +784,10 @@
     "directLinkCopyFailed": "Não foi possível copiar. Copie manualmente.",
     "colProperty": "Property ID",
     "colEarlyCheckIn": "Antes do check-in",
+    "colReleaseTime": "Horário de liberação",
+    "releaseTimeAria": "Horário de liberação da reserva {{code}}",
+    "releaseTimeCustom": "Horário personalizado",
+    "releaseTimeStays": "Padrão da Stays",
     "colActive": "Ativo",
     "colLastAccess": "Último acesso",
     "colDevice": "Dispositivo",
@@ -775,18 +804,19 @@
     "editActiveOn": "Acesso ativado.",
     "editActiveOff": "Acesso desativado.",
     "editEarlyCheckInOn": "Painel completo liberado antes do check-in.",
-    "editEarlyCheckInOff": "Acesso antecipado desativado — o hóspede aguarda o horário de check-in.",
+    "editEarlyCheckInOff": "Acesso antecipado desativado — o hóspede aguarda o horário de liberação.",
+    "editReleaseTimeSuccess": "Horário de liberação atualizado.",
     "editError": "Não foi possível guardar a alteração.",
     "empty": "Ainda não há vínculos. Crie o primeiro acima."
   },
   "adminCreateAccess": {
     "title": "Criar acesso",
-    "lead": "Informe o código para vincular o imóvel automaticamente (ao sair do campo, ao buscar ou ao salvar). A seleção manual continua disponível como contingência.",
-    "fieldReservation": "Código da reserva",
-    "placeholderReservation": "Ex.: IZ07J",
+    "lead": "Informe o ID externo para vincular o imóvel automaticamente. Se consultar pelo ID da Stays, ele será substituído pelo ID externo quando existir.",
+    "fieldReservation": "ID da reserva",
+    "placeholderReservation": "Ex.: 5574901098",
     "lookupReservation": "Buscar na Stays",
     "lookupEmpty": "Informe o código da reserva antes de consultar.",
-    "lookupSuccess": "Reserva validada e imóvel vinculado automaticamente.",
+    "lookupSuccess": "Reserva validada, ID preferencial confirmado e imóvel vinculado automaticamente.",
     "lookupNotFound": "Reserva não encontrada na Stays. Confira o código informado.",
     "lookupCanceled": "Esta reserva está cancelada na Stays e não pode receber um acesso.",
     "lookupWithoutProperty": "A reserva existe, mas não possui um imóvel vinculado na Stays.",
@@ -829,9 +859,91 @@
     "directLinkCopyFailed": "Não foi possível copiar o link.",
     "dismissDirectLink": "Fechar"
   },
+  "notFound": {
+    "title": "Página não encontrada",
+    "description": "O endereço que você acessou não existe ou foi movido.",
+    "backHome": "Ir para o painel",
+    "backLogin": "Ir para o login",
+    "goLogin": "Login"
+  },
+  "settings": {
+    "title": "Configurações",
+    "desc": "Idioma, tema e preferências da sua conta.",
+    "account": "Conta",
+    "accountGuest": "Hóspede — reserva {{code}}",
+    "accountAdmin": "Administrador — {{email}}",
+    "preferences": "Preferências",
+    "legal": "Legal",
+    "termsLink": "Termos de uso",
+    "privacyLink": "Política de privacidade",
+    "logout": "Sair",
+    "language": "Idioma",
+    "theme": "Tema",
+    "themeDark": "Dark Mode",
+    "themeLight": "Light Mode",
+    "themeSystem": "Padrão do Sistema",
+    "pt": "Português",
+    "en": "English",
+    "pushNotifications": "Notificações push",
+    "pushEnabledHint": "Receberá lembretes de check-in, checkout e pedidos concluídos.",
+    "pushDisabledHint": "Ative para receber alertas importantes da sua estadia.",
+    "pushNotSupported": "Notificações push não estão disponíveis neste navegador ou dispositivo.",
+    "pushPermissionDenied": "Permissão negada. Ative notificações nas definições do browser.",
+    "pushError": "Não foi possível ativar as notificações. Tente novamente."
+  },
   "placeholders": {
     "settingsTitle": "Configurações",
-    "settingsDesc": "Idioma, tema e preferências básicas do hóspede."
+    "settingsDesc": "Idioma, tema e preferências básicas do hóspede.",
+    "accountLabel": "Conta",
+    "accountGuest": "Hóspede — reserva {{code}}",
+    "accountAdmin": "Administrador — {{email}}",
+    "legalTitle": "Legal",
+    "termsLink": "Termos de uso",
+    "privacyLink": "Política de privacidade"
+  },
+  "legal": {
+    "termsTitle": "Termos de uso",
+    "privacyTitle": "Política de privacidade",
+    "back": "Voltar",
+    "lastUpdated": "Última atualização: agosto de 2026",
+    "termsIntro": "Ao utilizar o Guia da Zen, você concorda com estes termos. O serviço é um guia digital da sua estadia, fornecido pela Zen.",
+    "termsSections": [
+      {
+        "title": "1. Acesso",
+        "body": "O acesso de hóspede é vinculado ao período da reserva confirmada na Stays. Após o check-out, o acesso pode ser encerrado automaticamente."
+      },
+      {
+        "title": "2. Uso adequado",
+        "body": "As informações (Wi-Fi, acesso ao imóvel, instruções) são para uso pessoal durante a estadia. Não reproduza credenciais ou códigos fora do necessário."
+      },
+      {
+        "title": "3. Serviços adicionais",
+        "body": "Pedidos de serviços extras podem estar sujeitos a pagamento e confirmação pela operação Zen. Valores e disponibilidade podem variar."
+      },
+      {
+        "title": "4. Limitação",
+        "body": "O guia complementa, mas não substitui, o contacto com a equipa Zen em situações de emergência ou urgência."
+      }
+    ],
+    "privacyIntro": "Esta política descreve como tratamos dados no Guia da Zen.",
+    "privacySections": [
+      {
+        "title": "1. Dados que utilizamos",
+        "body": "Código da reserva, dados da estadia (datas, imóvel), perfil Firebase, pedidos de serviços e preferências (idioma, tema, notificações)."
+      },
+      {
+        "title": "2. Finalidade",
+        "body": "Exibir informações da estadia, permitir pedidos de serviços, melhorar a experiência e apoiar a operação da Zen."
+      },
+      {
+        "title": "3. Partilha",
+        "body": "Dados de reserva são obtidos da API Stays. Pagamentos podem ser processados por parceiros (ex.: Pagar.me). Não vendemos dados pessoais."
+      },
+      {
+        "title": "4. Os seus direitos",
+        "body": "Para questões sobre dados ou eliminação de conta, contacte a equipa Zen pelo canal de suporte indicado no app."
+      }
+    ]
   },
   "servicePayment": {
     "title": "Pagamento do serviço",
@@ -861,20 +973,5 @@
     "errorPublicKey": "Pagamento por cartão indisponível: chave pública Pagar.me não configurada.",
     "errorCardDeclined": "Pagamento recusado. Verifique os dados do cartão ou tente PIX.",
     "errorCreate": "Não foi possível iniciar o pagamento. Tente novamente."
-  },
-  "settings": {
-    "language": "Idioma",
-    "theme": "Tema",
-    "themeDark": "Dark Mode",
-    "themeLight": "Light Mode",
-    "themeSystem": "Padrão do Sistema",
-    "pt": "Português",
-    "en": "English",
-    "pushNotifications": "Notificações push",
-    "pushEnabledHint": "Receberá lembretes de check-in, checkout e pedidos concluídos.",
-    "pushDisabledHint": "Ative para receber alertas importantes da sua estadia.",
-    "pushNotSupported": "Notificações push não estão disponíveis neste navegador ou dispositivo.",
-    "pushPermissionDenied": "Permissão negada. Ative notificações nas definições do browser.",
-    "pushError": "Não foi possível ativar as notificações. Tente novamente."
   }
 }

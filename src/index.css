@@ -77,6 +77,18 @@
   --bottom-bar-height: 3.5rem;
 }
 
+/* 1) Gutters e tipografia mais compactos no telemóvel */
+@media (max-width: 640px) {
+  :root {
+    --spacing-page-x: 1rem;
+    --spacing-page-y: 1rem;
+    --spacing-card: 1.25rem;
+    --spacing-section: 1.75rem;
+    --header-height: 3.5rem;
+    --bottom-bar-height: 3.75rem;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --text-primary: #f2f4f7;

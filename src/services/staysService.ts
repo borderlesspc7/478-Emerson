@@ -27,6 +27,7 @@ import {
   parseStaysListingPayload,
   requireReservationListingId,
 } from "./staysValidation";
+import { resolveGuestReservationCode } from "../lib/staysReservationCode";
 
 /**
  * Campos adicionais (Wi‑Fi, andar, vaga) vêm do `mapStaysToGuestStayBundle` em `staysMapper.ts`
@@ -356,6 +357,7 @@ export async function fetchGuestProfileFromStays(
 ): Promise<StaysGuestProfile> {
   const normalized = normalizeStaysReservationId(reservationCode);
   const booking = await fetchReservation(normalized);
+  const guestReservationCode = resolveGuestReservationCode(booking, normalized);
 
   const listingRef = requireReservationListingId(booking);
   let listing: StaysPropertyListing | null = null;
@@ -407,7 +409,7 @@ export async function fetchGuestProfileFromStays(
   });
 
   const bundle = mapStaysToGuestStayBundle(
-    normalized,
+    guestReservationCode,
     booking,
     listing,
     houseRules,

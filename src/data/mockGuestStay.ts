@@ -2,14 +2,17 @@ import type { GuestStay, ServiceOffer } from '../types/guestStay'
 
 /** Substituir por resposta da API Stays quando a integração existir. */
 export const mockGuestStay: GuestStay = {
-  reservationCode: 'ZEN-2026-8841',
+  reservationCode: '5574901098',
+  bookingPortal: 'Booking.com',
   property: {
-    name: 'Zen Residence · Pinheiros',
-    unit: 'Apto 402',
-    floor: '4º andar',
-    addressLine: 'Rua dos Pinheiros, 123',
-    city: 'São Paulo, SP',
-    postalCode: '05422-000',
+    name: 'dn11 - Aconchego e silêncio, a 11km do aeroporto',
+    unit: 'Apto 11',
+    buildingName: 'Dona Neusa',
+    listingCode: 'dn11',
+    floor: '1º andar',
+    addressLine: 'Rua Professora Maria Assunção, 3756',
+    city: 'Curitiba, PR · Boqueirão',
+    postalCode: '81670-040',
     imageUrl:
       'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80',
   },
@@ -24,11 +27,19 @@ export const mockGuestStay: GuestStay = {
     instructions:
       'Use o teclado ao lado da porta: digite o código 1842# e aguarde o sinal verde. O cofre na sala contém a chave extra (código enviado por SMS). Mantenha a porta da varanda fechada ao sair.',
     doorPassword: '1842#',
-    floor: '4º andar',
+    apartmentPassword: '1133',
+    floor: '1º andar',
     garageSpot: 'Vaga 27',
   },
   notes:
     'Check-out até 11h. Depósito de lixo no hall (porta à esquerda das elevadoras).',
+  staysCustomFields: [
+    {
+      key: 'apartment-password',
+      label: 'Senha do apartamento',
+      value: '1842#',
+    },
+  ],
 }
 
 export const mockServiceOffers: ServiceOffer[] = [

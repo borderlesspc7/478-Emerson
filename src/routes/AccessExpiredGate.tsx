@@ -3,17 +3,22 @@ import { Navigate } from 'react-router-dom'
 import { isStayCheckOutExpired } from '../lib/auth'
 import { getGuestHomePath } from '../lib/guestHomePath'
 import { useAuth } from '../hooks/useAuth'
-import { useGuestEarlyCheckInAccess } from '../hooks/useGuestEarlyCheckInAccess'
+import { useGuestAccessSettings } from '../hooks/useGuestEarlyCheckInAccess'
+import { resolveAccessReleaseAt } from '../lib/guestAccessRelease'
 import { AccessExpiredPage } from '../pages/AccessExpired/AccessExpiredPage'
 import type { AppUser } from '../types/user'
 import { PATHS } from './path'
 
-function guestHomePathWithEarlyAccess(user: AppUser, earlyCheckInAccess: boolean): string {
+function guestHomePathWithAccessSettings(
+  user: AppUser,
+  earlyCheckInAccess: boolean,
+  accessReleaseTime: string | null,
+): string {
   if (user.role !== 'guest') return PATHS.dashboard
   const stay = user.stay
   if (!stay?.checkInAt || !stay?.checkOutAt) return PATHS.dashboard
   if (isStayCheckOutExpired(stay)) return PATHS.accessExpired
-  return getGuestHomePath({ ...user, earlyCheckInAccess })
+  return getGuestHomePath({ ...user, earlyCheckInAccess, accessReleaseTime })
 }
 
 /**
@@ -23,7 +28,7 @@ function guestHomePathWithEarlyAccess(user: AppUser, earlyCheckInAccess: boolean
 export function AccessExpiredGate() {
   const { t } = useTranslation()
   const { user, authReady } = useAuth()
-  const earlyCheckInAccess = useGuestEarlyCheckInAccess(user)
+  const accessSettings = useGuestAccessSettings(user)
 
   if (!authReady) {
     return (
@@ -37,7 +42,20 @@ export function AccessExpiredGate() {
   const stay = user?.stay
   const hasWindow = Boolean(stay?.checkInAt && stay?.checkOutAt)
   if (user?.role === 'guest' && hasWindow && !isStayCheckOutExpired(stay!)) {
-    return <Navigate to={guestHomePathWithEarlyAccess(user, earlyCheckInAccess)} replace />
+    const releaseAt = resolveAccessReleaseAt(
+      stay!.checkInAt,
+      accessSettings.accessReleaseTime,
+    )
+    return (
+      <Navigate
+        to={guestHomePathWithAccessSettings(
+          { ...user, stay: { ...stay!, checkInAt: releaseAt } },
+          accessSettings.earlyCheckInAccess,
+          accessSettings.accessReleaseTime,
+        )}
+        replace
+      />
+    )
   }
 
   return <AccessExpiredPage />

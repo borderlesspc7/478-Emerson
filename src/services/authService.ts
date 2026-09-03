@@ -2,6 +2,7 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   setPersistence,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
   browserLocalPersistence,
@@ -45,6 +46,13 @@ import {
   toStayIso,
 } from './staysMapper'
 import type { StaysBooking } from '../types/staysApi'
+import { resolveGuestReservationCode } from '../lib/staysReservationCode'
+import {
+  buildDevGuestDemoStay,
+  DEV_GUEST_DEMO_CODE,
+  devGuestDemoServiceOffers,
+  isDevGuestDemoInput,
+} from '../lib/devGuestDemo'
 
 /** E-mail sintético Firebase: só caracteres seguros no local-part. */
 export const GUEST_FIREBASE_EMAIL_DOMAIN = 'zen.com.br'
@@ -102,11 +110,19 @@ async function fetchUserProfileWithGuestRetry(
 async function applyZenGuestCuration(
   stay: import('../types/guestStay').GuestStay,
   reservationCode: string
-): Promise<{ guestStay: import('../types/guestStay').GuestStay; earlyCheckInAccess: boolean }> {
+): Promise<{
+  guestStay: import('../types/guestStay').GuestStay
+  earlyCheckInAccess: boolean
+  accessReleaseTime: string | null
+}> {
   try {
     const link = await getGuestAccessLink(reservationCode)
     if (!link?.accessActive) {
-      return { guestStay: stay, earlyCheckInAccess: link?.earlyCheckInAccess === true }
+      return {
+        guestStay: stay,
+        earlyCheckInAccess: link?.earlyCheckInAccess === true,
+        accessReleaseTime: link?.accessReleaseTime ?? null,
+      }
     }
     let next = stay
     if (link.customFieldVisibility && Object.keys(link.customFieldVisibility).length > 0) {
@@ -118,9 +134,10 @@ async function applyZenGuestCuration(
         accessActive: link.accessActive,
       }),
       earlyCheckInAccess: link.earlyCheckInAccess,
+      accessReleaseTime: link.accessReleaseTime,
     }
   } catch {
-    return { guestStay: stay, earlyCheckInAccess: false }
+    return { guestStay: stay, earlyCheckInAccess: false, accessReleaseTime: null }
   }
 }
 
@@ -133,9 +150,33 @@ async function enrichGuestAppUser(
   reservationCode: string
 ): Promise<AppUser> {
   const base = mapUser(u, profile)
+
+  if (
+    import.meta.env.DEV &&
+    reservationCode.trim().toUpperCase() === DEV_GUEST_DEMO_CODE
+  ) {
+    const guestStay = buildDevGuestDemoStay()
+    return {
+      ...base,
+      role: 'guest',
+      displayName: profile?.displayName ?? 'Hóspede Demo',
+      reservationCode: guestStay.reservationCode,
+      earlyCheckInAccess: false,
+      accessReleaseTime: null,
+      stay: {
+        checkInAt: guestStay.checkInAt,
+        checkOutAt: guestStay.checkOutAt,
+        propertyName: guestStay.property.name,
+        unit: guestStay.property.unit,
+      },
+      guestStay,
+      serviceOffers: devGuestDemoServiceOffers(),
+    }
+  }
+
   try {
     const bundle = await fetchGuestProfileFromStays(reservationCode)
-    const { guestStay, earlyCheckInAccess } = await applyZenGuestCuration(
+    const { guestStay, earlyCheckInAccess, accessReleaseTime } = await applyZenGuestCuration(
       bundle.guestStay,
       reservationCode,
     )
@@ -151,6 +192,7 @@ async function enrichGuestAppUser(
       email: u.email,
       reservationCode,
       earlyCheckInAccess,
+      accessReleaseTime,
       stay: {
         checkInAt: guestStay.checkInAt,
         checkOutAt: guestStay.checkOutAt,
@@ -164,7 +206,7 @@ async function enrichGuestAppUser(
     try {
       const booking = await fetchReservation(reservationCode)
       const mini = mapStaysToGuestStayBundle(reservationCode, booking, null, null)
-      const { guestStay, earlyCheckInAccess } = await applyZenGuestCuration(
+      const { guestStay, earlyCheckInAccess, accessReleaseTime } = await applyZenGuestCuration(
         mini.guestStay,
         reservationCode,
       )
@@ -175,6 +217,7 @@ async function enrichGuestAppUser(
         displayName: primary?.name ?? profile?.displayName ?? `Hóspede ${reservationCode}`,
         reservationCode,
         earlyCheckInAccess,
+        accessReleaseTime,
         stay: {
           checkInAt: guestStay.checkInAt,
           checkOutAt: guestStay.checkOutAt,
@@ -186,7 +229,7 @@ async function enrichGuestAppUser(
       }
     } catch {
       const mini = mapStaysToGuestStayBundle(reservationCode, { id: reservationCode }, null, null)
-      const { guestStay, earlyCheckInAccess } = await applyZenGuestCuration(
+      const { guestStay, earlyCheckInAccess, accessReleaseTime } = await applyZenGuestCuration(
         mini.guestStay,
         reservationCode,
       )
@@ -195,6 +238,7 @@ async function enrichGuestAppUser(
         role: 'guest',
         reservationCode,
         earlyCheckInAccess,
+        accessReleaseTime,
         stay: {
           checkInAt: guestStay.checkInAt,
           checkOutAt: guestStay.checkOutAt,
@@ -326,6 +370,10 @@ export async function loginWithStaysReservation(
     throw new Error('guest/wrong-default-password')
   }
 
+  if (isDevGuestDemoInput(reservationCode)) {
+    return loginWithDevGuestDemo(password)
+  }
+
   const parsed = parseStaysReservationUserInput(reservationCode)
   const normalized = normalizeStaysReservationId(parsed)
   if (!normalized) {
@@ -358,6 +406,8 @@ export async function loginWithStaysReservation(
     throw new Error('stays/reservation-canceled')
   }
 
+  const guestReservationCode = resolveGuestReservationCode(booking, normalized)
+
   const checkInAt = toStayIso(booking.checkInDate, booking.checkInTime, false)
   const checkOutAt = toStayCheckOutIso(booking.checkOutDate, booking.checkOutTime)
 
@@ -370,9 +420,9 @@ export async function loginWithStaysReservation(
     throw stayAccessError
   }
 
-  const email = reservationCodeToGuestEmail(normalized)
+  const email = reservationCodeToGuestEmail(guestReservationCode)
   const primaryGuest = pickPrimaryStaysGuest(booking)
-  const displayName = primaryGuest?.name?.trim() ?? `Hóspede ${normalized}`
+  const displayName = primaryGuest?.name?.trim() ?? `Hóspede ${guestReservationCode}`
 
   await setPersistence(auth, browserLocalPersistence)
 
@@ -406,7 +456,7 @@ export async function loginWithStaysReservation(
   }
 
   await ensureGuestProfileDocument(credUser.uid, {
-    reservationCode: normalizeGuestAccessReservationCode(normalized),
+    reservationCode: normalizeGuestAccessReservationCode(guestReservationCode),
     displayName,
     email: credUser.email ?? email,
   })
@@ -417,7 +467,45 @@ export async function loginWithStaysReservation(
     propertyName: displayName,
   })
 
-  await recordGuestAccessLinkUsage(normalized)
+  await recordGuestAccessLinkUsage(guestReservationCode)
+}
+
+async function loginWithDevGuestDemo(password: string): Promise<void> {
+  const auth = getFirebaseAuth()
+  if (!auth) throw new Error('AUTH_NOT_CONFIGURED')
+
+  const guestStay = buildDevGuestDemoStay()
+  const email = reservationCodeToGuestEmail(DEV_GUEST_DEMO_CODE)
+  const displayName = 'Hóspede Demo'
+
+  await setPersistence(auth, browserLocalPersistence)
+
+  let credUser: User
+  try {
+    const cred = await signInWithEmailAndPassword(auth, email, password)
+    credUser = cred.user
+  } catch (e: unknown) {
+    const code =
+      e && typeof e === 'object' && 'code' in e ? String((e as { code: string }).code) : ''
+    if (code === 'auth/user-not-found' || code === 'auth/invalid-credential') {
+      const cred = await createUserWithEmailAndPassword(auth, email, password)
+      credUser = cred.user
+    } else {
+      throw e
+    }
+  }
+
+  await ensureGuestProfileDocument(credUser.uid, {
+    reservationCode: DEV_GUEST_DEMO_CODE,
+    displayName,
+    email: credUser.email ?? email,
+  })
+
+  await syncGuestStayToFirestore(credUser.uid, {
+    checkInAt: guestStay.checkInAt,
+    checkOutAt: guestStay.checkOutAt,
+    propertyName: guestStay.property.name,
+  })
 }
 
 export async function loginWithEmail(email: string, password: string): Promise<void> {
@@ -428,6 +516,15 @@ export async function loginWithEmail(email: string, password: string): Promise<v
 
   await setPersistence(auth, browserLocalPersistence)
   await signInWithEmailAndPassword(auth, email.trim(), password)
+}
+
+export async function sendAdminPasswordResetEmail(email: string): Promise<void> {
+  const auth = getFirebaseAuth()
+  if (!auth || !isFirebaseConfigured()) {
+    throw new Error('AUTH_NOT_CONFIGURED')
+  }
+
+  await sendPasswordResetEmail(auth, email.trim())
 }
 
 export async function registerWithEmail(email: string, password: string): Promise<void> {

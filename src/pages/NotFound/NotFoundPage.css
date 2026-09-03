@@ -1,0 +1,66 @@
+.not-found-page {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: var(--surface-base, #f5f5f5);
+}
+
+.not-found-page__card {
+  max-width: 26rem;
+  width: 100%;
+  padding: 2rem;
+  text-align: center;
+  background: var(--surface-elevated);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+}
+
+.not-found-page__code {
+  margin: 0 0 0.5rem;
+  font-size: 3rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--accent-primary);
+}
+
+.not-found-page__title {
+  margin: 0 0 0.75rem;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.not-found-page__text {
+  margin: 0 0 1.5rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.not-found-page__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.not-found-page__link {
+  display: inline-block;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-md);
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--accent-primary);
+  border: 1px solid var(--border-default);
+}
+
+.not-found-page__link--primary {
+  background: var(--accent-primary);
+  color: var(--text-on-accent, #fff);
+  border-color: transparent;
+}
+
+.not-found-page__link:hover {
+  opacity: 0.92;
+}

@@ -4,6 +4,10 @@ import type { StaysCustomFieldGuest } from './staysCustomField'
 export type GuestProperty = {
   name: string
   unit: string
+  /** Nome do empreendimento/condomínio reconhecido nos campos da Stays. */
+  buildingName?: string | null
+  /** Código curto do imóvel na Stays, usado para identificar o número do apartamento. */
+  listingCode?: string | null
   /** Ex.: `apartment` da Stays, quando existir. */
   subtype?: string | null
   floor?: string | null
@@ -26,6 +30,8 @@ export type GuestAccess = {
   /** Instruções detalhadas (porta, fechadura, cofre, etc.) */
   instructions: string
   doorPassword?: string | null
+  /** Senha específica do apartamento, separada de portão e Wi-Fi. */
+  apartmentPassword?: string | null
   floor?: string | null
   garageSpot?: string | null
 }
@@ -41,6 +47,8 @@ export type GuestZenCurated = {
 
 export type GuestStay = {
   reservationCode: string
+  /** Portal de origem da reserva, por exemplo Booking.com ou Airbnb. */
+  bookingPortal?: string | null
   property: GuestProperty
   /** ISO 8601 */
   checkInAt: string

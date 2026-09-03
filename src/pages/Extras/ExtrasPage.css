@@ -16,6 +16,10 @@
   }
 }
 
+.page-extras__unavailable {
+  margin-top: 0.75rem;
+}
+
 .page-extras__card--sos {
   border: 1px solid color-mix(in srgb, var(--color-danger) 35%, var(--border-default));
   background: color-mix(in srgb, var(--color-danger) 6%, var(--surface-elevated));
@@ -50,4 +54,30 @@
 
 .page-extras__support-actions {
   margin-top: 1rem;
+}
+
+@media (max-width: 640px) {
+  .page-extras__sos-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: var(--radius-md);
+    background: color-mix(in srgb, var(--color-danger) 8%, var(--surface-elevated));
+  }
+
+  .page-extras__sos-label {
+    margin: 0;
+  }
+
+  .page-extras__sos-link {
+    font-size: 1.125rem;
+    min-width: 3.5rem;
+    text-align: right;
+  }
+
+  .page-extras__support-actions .ui-button {
+    min-height: 2.85rem;
+  }
 }

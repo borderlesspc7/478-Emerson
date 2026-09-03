@@ -165,6 +165,18 @@ export function AdminAccessPage() {
     [showToast, t],
   )
 
+  const handleSaveAccessReleaseTime = useCallback(
+    async (reservationCode: string, accessReleaseTime: string | null) => {
+      try {
+        await updateGuestAccessLinkFields(reservationCode, { accessReleaseTime })
+        showToast(t('adminAccess.editReleaseTimeSuccess'), 'success')
+      } catch {
+        showToast(t('adminAccess.editError'), 'error')
+      }
+    },
+    [showToast, t],
+  )
+
   const handleToggleActive = useCallback(
     async (reservationCode: string, accessActive: boolean) => {
       try {
@@ -245,6 +257,31 @@ export function AdminAccessPage() {
           </select>
         ),
       }),
+      columnHelper.accessor('accessReleaseTime', {
+        header: t('adminAccess.colReleaseTime'),
+        cell: (info) => (
+          <div className="admin-access__release-time">
+            <input
+              type="time"
+              className="admin-access__time-input"
+              value={info.getValue() ?? ''}
+              aria-label={t('adminAccess.releaseTimeAria', {
+                code: info.row.original.reservationCode,
+              })}
+              disabled={!info.row.original.accessActive}
+              onChange={(e) => {
+                void handleSaveAccessReleaseTime(
+                  info.row.original.reservationCode,
+                  e.target.value || null,
+                )
+              }}
+            />
+            <span className="admin-access__time-hint">
+              {info.getValue() ? t('adminAccess.releaseTimeCustom') : t('adminAccess.releaseTimeStays')}
+            </span>
+          </div>
+        ),
+      }),
       columnHelper.accessor('accessActive', {
         header: t('adminAccess.colActive'),
         cell: (info) => (
@@ -318,7 +355,7 @@ export function AdminAccessPage() {
         },
       }),
     ],
-    [t, locale, showToast, handleSaveReservationCode, handleSavePropertyId, handleToggleEarlyCheckIn, handleToggleActive],
+    [t, locale, showToast, handleSaveReservationCode, handleSavePropertyId, handleToggleEarlyCheckIn, handleSaveAccessReleaseTime, handleToggleActive],
   )
 
   const table = useReactTable({

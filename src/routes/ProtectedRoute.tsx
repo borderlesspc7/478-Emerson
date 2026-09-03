@@ -1,8 +1,9 @@
 import { useTranslation } from 'react-i18next'
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
 import { GuestStayExpiryMonitor } from '../components/GuestStayExpiryMonitor/GuestStayExpiryMonitor'
-import { useGuestEarlyCheckInAccess } from '../hooks/useGuestEarlyCheckInAccess'
+import { useGuestAccessSettings } from '../hooks/useGuestEarlyCheckInAccess'
 import { isGuestPreCheckInLocked, isStayCheckOutExpired } from '../lib/auth'
+import { resolveAccessReleaseAt } from '../lib/guestAccessRelease'
 import { useAuth } from '../hooks/useAuth'
 import { PATHS } from './path'
 
@@ -10,7 +11,7 @@ export function ProtectedRoute() {
   const { t } = useTranslation()
   const { user, authReady } = useAuth()
   const location = useLocation()
-  const earlyCheckInAccess = useGuestEarlyCheckInAccess(user)
+  const accessSettings = useGuestAccessSettings(user)
 
   if (!authReady) {
     return (
@@ -32,6 +33,15 @@ export function ProtectedRoute() {
   }
 
   const stay = user.stay
+  const accessStay = stay
+    ? {
+        ...stay,
+        checkInAt: resolveAccessReleaseAt(
+          stay.checkInAt,
+          accessSettings.accessReleaseTime,
+        ),
+      }
+    : null
   const hasStayWindow = Boolean(stay?.checkInAt && stay?.checkOutAt)
   const stayExpired =
     user.role === 'guest' && Boolean(stay) && hasStayWindow && isStayCheckOutExpired(stay!)
@@ -39,7 +49,9 @@ export function ProtectedRoute() {
     user.role === 'guest' &&
     Boolean(stay) &&
     hasStayWindow &&
-    isGuestPreCheckInLocked(stay!, { earlyCheckInAccess })
+    isGuestPreCheckInLocked(accessStay!, {
+      earlyCheckInAccess: accessSettings.earlyCheckInAccess,
+    })
   const onPreCheckInPage = location.pathname === PATHS.preCheckIn
 
   const isAdminArea =

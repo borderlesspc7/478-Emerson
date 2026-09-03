@@ -93,9 +93,30 @@
   max-width: 200px;
 }
 
+@media (max-width: 640px) {
+  .app-header {
+    gap: 0.5rem;
+    padding-inline: 0.75rem;
+  }
+
+  .app-header__title {
+    font-size: 0.9375rem;
+  }
+
+  .app-header__user {
+    max-width: 9rem;
+  }
+}
+
 @media (max-width: 480px) {
   .app-header__user-text {
     display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-header__logout {
+    font-size: 0.75rem;
   }
 }
 

@@ -1,0 +1,79 @@
+.guest-settings {
+  max-width: 28rem;
+}
+
+.guest-settings__title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.guest-settings__lead {
+  margin: 0.35rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.guest-settings__actions {
+  margin-top: 2rem;
+}
+
+.guest-settings__block {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--border-subtle, rgba(0, 0, 0, 0.08));
+}
+
+.guest-settings__block:first-of-type {
+  margin-top: 1rem;
+  padding-top: 0;
+  border-top: none;
+}
+
+.guest-settings__label {
+  margin: 0 0 0.75rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.guest-settings__value {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.guest-settings__links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.guest-settings__links a {
+  color: var(--accent-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.guest-settings__links a:hover {
+  text-decoration: underline;
+}
+
+/* 7) Settings e páginas públicas confortáveis no telemóvel */
+@media (max-width: 640px) {
+  .guest-settings {
+    max-width: none;
+  }
+
+  .guest-settings__title {
+    font-size: 1.2rem;
+  }
+
+  .guest-settings__actions .ui-button {
+    width: 100%;
+  }
+}

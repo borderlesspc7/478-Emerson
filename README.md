@@ -1,73 +1,88 @@
-# React + TypeScript + Vite
+# Guia da Zen
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+PWA React + TypeScript + Vite para hóspedes e administradores da Zen. Integra **Stays** (reservas), **Firebase** (auth, Firestore, Storage, Functions, Hosting) e **Pagar.me** (pagamentos de serviços).
 
-Currently, two official plugins are available:
+**Produção:** https://emerson-1e6d2.web.app  
+**Firebase:** `emerson-1e6d2`
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Pré-requisitos
 
-## React Compiler
+- Node.js 18+ ou 20+
+- Conta Firebase com acesso ao projeto
+- Credenciais Stays (App Center → External API) para login de hóspede
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Setup local
 
-## Expanding the ESLint configuration
+```bash
+cp .env.example .env
+# Preencha VITE_STAYS_* para login hóspede em dev (ver comentários no .env.example)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+npm install
+npm run dev          # frontend (porta 5173)
+npm run dev:full     # frontend + emulador Functions
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### Login em desenvolvimento
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+| Perfil | Como entrar |
+|--------|-------------|
+| **Hóspede (demo)** | Código `demo` — dados fictícios, sem Stays |
+| **Hóspede (Stays)** | Código de reserva ativo (ex. `IZ07J`) ou URL `?reserve=IU08J` |
+| **Admin** | E-mail/senha Firebase Auth (ex. `user@teste.com`) |
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Links úteis:
+
+- Login com código pré-preenchido: `/login?reserve=IU08J`
+- Magic link hóspede: `/entrar/:reservationCode`
+- Termos / Privacidade: `/termos`, `/privacidade` (públicos, sem login)
+
+## Scripts
+
+| Comando | Descrição |
+|---------|-----------|
+| `npm run dev` | Vite dev server |
+| `npm run dev:full` | Dev + Firebase Functions emulator |
+| `npm test` | Testes Vitest |
+| `npm run build` | Build de produção |
+| `npm run lint` | ESLint |
+| `npm run firebase:deploy:prod` | Deploy hosting + rules + functions (script completo) |
+| `npm run firebase:deploy:hosting` | Só hosting |
+
+## Variáveis de ambiente
+
+Ver `.env.example` (frontend) e `functions/.env.example` (servidor).
+
+- **Stays:** `VITE_STAYS_*` em dev; em prod o frontend usa `/api/stays` (Cloud Function) com `STAYS_*` no servidor.
+- **WhatsApp suporte:** `VITE_ZEN_SUPPORT_WHATSAPP` (só dígitos com DDI).
+- **Pagar.me:** `VITE_PAGARME_PUBLIC_KEY` + `PAGARME_SECRET_KEY` nas Functions.
+
+## Estrutura principal
+
 ```
+src/
+  pages/          # Telas hóspede + admin
+  routes/         # AppRoutes, ProtectedRoute, paths
+  services/       # Stays, auth, Firestore
+  contexts/       # AuthContext
+  locales/        # PT / EN (i18next)
+functions/        # Cloud Functions (proxy Stays, Pagar.me)
+firestore.rules   # Regras Firestore
+storage.rules     # Regras Storage (fotos curadoria)
+```
+
+## Deploy
+
+```bash
+npm run build
+npm run firebase:deploy:prod
+```
+
+Documentação adicional: `docs/PAGARME_SETUP.md`, `docs/DEVELOPMENT.md`.
+
+## Testes
+
+```bash
+npm test
+```
+
+Cobertura inclui validação Stays, mapeamento de reservas, parse de URL/código de reserva e regras de acesso.

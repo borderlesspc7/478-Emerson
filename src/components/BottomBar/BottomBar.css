@@ -115,3 +115,31 @@
     box-shadow: 0 0 0 2px var(--surface-elevated);
   }
 }
+
+/* 5) Bottom bar mais densa em ecrãs estreitos */
+@media (max-width: 400px) {
+  .app-bottom-bar__list {
+    padding: 0.3rem 0.1rem 0.35rem;
+    gap: 0;
+  }
+
+  .app-bottom-bar__item {
+    min-width: 2.75rem;
+    max-width: none;
+  }
+
+  .app-bottom-bar__link {
+    font-size: 0.5625rem;
+    padding: 0.2rem 0.1rem;
+    gap: 0.15rem;
+  }
+
+  .app-bottom-bar__icon {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+
+  .app-bottom-bar__label {
+    -webkit-line-clamp: 1;
+  }
+}

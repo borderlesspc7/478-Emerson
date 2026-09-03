@@ -41,3 +41,18 @@
   background: var(--color-primary-muted);
   border-color: color-mix(in srgb, var(--color-primary) 35%, var(--border-default));
 }
+
+/* 4) Alvos de toque maiores e distribuição uniforme no telemóvel */
+@media (max-width: 640px) {
+  .theme-switcher__buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .theme-switcher__btn {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.7rem 1rem;
+  }
+}

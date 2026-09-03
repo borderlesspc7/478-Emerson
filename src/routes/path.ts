@@ -20,6 +20,8 @@ export const PATHS = {
   extras: '/extras',
   services: '/servicos',
   settings: '/configuracoes',
+  terms: '/termos',
+  privacy: '/privacidade',
 } as const
 
 export type PathKey = keyof typeof PATHS

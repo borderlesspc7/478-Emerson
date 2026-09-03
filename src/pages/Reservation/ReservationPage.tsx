@@ -1,19 +1,36 @@
+import { useState } from 'react'
+import { FiCheck, FiCopy } from 'react-icons/fi'
 import { useTranslation } from 'react-i18next'
+import { Button } from '../../components/ui/Button/Button'
 import { useGuestStay } from '../../hooks/useGuestStay'
-import { formatPartyLine, formatTotalPrice } from '../../lib/formatGuestStay'
+import { formatPartyLine } from '../../lib/formatGuestStay'
 import { formatStayDate, formatStayTime } from '../../lib/formatStayDates'
+import { deriveApartmentNumber } from '../../lib/guestApartment'
 import '../shared/guestContent.css'
 import './ReservationPage.css'
 
 export function ReservationPage() {
   const { t, i18n } = useTranslation()
   const { stay } = useGuestStay()
+  const [addressCopied, setAddressCopied] = useState(false)
   const loc = i18n.language === 'en' ? 'en' : 'pt-BR'
-  const { property, wifi, party, totalPrice, staysCustomFields } = stay
+  const { property, access, wifi, party } = stay
+  const apartmentNumber = deriveApartmentNumber(property.listingCode)
 
   const addressFull = [property.addressLine, property.city, property.postalCode]
     .filter(Boolean)
     .join(' · ')
+
+  async function copyAddress() {
+    if (!addressFull) return
+    try {
+      await navigator.clipboard.writeText(addressFull)
+      setAddressCopied(true)
+      window.setTimeout(() => setAddressCopied(false), 2000)
+    } catch {
+      setAddressCopied(false)
+    }
+  }
 
   return (
     <div className="page-reservation">
@@ -31,9 +48,6 @@ export function ReservationPage() {
           <p className="guest-content__card-value guest-content__card-value--sm">
             <span className="guest-content__code">{stay.reservationCode}</span>
           </p>
-          <p className="guest-content__card-meta">
-            {t('reservation.cardCodeMeta')}
-          </p>
         </article>
 
         <article className="guest-content__card">
@@ -43,9 +57,21 @@ export function ReservationPage() {
           <p className="guest-content__card-value guest-content__card-value--sm">
             {property.name}
           </p>
+          {property.buildingName ? (
+            <p className="guest-content__card-meta">
+              {t('reservation.cardBuilding')}: {property.buildingName}
+            </p>
+          ) : null}
           <p className="guest-content__card-meta">
-            {[property.unit, property.subtype, property.floor].filter(Boolean).join(' · ')}
+            {t('reservation.cardApartmentLabel')}{' '}
+            {apartmentNumber || t('reservation.cardApartmentUnknown')}
           </p>
+          {access.apartmentPassword ? (
+            <p className="guest-content__card-meta">
+              {t('reservation.cardApartmentPassword')}:{' '}
+              <span className="guest-content__code">{access.apartmentPassword}</span>
+            </p>
+          ) : null}
         </article>
 
         <article className="guest-content__card page-reservation__span-2">
@@ -55,6 +81,16 @@ export function ReservationPage() {
           <p className="guest-content__card-value guest-content__card-value--sm">
             {addressFull}
           </p>
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            className="page-reservation__copy-address"
+            leftIcon={addressCopied ? <FiCheck aria-hidden /> : <FiCopy aria-hidden />}
+            onClick={() => void copyAddress()}
+          >
+            {t(addressCopied ? 'reservation.addressCopied' : 'reservation.copyAddress')}
+          </Button>
         </article>
 
         <article className="guest-content__card">
@@ -82,32 +118,20 @@ export function ReservationPage() {
         </article>
       </div>
 
-      {party || totalPrice ? (
+      {party ? (
         <>
           <h3 className="guest-content__section">
             {t('reservation.sectionBooking')}
           </h3>
           <div className="guest-content__grid">
-            {party ? (
-              <article className="guest-content__card">
-                <h4 className="guest-content__card-title">
-                  {t('reservation.cardParty')}
-                </h4>
-                <p className="guest-content__card-value guest-content__card-value--sm">
-                  {formatPartyLine(party, t)}
-                </p>
-              </article>
-            ) : null}
-            {totalPrice ? (
-              <article className="guest-content__card">
-                <h4 className="guest-content__card-title">
-                  {t('reservation.cardTotal')}
-                </h4>
-                <p className="guest-content__card-value guest-content__card-value--sm">
-                  {formatTotalPrice(totalPrice, loc)}
-                </p>
-              </article>
-            ) : null}
+            <article className="guest-content__card">
+              <h4 className="guest-content__card-title">
+                {t('reservation.cardParty')}
+              </h4>
+              <p className="guest-content__card-value guest-content__card-value--sm">
+                {formatPartyLine(party, t)}
+              </p>
+            </article>
           </div>
         </>
       ) : null}
@@ -130,26 +154,6 @@ export function ReservationPage() {
         </article>
       </div>
 
-      {staysCustomFields && staysCustomFields.length > 0 ? (
-        <>
-          <h3 className="guest-content__section">{t('aboutProperty.staysCustomFieldsTitle')}</h3>
-          <p className="guest-content__lead" style={{ marginTop: 0 }}>
-            {t('aboutProperty.staysCustomFieldsLead')}
-          </p>
-          <article className="guest-content__card page-reservation__span-2">
-            <dl className="guest-content__dl">
-              {staysCustomFields.map((f) => (
-                <div key={f.key}>
-                  <dt className="guest-content__dt">{f.label}</dt>
-                  <dd className="guest-content__dd guest-content__prose" style={{ whiteSpace: 'pre-wrap' }}>
-                    {f.value.trim() ? f.value : '—'}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </article>
-        </>
-      ) : null}
     </div>
   )
 }

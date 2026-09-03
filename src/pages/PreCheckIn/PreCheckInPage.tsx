@@ -1,11 +1,14 @@
 import { useAuth } from '../../hooks/useAuth'
 import { useGuestStay } from '../../hooks/useGuestStay'
 import { usePreCheckInUnlockMonitor } from '../../hooks/usePreCheckInUnlockMonitor'
+import { useGuestAccessSettings } from '../../hooks/useGuestEarlyCheckInAccess'
+import { resolveAccessReleaseAt } from '../../lib/guestAccessRelease'
 import { PreCheckInView } from './PreCheckInView'
 
 export function PreCheckInPage() {
   const { user, logout } = useAuth()
   const { stay, serviceOffers, catalogError } = useGuestStay()
+  const accessSettings = useGuestAccessSettings(user)
 
   usePreCheckInUnlockMonitor()
 
@@ -16,6 +19,10 @@ export function PreCheckInPage() {
   return (
     <PreCheckInView
       stay={stay}
+      accessReleaseAt={
+        resolveAccessReleaseAt(stay.checkInAt, accessSettings.accessReleaseTime) ??
+        stay.checkInAt
+      }
       serviceOffers={serviceOffers}
       propertyName={propertyName}
       userName={user?.displayName || undefined}

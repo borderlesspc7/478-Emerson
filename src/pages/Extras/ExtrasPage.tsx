@@ -84,8 +84,10 @@ export function ExtrasPage() {
               {t('extras.zen.ctaWhatsapp')}
             </Button>
             {!waNumber ? (
-              <p className="guest-content__card-meta" style={{ marginTop: '0.75rem' }}>
-                {t('extras.zen.missingNumber')}
+              <p className="guest-content__card-meta page-extras__unavailable">
+                {import.meta.env.DEV
+                  ? t('extras.zen.missingNumber')
+                  : t('extras.zen.unavailableGuest')}
               </p>
             ) : null}
           </div>

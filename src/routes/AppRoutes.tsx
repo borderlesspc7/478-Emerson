@@ -1,6 +1,5 @@
-import { Navigate, Route, Routes } from 'react-router-dom'
-import { useAuth } from '../hooks/useAuth'
-import { getDefaultPathForUser } from '../lib/defaultRoute'
+import { Route, Routes } from 'react-router-dom'
+import type { ReactNode } from 'react'
 import { AppLayout } from '../components/Layout/Layout'
 import { LoginPage } from '../pages/Login/Login'
 import { GuestMagicLoginPage } from '../pages/GuestMagicLogin/GuestMagicLoginPage'
@@ -21,13 +20,16 @@ import { ServicesPage } from '../pages/Services/ServicesPage'
 import { InterestsPage } from '../pages/Interests/InterestsPage'
 import { ExtrasPage } from '../pages/Extras/ExtrasPage'
 import { GuestSettingsPage } from '../pages/Settings/GuestSettingsPage'
+import { TermsPage } from '../pages/Legal/TermsPage'
+import { PrivacyPage } from '../pages/Legal/PrivacyPage'
+import { NotFoundPage } from '../pages/NotFound/NotFoundPage'
+import { PublicPageShell } from '../components/PublicPageShell/PublicPageShell'
 import { PATHS } from './path'
 import { AccessExpiredGate } from './AccessExpiredGate'
 import { ProtectedRoute } from './ProtectedRoute'
 
-function DefaultRedirect() {
-  const { user } = useAuth()
-  return <Navigate to={getDefaultPathForUser(user)} replace />
+function PublicLegalRoute({ children }: { children: ReactNode }) {
+  return <PublicPageShell>{children}</PublicPageShell>
 }
 
 export function AppRoutes() {
@@ -42,6 +44,22 @@ export function AppRoutes() {
         element={<GuestMagicLoginPage />}
       />
       <Route path={PATHS.accessExpired} element={<AccessExpiredGate />} />
+      <Route
+        path={PATHS.terms}
+        element={
+          <PublicLegalRoute>
+            <TermsPage />
+          </PublicLegalRoute>
+        }
+      />
+      <Route
+        path={PATHS.privacy}
+        element={
+          <PublicLegalRoute>
+            <PrivacyPage />
+          </PublicLegalRoute>
+        }
+      />
       <Route element={<ProtectedRoute />}>
         <Route path={PATHS.preCheckIn} element={<PreCheckInPage />} />
         <Route element={<AppLayout />}>
@@ -63,7 +81,7 @@ export function AppRoutes() {
           <Route path={PATHS.settings} element={<GuestSettingsPage />} />
         </Route>
       </Route>
-      <Route path="*" element={<DefaultRedirect />} />
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   )
 }

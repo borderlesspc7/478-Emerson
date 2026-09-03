@@ -29,10 +29,16 @@ export interface StaysBookingPrice {
   _f_total?: number
 }
 
+export interface StaysBookingPartner {
+  _id?: string
+  name?: string
+}
+
 export interface StaysBooking {
   _id?: string
   id?: string
   partnerCode?: string
+  partner?: StaysBookingPartner
   creationDate?: string
   checkInDate?: string
   checkInTime?: string

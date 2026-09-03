@@ -5,15 +5,21 @@ service cloud.firestore {
     // JWT com e-mail corporativo (não @zen.com.br). Alinha com `syncUserProfileToFirestore`,
     // que grava `role: admin` para estes e-mails — evita negar escrita quando o doc
     // ainda não tem o campo (UI antiga inferia admin só pelo e-mail).
-    function isAdmin() {
+    function isCorporateEmail() {
       return request.auth != null
-        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && request.auth.token.email != null
+        && !(request.auth.token.email.matches('(?i).+@zen\\.com\\.br$'));
+    }
+
+    // Admin: e-mail corporativo no JWT (mesmo antes de `users/{uid}` existir) OU role explícita.
+    // Corrige race no primeiro login: upload/curadoria falhava enquanto syncUserProfileToFirestore corria.
+    function isAdmin() {
+      return isCorporateEmail()
         && (
-          get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+          !exists(/databases/$(database)/documents/users/$(request.auth.uid))
+          || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
           || (
             !('role' in get(/databases/$(database)/documents/users/$(request.auth.uid)).data)
-            && request.auth.token.email != null
-            && !(request.auth.token.email.matches('(?i).+@zen\\.com\\.br$'))
           )
         );
     }
@@ -34,6 +40,14 @@ service cloud.firestore {
         && request.resource.data.propertyId == resource.data.propertyId
         && request.resource.data.reservationCode == resource.data.reservationCode
         && request.resource.data.accessActive == resource.data.accessActive
+        && (
+          (!('earlyCheckInAccess' in resource.data) && !('earlyCheckInAccess' in request.resource.data))
+          || request.resource.data.earlyCheckInAccess == resource.data.earlyCheckInAccess
+        )
+        && (
+          (!('accessReleaseTime' in resource.data) && !('accessReleaseTime' in request.resource.data))
+          || request.resource.data.accessReleaseTime == resource.data.accessReleaseTime
+        )
         && (!('createdAt' in resource.data) || request.resource.data.createdAt == resource.data.createdAt)
         && (!('updatedAt' in resource.data) || request.resource.data.updatedAt == resource.data.updatedAt)
         && (

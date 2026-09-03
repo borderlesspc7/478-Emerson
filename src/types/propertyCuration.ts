@@ -7,6 +7,12 @@ export type PropertyCurationRecord = {
   elevatorPhotoUrls: string[]
   manualAccessTips: string
   manualPropertyTips: string
+  /** Conteúdo editável exibido no card do imóvel para o hóspede. */
+  buildingName?: string | null
+  apartmentPassword?: string | null
+  /** `false` remove a informação correspondente da visualização do hóspede. */
+  showBuildingName?: boolean
+  showApartmentPassword?: boolean
   /** Título amigável para grelha admin (cache). */
   displayName?: string | null
   updatedAt: Date | null
