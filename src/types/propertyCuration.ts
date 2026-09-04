@@ -10,9 +10,13 @@ export type PropertyCurationRecord = {
   /** Conteúdo editável exibido no card do imóvel para o hóspede. */
   buildingName?: string | null
   apartmentPassword?: string | null
+  /** Override opcional do Wi‑Fi (Stays costuma trazer HTML/`<p>`). */
+  wifiSsid?: string | null
+  wifiPassword?: string | null
   /** `false` remove a informação correspondente da visualização do hóspede. */
   showBuildingName?: boolean
   showApartmentPassword?: boolean
+  showWifi?: boolean
   /** Título amigável para grelha admin (cache). */
   displayName?: string | null
   updatedAt: Date | null

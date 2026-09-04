@@ -32,6 +32,12 @@ function stripHtml(raw: string): string {
   return raw.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
+/** Remove tags HTML mantendo o texto limpo (SSID, senhas, etc.). */
+export function sanitizePlainText(raw: string | null | undefined): string {
+  if (!raw) return ''
+  return stripHtml(String(raw))
+}
+
 function formatPostal(zip: string | undefined): string | null {
   if (!zip) return null
   const digits = zip.replace(/\D/g, '')
@@ -450,6 +456,10 @@ export function mapStaysToGuestStayBundle(
   if (!wifi) {
     wifi = { ssid: '—', password: '—' }
   }
+  wifi = {
+    ssid: sanitizePlainText(wifi.ssid) || '—',
+    password: sanitizePlainText(wifi.password) || '—',
+  }
 
   const primaryGuest = pickPrimaryStaysGuest(booking)
 
@@ -537,10 +547,21 @@ export function mergeGuestStayWithZenCuration(
       ? null
       : curation.apartmentPassword?.trim() || stay.access.apartmentPassword || null
 
+  const curatedSsid = sanitizePlainText(curation.wifiSsid)
+  const curatedPass = sanitizePlainText(curation.wifiPassword)
+  const wifi =
+    curation.showWifi === false
+      ? { ssid: '—', password: '—' }
+      : {
+          ssid: curatedSsid || sanitizePlainText(stay.wifi.ssid) || '—',
+          password: curatedPass || sanitizePlainText(stay.wifi.password) || '—',
+        }
+
   if (!hasExtras) {
     return {
       ...stay,
       property: { ...stay.property, buildingName },
+      wifi,
       access: { ...stay.access, apartmentPassword },
       zenCurated: null,
     }
@@ -560,6 +581,7 @@ export function mergeGuestStayWithZenCuration(
   return {
     ...stay,
     property: { ...stay.property, buildingName },
+    wifi,
     zenCurated,
     access: {
       ...stay.access,

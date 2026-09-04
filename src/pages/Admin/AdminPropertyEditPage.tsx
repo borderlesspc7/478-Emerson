@@ -111,8 +111,11 @@ export function AdminPropertyEditPage() {
   const [manualProperty, setManualProperty] = useState('')
   const [buildingName, setBuildingName] = useState('')
   const [apartmentPassword, setApartmentPassword] = useState('')
+  const [wifiSsid, setWifiSsid] = useState('')
+  const [wifiPassword, setWifiPassword] = useState('')
   const [showBuildingName, setShowBuildingName] = useState(true)
   const [showApartmentPassword, setShowApartmentPassword] = useState(true)
+  const [showWifi, setShowWifi] = useState(true)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [uploadingG, setUploadingG] = useState(false)
@@ -128,8 +131,11 @@ export function AdminPropertyEditPage() {
         manualPropertyTips: manualProperty,
         buildingName,
         apartmentPassword,
+        wifiSsid,
+        wifiPassword,
         showBuildingName,
         showApartmentPassword,
+        showWifi,
         displayName: title || null,
       })
     },
@@ -139,8 +145,11 @@ export function AdminPropertyEditPage() {
       manualProperty,
       buildingName,
       apartmentPassword,
+      wifiSsid,
+      wifiPassword,
       showBuildingName,
       showApartmentPassword,
+      showWifi,
       title,
       garageVideoUrl,
     ],
@@ -213,8 +222,11 @@ export function AdminPropertyEditPage() {
         setApartmentPassword(
           cur?.apartmentPassword ?? findApartmentPassword(staysFields) ?? '',
         )
+        setWifiSsid(cur?.wifiSsid ?? '')
+        setWifiPassword(cur?.wifiPassword ?? '')
         setShowBuildingName(cur?.showBuildingName ?? true)
         setShowApartmentPassword(cur?.showApartmentPassword ?? true)
+        setShowWifi(cur?.showWifi ?? true)
       } catch {
         if (!cancelled) showToast(t('adminPropertyEdit.loadError'), 'error')
       } finally {
@@ -391,8 +403,11 @@ export function AdminPropertyEditPage() {
         manualPropertyTips: manualProperty,
         buildingName,
         apartmentPassword,
+        wifiSsid,
+        wifiPassword,
         showBuildingName,
         showApartmentPassword,
+        showWifi,
         displayName: title || null,
       })
       showToast(t('adminPropertyEdit.saveOk'), 'success')
@@ -490,6 +505,38 @@ export function AdminPropertyEditPage() {
                   value={apartmentPassword}
                   onChange={(e) => setApartmentPassword(e.target.value)}
                   disabled={!showApartmentPassword}
+                  autoComplete="off"
+                />
+              </label>
+            </div>
+
+            <div className="admin-property-edit__guest-card-editor">
+              <div className="admin-property-edit__guest-card-head">
+                <strong>{t('adminPropertyEdit.wifiSsid')}</strong>
+                <label className="admin-property-edit__visibility">
+                  <input
+                    type="checkbox"
+                    checked={showWifi}
+                    onChange={(e) => setShowWifi(e.target.checked)}
+                  />
+                  <span>{t('adminPropertyEdit.showForGuest')}</span>
+                </label>
+              </div>
+              <label className="admin-property-edit__field">
+                <span>{t('adminPropertyEdit.wifiSsid')}</span>
+                <input
+                  value={wifiSsid}
+                  onChange={(e) => setWifiSsid(e.target.value)}
+                  disabled={!showWifi}
+                  autoComplete="off"
+                />
+              </label>
+              <label className="admin-property-edit__field">
+                <span>{t('adminPropertyEdit.wifiPassword')}</span>
+                <input
+                  value={wifiPassword}
+                  onChange={(e) => setWifiPassword(e.target.value)}
+                  disabled={!showWifi}
                   autoComplete="off"
                 />
               </label>

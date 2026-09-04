@@ -11,6 +11,41 @@
   letter-spacing: 0.02em;
 }
 
+.page-interests__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.page-interests__filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.5rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--surface-subtle);
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition-premium);
+}
+
+.page-interests__filter:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+
+.page-interests__filter.is-active {
+  color: var(--color-primary);
+  background: var(--color-primary-muted);
+  border-color: color-mix(in srgb, var(--color-primary) 35%, var(--border-default));
+}
+
 .page-interests__grid {
   display: grid;
   grid-template-columns: 1fr;

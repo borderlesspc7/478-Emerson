@@ -285,6 +285,7 @@
   line-height: 1.5;
   color: var(--text-muted);
   overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 .page-services__admin-meta {

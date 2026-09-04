@@ -1,3 +1,4 @@
+import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { FiHeart, FiMapPin, FiPackage, FiSun } from 'react-icons/fi'
 import { Button } from '../../components/ui/Button/Button'
@@ -7,6 +8,8 @@ import { useNearbyInterests } from '../../hooks/useNearbyInterests'
 import type { NearbyPlace } from '../../types/nearbyPlace'
 import '../shared/guestContent.css'
 import './InterestsPage.css'
+
+const KIND_ORDER: InterestKind[] = ['pharmacy', 'grocery', 'park', 'museum']
 
 function mapsSearchUrl(query: string): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`
@@ -38,7 +41,7 @@ function InterestCard({ place, isFallback }: { place: NearbyPlace; isFallback: b
       })
 
   return (
-    <article className="guest-content__card page-interests__card">
+    <article className="guest-content__card page-interests__card" id={`interest-${place.kind}`}>
       <div className="page-interests__card-head">
         <span className="page-interests__cat-icon" aria-hidden>
           <InterestKindIcon kind={place.kind} />
@@ -79,6 +82,22 @@ export function InterestsPage() {
   const { t } = useTranslation()
   const { essential, leisure, regionLabel, loading, error, source } = useNearbyInterests()
   const isFallback = source === 'fallback'
+  const [kindFilter, setKindFilter] = useState<InterestKind | 'all'>('all')
+
+  const filteredEssential = useMemo(
+    () =>
+      kindFilter === 'all' ? essential : essential.filter((p) => p.kind === kindFilter),
+    [essential, kindFilter],
+  )
+  const filteredLeisure = useMemo(
+    () => (kindFilter === 'all' ? leisure : leisure.filter((p) => p.kind === kindFilter)),
+    [leisure, kindFilter],
+  )
+
+  const showEssential =
+    kindFilter === 'all' || kindFilter === 'pharmacy' || kindFilter === 'grocery'
+  const showLeisure =
+    kindFilter === 'all' || kindFilter === 'park' || kindFilter === 'museum'
 
   return (
     <div className="page-interests">
@@ -97,29 +116,63 @@ export function InterestsPage() {
         {!loading && !isFallback ? (
           <p className="page-interests__attribution">{t('interests.osmAttribution')}</p>
         ) : null}
+
+        <div className="page-interests__filters" role="toolbar" aria-label={t('interests.filterAria')}>
+          <button
+            type="button"
+            className={`page-interests__filter ${kindFilter === 'all' ? 'is-active' : ''}`}
+            onClick={() => setKindFilter('all')}
+          >
+            {t('interests.filterAll')}
+          </button>
+          {KIND_ORDER.map((kind) => (
+            <button
+              key={kind}
+              type="button"
+              className={`page-interests__filter ${kindFilter === kind ? 'is-active' : ''}`}
+              onClick={() => setKindFilter(kind)}
+              aria-pressed={kindFilter === kind}
+            >
+              <InterestKindIcon kind={kind} />
+              <span>{t(`interests.kinds.${kind}`)}</span>
+            </button>
+          ))}
+        </div>
       </header>
 
-      <h3 className="page-interests__section-title">{t('interests.sectionEssential')}</h3>
-      {loading ? (
-        <InterestsSkeleton />
-      ) : (
-        <div className="page-interests__grid">
-          {essential.map((place) => (
-            <InterestCard key={place.id} place={place} isFallback={isFallback} />
-          ))}
-        </div>
-      )}
+      {showEssential ? (
+        <>
+          <h3 className="page-interests__section-title">{t('interests.sectionEssential')}</h3>
+          {loading ? (
+            <InterestsSkeleton />
+          ) : filteredEssential.length ? (
+            <div className="page-interests__grid">
+              {filteredEssential.map((place) => (
+                <InterestCard key={place.id} place={place} isFallback={isFallback} />
+              ))}
+            </div>
+          ) : (
+            <p className="page-interests__notice">{t(`interests.kindDescriptions.${kindFilter}`)}</p>
+          )}
+        </>
+      ) : null}
 
-      <h3 className="page-interests__section-title">{t('interests.sectionLeisure')}</h3>
-      {loading ? (
-        <InterestsSkeleton />
-      ) : (
-        <div className="page-interests__grid">
-          {leisure.map((place) => (
-            <InterestCard key={place.id} place={place} isFallback={isFallback} />
-          ))}
-        </div>
-      )}
+      {showLeisure ? (
+        <>
+          <h3 className="page-interests__section-title">{t('interests.sectionLeisure')}</h3>
+          {loading ? (
+            <InterestsSkeleton />
+          ) : filteredLeisure.length ? (
+            <div className="page-interests__grid">
+              {filteredLeisure.map((place) => (
+                <InterestCard key={place.id} place={place} isFallback={isFallback} />
+              ))}
+            </div>
+          ) : (
+            <p className="page-interests__notice">{t(`interests.kindDescriptions.${kindFilter}`)}</p>
+          )}
+        </>
+      ) : null}
     </div>
   )
 }

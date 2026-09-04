@@ -43,8 +43,11 @@ export function mapPropertyCurationDoc(
     buildingName: typeof data.buildingName === 'string' ? data.buildingName : null,
     apartmentPassword:
       typeof data.apartmentPassword === 'string' ? data.apartmentPassword : null,
+    wifiSsid: typeof data.wifiSsid === 'string' ? data.wifiSsid : null,
+    wifiPassword: typeof data.wifiPassword === 'string' ? data.wifiPassword : null,
     showBuildingName: data.showBuildingName !== false,
     showApartmentPassword: data.showApartmentPassword !== false,
+    showWifi: data.showWifi !== false,
     displayName: typeof data.displayName === 'string' ? data.displayName : null,
     updatedAt: toDate(data.updatedAt),
   }
@@ -71,8 +74,11 @@ export async function savePropertyCuration(
     manualPropertyTips: string
     buildingName?: string | null
     apartmentPassword?: string | null
+    wifiSsid?: string | null
+    wifiPassword?: string | null
     showBuildingName?: boolean
     showApartmentPassword?: boolean
+    showWifi?: boolean
     displayName?: string | null
   }
 ): Promise<void> {
@@ -88,8 +94,11 @@ export async function savePropertyCuration(
       manualPropertyTips: input.manualPropertyTips,
       buildingName: input.buildingName?.trim() || null,
       apartmentPassword: input.apartmentPassword?.trim() || null,
+      wifiSsid: input.wifiSsid?.trim() || null,
+      wifiPassword: input.wifiPassword?.trim() || null,
       showBuildingName: input.showBuildingName !== false,
       showApartmentPassword: input.showApartmentPassword !== false,
+      showWifi: input.showWifi !== false,
       displayName: input.displayName ?? null,
       updatedAt: serverTimestamp(),
     },

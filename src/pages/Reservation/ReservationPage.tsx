@@ -6,6 +6,7 @@ import { useGuestStay } from '../../hooks/useGuestStay'
 import { formatPartyLine } from '../../lib/formatGuestStay'
 import { formatStayDate, formatStayTime } from '../../lib/formatStayDates'
 import { deriveApartmentNumber } from '../../lib/guestApartment'
+import { sanitizePlainText } from '../../services/staysMapper'
 import '../shared/guestContent.css'
 import './ReservationPage.css'
 
@@ -16,6 +17,8 @@ export function ReservationPage() {
   const loc = i18n.language === 'en' ? 'en' : 'pt-BR'
   const { property, access, wifi, party } = stay
   const apartmentNumber = deriveApartmentNumber(property.listingCode)
+  const wifiSsid = sanitizePlainText(wifi.ssid) || '—'
+  const wifiPassword = sanitizePlainText(wifi.password) || '—'
 
   const addressFull = [property.addressLine, property.city, property.postalCode]
     .filter(Boolean)
@@ -141,7 +144,7 @@ export function ReservationPage() {
         <article className="guest-content__card">
           <h4 className="guest-content__card-title">{t('reservation.wifiSsid')}</h4>
           <p className="guest-content__card-value guest-content__card-value--sm">
-            <span className="guest-content__code">{wifi.ssid}</span>
+            <span className="guest-content__code">{wifiSsid}</span>
           </p>
         </article>
         <article className="guest-content__card">
@@ -149,7 +152,7 @@ export function ReservationPage() {
             {t('reservation.wifiPassword')}
           </h4>
           <p className="guest-content__card-value guest-content__card-value--sm">
-            <span className="guest-content__code">{wifi.password}</span>
+            <span className="guest-content__code">{wifiPassword}</span>
           </p>
         </article>
       </div>

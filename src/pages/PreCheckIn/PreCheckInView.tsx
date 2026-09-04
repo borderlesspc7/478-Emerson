@@ -130,6 +130,7 @@ export function PreCheckInView({
       </header>
 
       <main className="page-pre-checkin__main" id="main-content">
+        <p className="page-pre-checkin__welcome">{t('preCheckIn.welcome')}</p>
         <p className="page-pre-checkin__notice" role="status">
           <Trans
             i18nKey="preCheckIn.notice"
