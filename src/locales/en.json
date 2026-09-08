@@ -191,6 +191,7 @@
     "forgotPassword": "Forgot password?",
     "passwordResetSent": "We sent a password reset email. Check your inbox.",
     "submitGuest": "Sign in with reservation",
+    "productLink": "Learn about the product",
     "submitSignIn": "Sign in",
     "submitSignUp": "Create account and sign in",
     "errorReservationRequired": "Please enter the Stays reservation access code.",

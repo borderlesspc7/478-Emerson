@@ -1,4 +1,6 @@
 export const PATHS = {
+  /** Landing marketing pública (protótipo Guia da Zen). */
+  landing: '/produto',
   login: '/login',
   /** Entrada direta do hóspede (magic link): `/entrar/:reservationCode`. */
   guestDirectEntry: '/entrar',

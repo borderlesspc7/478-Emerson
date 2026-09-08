@@ -191,6 +191,7 @@
     "forgotPassword": "Esqueceu a senha?",
     "passwordResetSent": "Enviamos um e-mail para redefinir a sua senha. Verifique a caixa de entrada.",
     "submitGuest": "Entrar com reserva",
+    "productLink": "Conhecer o produto",
     "submitSignIn": "Entrar na plataforma",
     "submitSignUp": "Criar conta e entrar",
     "errorReservationRequired": "Informe o código de acesso da reserva (Stays).",

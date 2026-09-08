@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import type { ReactNode } from 'react'
 import { AppLayout } from '../components/Layout/Layout'
+import { LandingPage } from '../pages/Landing/LandingPage'
 import { LoginPage } from '../pages/Login/Login'
 import { GuestMagicLoginPage } from '../pages/GuestMagicLogin/GuestMagicLoginPage'
 import { DashboardPage } from '../pages/Dashboard/DashboardPage'
@@ -38,6 +39,7 @@ export function AppRoutes() {
       {import.meta.env.DEV ? (
         <Route path={PATHS.preCheckInPreview} element={<PreCheckInPreviewPage />} />
       ) : null}
+      <Route path={PATHS.landing} element={<LandingPage />} />
       <Route path={PATHS.login} element={<LoginPage />} />
       <Route
         path={`${PATHS.guestDirectEntry}/:reservationCode`}

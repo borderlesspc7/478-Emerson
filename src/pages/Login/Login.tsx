@@ -349,6 +349,8 @@ export function LoginPage() {
           ) : null}
 
           <footer className="login-card__footer">
+            <Link to={PATHS.landing}>{t('login.productLink')}</Link>
+            <span aria-hidden> · </span>
             <Link to={PATHS.terms}>{t('settings.termsLink')}</Link>
             <span aria-hidden> · </span>
             <Link to={PATHS.privacy}>{t('settings.privacyLink')}</Link>
