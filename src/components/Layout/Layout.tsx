@@ -1,12 +1,13 @@
 import { useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Outlet, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { useMediaQuery } from '../../hooks/useMediaQuery'
 import { PATHS } from '../../routes/path'
 import { BottomBar } from '../BottomBar/BottomBar'
 import { GuestNotificationCenter } from '../GuestNotificationCenter/GuestNotificationCenter'
 import { Header } from '../Header/Header'
+import { AnimatedOutlet } from '../navigation/AnimatedOutlet'
 import { Sidebar } from '../Sidebar/Sidebar'
 import './Layout.css'
 
@@ -106,7 +107,7 @@ export function AppLayout() {
           logoutLabel={t('header.logout')}
         />
         <main className="app-layout__content" id="main-content">
-          <Outlet />
+          <AnimatedOutlet scope="section" variant="page" />
         </main>
       </div>
       {!isDesktop ? <BottomBar /> : null}

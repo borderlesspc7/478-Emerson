@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next'
-import { NavLink } from 'react-router-dom'
 import { useAppNavigation } from '../../hooks/useAppNavigation'
+import { ViewTransitionNavLink } from '../navigation/ViewTransitionNavLink'
 import './BottomBar.css'
 
 export function BottomBar() {
@@ -21,7 +21,7 @@ export function BottomBar() {
 
           return (
             <li key={to} className="app-bottom-bar__item">
-              <NavLink
+              <ViewTransitionNavLink
                 to={to}
                 end={matchEnd}
                 className={({ isActive }) =>
@@ -39,7 +39,7 @@ export function BottomBar() {
                     {badge}
                   </span>
                 ) : null}
-              </NavLink>
+              </ViewTransitionNavLink>
             </li>
           )
         })}

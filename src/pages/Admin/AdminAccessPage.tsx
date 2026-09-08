@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-table'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../../components/ui/Button/Button'
+import { EmptyState } from '../../components/ui/EmptyState/EmptyState'
 import { useToast } from '../../contexts/ToastContext'
 import { guestDirectEntryAbsUrl } from '../../lib/guestDirectLink'
 import { pickListingCardImageUrl } from '../../lib/staysListingMedia'
@@ -380,7 +381,7 @@ export function AdminAccessPage() {
       <p className="guest-content__lead">{t('adminAccess.listLead')}</p>
 
       {!links.length ? (
-        <p className="guest-content__card-meta">{t('adminAccess.empty')}</p>
+        <EmptyState title={t('adminAccess.empty')} description={t('common.emptyHint')} />
       ) : (
         <div className="admin-table-wrap">
           <table className="admin-table">

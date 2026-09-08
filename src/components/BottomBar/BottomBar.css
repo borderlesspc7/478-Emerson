@@ -73,7 +73,8 @@
 
   .app-bottom-bar__link.is-active {
     color: var(--color-primary);
-    font-weight: 600;
+    font-weight: 700;
+    background: color-mix(in srgb, var(--color-primary) 10%, transparent);
   }
 
   .app-bottom-bar__icon {

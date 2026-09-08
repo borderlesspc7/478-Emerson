@@ -3,6 +3,7 @@ import { FiImage } from 'react-icons/fi'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { Button } from '../../components/ui/Button/Button'
+import { EmptyState } from '../../components/ui/EmptyState/EmptyState'
 import { pickListingCardImageUrl } from '../../lib/staysListingMedia'
 import { useToast } from '../../contexts/ToastContext'
 import { fetchListingById, fetchListings } from '../../services/staysService'
@@ -136,11 +137,21 @@ export function AdminPropertiesPage() {
       </form>
 
       {loading ? (
-        <p className="guest-content__card-meta">{t('adminProperties.loading')}</p>
+        <div
+          className="admin-grid-cards"
+          aria-busy="true"
+          aria-live="polite"
+          style={{ marginBottom: '1.25rem' }}
+        >
+          {[0, 1, 2].map((i) => (
+            <span key={i} className="ui-skeleton ui-skeleton--card" />
+          ))}
+          <span className="visually-hidden">{t('adminProperties.loading')}</span>
+        </div>
       ) : null}
 
       {!loading && merged.length === 0 ? (
-        <p className="guest-content__card-meta">{t('adminProperties.empty')}</p>
+        <EmptyState title={t('adminProperties.empty')} description={t('common.emptyHint')} />
       ) : null}
 
       <div className="admin-grid-cards">

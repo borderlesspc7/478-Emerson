@@ -125,6 +125,35 @@ export function LoginPage() {
     }
   }
 
+  async function quickGuestLogin(code: 'demo' | 'demo-pre') {
+    setAuthMode('guest')
+    setReservationCode(code)
+    setFieldError(null)
+    setSubmitting(true)
+    try {
+      await loginGuest(code, { loginMethod: 'manual' })
+    } catch {
+      /* erro já em lastError */
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  async function quickAdminLogin() {
+    setAuthMode('admin')
+    setEmail('user@teste.com')
+    setPassword('123456')
+    setFieldError(null)
+    setSubmitting(true)
+    try {
+      await loginAdmin('user@teste.com', '123456')
+    } catch {
+      /* erro já em lastError */
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   return (
     <div className="login-page">
       <main className="login-page__main">
@@ -280,6 +309,44 @@ export function LoginPage() {
                 : t('login.submitSignIn')}
             </Button>
           </form>
+
+          {import.meta.env.DEV ? (
+            <div className="login-card__dev-access" aria-label={t('login.devQuickAccessAria')}>
+              <p className="login-card__dev-title">{t('login.devQuickAccessTitle')}</p>
+              <div className="login-card__dev-actions">
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  fullWidth
+                  disabled={submitting}
+                  onClick={() => void quickGuestLogin('demo')}
+                >
+                  {t('login.devQuickGuest')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  fullWidth
+                  disabled={submitting}
+                  onClick={() => void quickGuestLogin('demo-pre')}
+                >
+                  {t('login.devQuickGuestPre')}
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  size="sm"
+                  fullWidth
+                  disabled={submitting}
+                  onClick={() => void quickAdminLogin()}
+                >
+                  {t('login.devQuickAdmin')}
+                </Button>
+              </div>
+            </div>
+          ) : null}
 
           <footer className="login-card__footer">
             <Link to={PATHS.terms}>{t('settings.termsLink')}</Link>

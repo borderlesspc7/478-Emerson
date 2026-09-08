@@ -18,7 +18,6 @@ import type { ServiceOrderCategoryKey } from '../../services/adminAnalyticsCompu
 import '../../components/AdminLayout/AdminLayout.css'
 import '../shared/guestContent.css'
 import './AdminDashboardPage.css'
-import './AdminDashboardPage.css'
 
 function categoryLabel(t: (k: string) => string, key: ServiceOrderCategoryKey): string {
   return t(`adminDashboard.chartCategory.${key}`)

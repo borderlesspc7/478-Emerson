@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next'
-import { Navigate, Outlet } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { useAuth } from '../../hooks/useAuth'
 import { PATHS } from '../../routes/path'
+import { AnimatedOutlet } from '../navigation/AnimatedOutlet'
 import '../../pages/shared/guestContent.css'
 import './AdminLayout.css'
 
@@ -27,8 +28,8 @@ export function AdminLayout() {
   }
 
   return (
-    <div className="page-admin admin-shell">
-      <Outlet />
+    <div className="page-admin admin-shell ui-page">
+      <AnimatedOutlet scope="full" variant="tab" />
     </div>
   )
 }

@@ -4,9 +4,9 @@ import {
   MdKeyboardDoubleArrowRight,
 } from 'react-icons/md'
 import { useTranslation } from 'react-i18next'
-import { NavLink } from 'react-router-dom'
 import { BRAND } from '../../config/brand'
 import { useAppNavigation } from '../../hooks/useAppNavigation'
+import { ViewTransitionNavLink } from '../navigation/ViewTransitionNavLink'
 import './Sidebar.css'
 
 type SidebarProps = {
@@ -43,7 +43,7 @@ export function Sidebar({ collapsed, onToggleSidebar }: SidebarProps) {
 
             return (
               <li key={to}>
-                <NavLink
+                <ViewTransitionNavLink
                   to={to}
                   end={matchEnd}
                   className={({ isActive }) =>
@@ -65,7 +65,7 @@ export function Sidebar({ collapsed, onToggleSidebar }: SidebarProps) {
                       {badge}
                     </span>
                   ) : null}
-                </NavLink>
+                </ViewTransitionNavLink>
               </li>
             )
           })}

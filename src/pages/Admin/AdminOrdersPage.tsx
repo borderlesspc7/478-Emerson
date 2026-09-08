@@ -8,6 +8,7 @@ import {
 import { FiCheck, FiPlay, FiRotateCcw, FiTrash2 } from 'react-icons/fi'
 import { useTranslation } from 'react-i18next'
 import { Button } from '../../components/ui/Button/Button'
+import { EmptyState } from '../../components/ui/EmptyState/EmptyState'
 import { useToast } from '../../contexts/ToastContext'
 import { useAuth } from '../../hooks/useAuth'
 import { useServiceRequests } from '../../hooks/useServiceRequests'
@@ -278,16 +279,26 @@ export function AdminOrdersPage() {
       <p className="guest-content__lead">{t('adminOrders.lead')}</p>
 
       {loading ? (
-        <p className="guest-content__card-meta">{t('adminOrders.loading')}</p>
+        <div className="admin-table-wrap" aria-busy="true" aria-live="polite">
+          <div style={{ padding: '1.25rem', display: 'grid', gap: '0.75rem' }}>
+            <span className="ui-skeleton ui-skeleton--title" />
+            <span className="ui-skeleton ui-skeleton--text" />
+            <span className="ui-skeleton ui-skeleton--text" style={{ width: '80%' }} />
+            <span className="ui-skeleton ui-skeleton--text" style={{ width: '65%' }} />
+          </div>
+          <span className="visually-hidden">{t('adminOrders.loading')}</span>
+        </div>
       ) : null}
       {error ? (
-        <p className="guest-content__card-meta" style={{ color: 'var(--color-danger)' }}>
-          {t('adminOrders.error')}
-        </p>
+        <EmptyState
+          variant="error"
+          title={t('adminOrders.error')}
+          description={t('common.emptyHint')}
+        />
       ) : null}
 
-      {!loading && !requests.length ? (
-        <p className="guest-content__card-meta">{t('adminOrders.empty')}</p>
+      {!loading && !error && !requests.length ? (
+        <EmptyState title={t('adminOrders.empty')} description={t('common.emptyHint')} />
       ) : null}
 
       {requests.length > 0 ? (

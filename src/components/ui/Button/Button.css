@@ -3,7 +3,7 @@
   --btn-bg-hover: var(--color-primary-hover);
   --btn-fg: #fff;
   --btn-border: transparent;
-  --btn-shadow: var(--shadow-sm);
+  --btn-shadow: var(--shadow-xs);
 
   position: relative;
   display: inline-flex;
@@ -11,8 +11,8 @@
   justify-content: center;
   gap: var(--spacing-gap-xs);
   font-family: var(--font-sans);
-  font-weight: var(--font-weight-heading);
-  letter-spacing: 0.01em;
+  font-weight: 600;
+  letter-spacing: 0.005em;
   border: 1px solid var(--btn-border);
   border-radius: var(--radius-md);
   background: var(--btn-bg);
@@ -20,16 +20,17 @@
   cursor: pointer;
   transition: var(--transition-premium);
   box-shadow: var(--btn-shadow);
+  white-space: nowrap;
 }
 
 .ui-button:focus-visible {
-  outline: 2px solid var(--color-ring);
-  outline-offset: 2px;
+  outline: none;
+  box-shadow: var(--btn-shadow), var(--focus-ring);
 }
 
 .ui-button:hover:not(:disabled) {
   background: var(--btn-bg-hover);
-  box-shadow: var(--shadow-md);
+  box-shadow: var(--shadow-sm);
 }
 
 .ui-button:active:not(:disabled) {

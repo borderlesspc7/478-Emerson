@@ -47,11 +47,11 @@
   width: 100%;
   max-width: 400px;
   padding: var(--spacing-card);
-  border-radius: calc(var(--radius-lg) + 4px);
-  background: color-mix(in srgb, var(--surface-elevated) 78%, transparent);
+  border-radius: calc(var(--radius-lg) + 2px);
+  background: color-mix(in srgb, var(--surface-elevated) 94%, transparent);
   border: 1px solid color-mix(in srgb, var(--border-default) 88%, transparent);
-  box-shadow: var(--shadow-md);
-  animation: login-card-in 0.4s cubic-bezier(0.4, 0, 0.2, 1) both;
+  box-shadow: var(--shadow-lg);
+  animation: login-card-in 0.4s var(--ease-out) both;
 }
 
 @keyframes login-card-in {
@@ -275,6 +275,27 @@ button.login-form__link--inline {
 .login-card__footer a:hover {
   color: var(--accent-primary);
   text-decoration: underline;
+}
+
+.login-card__dev-access {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px dashed color-mix(in srgb, var(--border-default) 80%, transparent);
+}
+
+.login-card__dev-title {
+  margin: 0 0 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.login-card__dev-actions {
+  display: grid;
+  gap: 0.5rem;
 }
 
 @media (max-width: 768px) {

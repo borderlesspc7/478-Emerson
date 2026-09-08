@@ -1,70 +1,66 @@
 import type { GuestStay, ServiceOffer } from '../types/guestStay'
 
-/** Substituir por resposta da API Stays quando a integração existir. */
+/** Dados de exemplo para login DEV (`demo` / `demo-pre`). */
 export const mockGuestStay: GuestStay = {
-  reservationCode: '5574901098',
+  reservationCode: 'DEV-DEMO',
   bookingPortal: 'Booking.com',
   property: {
-    name: 'dn11 - Aconchego e silêncio, a 11km do aeroporto',
-    unit: 'Apto 11',
-    buildingName: 'Dona Neusa',
-    listingCode: 'dn11',
-    floor: '1º andar',
-    addressLine: 'Rua Professora Maria Assunção, 3756',
-    city: 'Curitiba, PR · Boqueirão',
-    postalCode: '81670-040',
+    name: 'Pepi Residencial - arena da baixada - elc102',
+    unit: 'ELC102',
+    buildingName: 'Ed. Luciane',
+    listingCode: 'elc102',
+    floor: '10º andar',
+    addressLine: 'Av. Pres. Getúlio Vargas, 1345',
+    city: 'Curitiba, PR · Rebouças',
+    postalCode: '80250-180',
     imageUrl:
       'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1200&q=80',
   },
   checkInAt: '2026-04-14T15:00:00-03:00',
   checkOutAt: '2026-04-18T11:00:00-03:00',
   wifi: {
-    ssid: 'ZEN_GUEST',
-    password: 'bemvindo2026',
+    ssid: 'CondominioLuciane',
+    password: 'luciane1345',
   },
   access: {
-    summary: 'Entrada digital ativa durante a estadia.',
+    summary:
+      'Apartamento de 39 m² no Ed. Luciane (Av. Pres. Getúlio Vargas, 1345). Acomoda até 4 hóspedes. Perto da Arena da Baixada e do Batel.',
     instructions:
-      'Use o teclado ao lado da porta: digite o código 1842# e aguarde o sinal verde. O cofre na sala contém a chave extra (código enviado por SMS). Mantenha a porta da varanda fechada ao sair.',
+      'Use o teclado ao lado da porta: digite o código 1842# e aguarde o sinal verde.\nO cofre na sala contém a chave extra.\nMantenha a porta da varanda fechada ao sair.',
     doorPassword: '1842#',
     apartmentPassword: '1133',
-    floor: '1º andar',
+    floor: '10º andar',
     garageSpot: 'Vaga 27',
   },
-  notes:
-    'Check-out até 11h. Depósito de lixo no hall (porta à esquerda das elevadoras).',
+  notes: 'Check-out até 11h. Depósito de lixo no hall.',
   staysCustomFields: [
     {
       key: 'apartment-password',
       label: 'Senha do apartamento',
-      value: '1842#',
+      value: '1133',
     },
   ],
 }
 
 export const mockServiceOffers: ServiceOffer[] = [
   {
-    id: 'mock-cleaning',
-    name: 'Limpeza extra',
-    description: 'Limpeza completa do apartamento fora do horário padrão.',
-    priceInCents: 18000,
+    id: 'mock-linen',
+    name: 'Troca de enxoval',
+    description:
+      '2 toalhas de banho\n2 fronhas\n1 toalha de rosto\n1 toalha de piso',
+    priceInCents: 7000,
   },
   {
-    id: 'mock-linen',
-    name: 'Roupa de cama e banho',
-    description: 'Troca adicional de lençóis e toalhas.',
-    priceInCents: 12000,
+    id: 'mock-cleaning',
+    name: 'Limpeza extra',
+    description:
+      'Limpeza completa do apartamento\nFora do horário padrão\nInclui troca de lixo e louça',
+    priceInCents: 18000,
   },
   {
     id: 'mock-maintenance',
     name: 'Manutenção leve',
     description: 'Pequenos reparos ou ajustes durante a estadia.',
     priceInCents: 9000,
-  },
-  {
-    id: 'mock-concierge',
-    name: 'Concierge / apoio',
-    description: 'Suporte e orientação durante a estadia.',
-    priceInCents: 7000,
   },
 ]

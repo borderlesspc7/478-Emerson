@@ -50,8 +50,10 @@ import { resolveGuestReservationCode } from '../lib/staysReservationCode'
 import {
   buildDevGuestDemoStay,
   DEV_GUEST_DEMO_CODE,
+  DEV_GUEST_DEMO_PRE_CODE,
   devGuestDemoServiceOffers,
   isDevGuestDemoInput,
+  isDevGuestDemoPreCheckIn,
 } from '../lib/devGuestDemo'
 
 /** E-mail sintético Firebase: só caracteres seguros no local-part. */
@@ -153,9 +155,12 @@ async function enrichGuestAppUser(
 
   if (
     import.meta.env.DEV &&
-    reservationCode.trim().toUpperCase() === DEV_GUEST_DEMO_CODE
+    (reservationCode.trim().toUpperCase() === DEV_GUEST_DEMO_CODE ||
+      reservationCode.trim().toUpperCase() === DEV_GUEST_DEMO_PRE_CODE)
   ) {
-    const guestStay = buildDevGuestDemoStay()
+    const guestStay = buildDevGuestDemoStay({
+      preCheckIn: reservationCode.trim().toUpperCase() === DEV_GUEST_DEMO_PRE_CODE,
+    })
     return {
       ...base,
       role: 'guest',
@@ -371,7 +376,7 @@ export async function loginWithStaysReservation(
   }
 
   if (isDevGuestDemoInput(reservationCode)) {
-    return loginWithDevGuestDemo(password)
+    return loginWithDevGuestDemo(password, isDevGuestDemoPreCheckIn(reservationCode))
   }
 
   const parsed = parseStaysReservationUserInput(reservationCode)
@@ -470,13 +475,17 @@ export async function loginWithStaysReservation(
   await recordGuestAccessLinkUsage(guestReservationCode)
 }
 
-async function loginWithDevGuestDemo(password: string): Promise<void> {
+async function loginWithDevGuestDemo(
+  password: string,
+  preCheckIn = false,
+): Promise<void> {
   const auth = getFirebaseAuth()
   if (!auth) throw new Error('AUTH_NOT_CONFIGURED')
 
-  const guestStay = buildDevGuestDemoStay()
-  const email = reservationCodeToGuestEmail(DEV_GUEST_DEMO_CODE)
-  const displayName = 'Hóspede Demo'
+  const demoCode = preCheckIn ? DEV_GUEST_DEMO_PRE_CODE : DEV_GUEST_DEMO_CODE
+  const guestStay = buildDevGuestDemoStay({ preCheckIn })
+  const email = reservationCodeToGuestEmail(demoCode)
+  const displayName = preCheckIn ? 'Hóspede Demo (pré-check-in)' : 'Hóspede Demo'
 
   await setPersistence(auth, browserLocalPersistence)
 
@@ -488,15 +497,28 @@ async function loginWithDevGuestDemo(password: string): Promise<void> {
     const code =
       e && typeof e === 'object' && 'code' in e ? String((e as { code: string }).code) : ''
     if (code === 'auth/user-not-found' || code === 'auth/invalid-credential') {
-      const cred = await createUserWithEmailAndPassword(auth, email, password)
-      credUser = cred.user
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password)
+        credUser = cred.user
+      } catch (e2: unknown) {
+        const c2 =
+          e2 && typeof e2 === 'object' && 'code' in e2
+            ? String((e2 as { code: string }).code)
+            : ''
+        if (c2 === 'auth/email-already-in-use') {
+          const cred = await signInWithEmailAndPassword(auth, email, password)
+          credUser = cred.user
+        } else {
+          throw e2
+        }
+      }
     } else {
       throw e
     }
   }
 
   await ensureGuestProfileDocument(credUser.uid, {
-    reservationCode: DEV_GUEST_DEMO_CODE,
+    reservationCode: demoCode,
     displayName,
     email: credUser.email ?? email,
   })

@@ -1,0 +1,89 @@
+@supports (view-transition-name: none) {
+  .app-sidebar,
+  .app-header,
+  .app-bottom-bar {
+    view-transition-name: app-chrome;
+  }
+
+  .vt-page {
+    view-transition-name: app-page-content;
+  }
+
+  .vt-tab {
+    view-transition-name: app-tab-content;
+  }
+
+  ::view-transition-old(app-chrome),
+  ::view-transition-new(app-chrome) {
+    animation: none;
+  }
+
+  ::view-transition-old(app-page-content) {
+    animation: vt-page-exit 280ms var(--ease-out) both;
+  }
+
+  ::view-transition-new(app-page-content) {
+    animation: vt-page-enter 340ms var(--ease-out) both;
+  }
+
+  ::view-transition-old(app-tab-content) {
+    animation: vt-tab-exit 220ms var(--ease-out) both;
+  }
+
+  ::view-transition-new(app-tab-content) {
+    animation: vt-tab-enter 260ms var(--ease-out) both;
+  }
+}
+
+@keyframes vt-page-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes vt-page-exit {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(0, -6px, 0);
+  }
+}
+
+@keyframes vt-tab-enter {
+  from {
+    opacity: 0;
+    transform: translate3d(10px, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes vt-tab-exit {
+  from {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate3d(-8px, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(app-page-content),
+  ::view-transition-new(app-page-content),
+  ::view-transition-old(app-tab-content),
+  ::view-transition-new(app-tab-content) {
+    animation: none !important;
+  }
+}
